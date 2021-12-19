@@ -9,10 +9,7 @@ homepage = "https://github.com/mamrhein/quantities.rs"
 repository = "https://github.com/mamrhein/quantities.rs"
 documentation = "https://docs.rs/quantities/"
 license-file = "LICENSE.TXT"
-keywords = [
-    "quantity", "quantities", "unit", "units", "unit-safe", "measure",
-    "arithmetics"
-]
+keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
 
 [dependencies]
