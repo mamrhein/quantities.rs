@@ -59,17 +59,17 @@ pub trait Unit: Copy + PartialEq + Sized + Mul<AmountT> {
 pub trait Quantity<U: Unit>:
     Copy + Sized + Add<Self> + Sub<Self> + Div<Self> + Mul<AmountT>
 {
-    // Returns a new instance of `Quantity<U>`.
+    /// Returns a new instance of `Quantity<U>`.
     fn new(amount: AmountT, unit: U) -> Self;
 
-    // Returns the amount of `self`.
+    /// Returns the amount of `self`.
     fn amount(&self) -> AmountT;
 
-    // Returns the unit of `self`.
+    /// Returns the unit of `self`.
     fn unit(&self) -> U;
 
-    // Returns `Some(factor)` so that `factor` * `unit` == `self`, or `None` if
-    // such a factor can't be determined.
+    /// Returns `Some(factor)` so that `factor` * `unit` == `self`, or `None` if
+    /// such a factor can't be determined.
     fn equiv_amount(&self, unit: U) -> Option<AmountT> {
         if self.unit() == unit {
             Some(self.amount())
