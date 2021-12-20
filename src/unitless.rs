@@ -12,7 +12,17 @@ use crate::{
 };
 use core::ops::Mul;
 
-define_qty!(Unitless, NonUnit, NONUNIT, "", "");
+define_qty!(
+    /// Special "unitless" quantity.
+    ///
+    /// An instances of this type is returned when an instance of a Quantity is
+    /// divided by an instance of the same type of Quantity.
+    Unitless,
+    NonUnit,
+    NONUNIT,
+    "",
+    ""
+);
 
 #[cfg(test)]
 mod tests {

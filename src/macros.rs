@@ -10,6 +10,7 @@
 #[cfg(fpdec)]
 #[allow(non_snake_case)]
 #[macro_export]
+/// Converts a numerical literal to an AmountT.
 macro_rules! Amnt {
     ($lit:literal) => {
         Dec!($lit)
@@ -18,6 +19,7 @@ macro_rules! Amnt {
 #[cfg(not(fpdec))]
 #[allow(non_snake_case)]
 #[macro_export]
+/// Converts a numerical literal to an AmountT.
 macro_rules! Amnt {
     ($lit:literal) => {
         $lit
@@ -54,7 +56,8 @@ macro_rules! impl_mul_amnt_unit {
 #[macro_export]
 macro_rules! define_qty {
     // Quantity with single unit
-    ($qty_id:ident,
+    ($(#[$meta:meta])*
+     $qty_id:ident,
      $unit_id:ident,
      $variant_id:ident,
      $variant_name:literal,
@@ -71,11 +74,13 @@ macro_rules! define_qty {
             fn si_prefix(&self) -> Option<SIPrefix> { None }
             fn scale(&self) -> Option<AmountT> { None }
         }
+        $(#[$meta])*
         pub type $qty_id = Qty<$unit_id>;
         impl_mul_amnt_unit!($qty_id, $unit_id);
         };
     // Quantity w/o reference unit
-    ($qty_id:ident,
+    ($(#[$meta:meta])*
+     $qty_id:ident,
      $unit_id:ident,
      $((
         $variant_id:ident,
@@ -103,11 +108,13 @@ macro_rules! define_qty {
             fn si_prefix(&self) -> Option<SIPrefix> { None }
             fn scale(&self) -> Option<AmountT> { None }
         }
+        $(#[$meta])*
         pub type $qty_id = Qty<$unit_id>;
         impl_mul_amnt_unit!($qty_id, $unit_id);
     };
     // Quantity with reference unit
-    ($qty_id:ident,
+    ($(#[$meta:meta])*
+     $qty_id:ident,
      $unit_id:ident,
      $ref_unit:ident,
      $((
@@ -146,6 +153,7 @@ macro_rules! define_qty {
                 }
             }
         }
+        $(#[$meta])*
         pub type $qty_id = Qty<$unit_id>;
         impl_mul_amnt_unit!($qty_id, $unit_id);
     };

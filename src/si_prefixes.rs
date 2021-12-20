@@ -33,6 +33,7 @@ pub enum SIPrefix {
 }
 
 impl SIPrefix {
+    /// Returns the name of `self`.
     pub const fn name(&self) -> &'static str {
         match self {
             SIPrefix::YOCTO => "Yocto",
@@ -59,6 +60,7 @@ impl SIPrefix {
         }
     }
 
+    /// Returns the abbreviation used to represent `self`.
     pub const fn abbr(&self) -> &'static str {
         match self {
             SIPrefix::YOCTO => "y",
@@ -85,6 +87,7 @@ impl SIPrefix {
         }
     }
 
+    /// Returns the exponent of base 10 represented by `self`.
     pub const fn exp(&self) -> i8 {
         match self {
             SIPrefix::YOCTO => -24,
@@ -111,6 +114,8 @@ impl SIPrefix {
         }
     }
 
+    /// Returns the SI prefix with the abbreviation `abbr`, or `None` if there
+    /// is no such SI prefix.
     pub fn from_abbr(abbr: &str) -> Option<Self> {
         match abbr {
             "y" => Some(SIPrefix::YOCTO),
@@ -138,6 +143,8 @@ impl SIPrefix {
         }
     }
 
+    /// Returns the SI prefix with the exponent `exp`, or `None` if there is no
+    /// such SI prefix.
     pub fn from_exp(exp: i8) -> Option<Self> {
         match exp {
             -24 => Some(SIPrefix::YOCTO),
@@ -166,6 +173,7 @@ impl SIPrefix {
     }
 }
 
+/// Array of all SI prefixes sorted by exponent in ascending order.
 pub const SI_PREFIXES: [SIPrefix; 21] = [
     SIPrefix::YOCTO,
     SIPrefix::ZEPTO,

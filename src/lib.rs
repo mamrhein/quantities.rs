@@ -14,7 +14,7 @@ use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
 #[cfg(fpdec)]
 use fpdec::{Dec, Decimal};
-pub use si_prefixes::SIPrefix;
+pub use si_prefixes::{SIPrefix, SI_PREFIXES};
 pub use unitless::{Unitless, NONUNIT};
 
 mod macros;
@@ -22,21 +22,29 @@ mod si_prefixes;
 mod unitless;
 
 #[cfg(fpdec)]
+/// Type used for the mumerical part of a Quantity.
 pub type AmountT = Decimal;
 #[cfg(all(not(fpdec), target_pointer_width = "64"))]
+/// Type used for the mumerical part of a Quantity.
 pub type AmountT = f64;
 #[cfg(all(not(fpdec), target_pointer_width = "32"))]
+/// Type used for the mumerical part of a Quantity.
 pub type AmountT = f32;
 
 pub trait Unit: Copy + PartialEq + Sized + Mul<AmountT> {
+    /// Optional unit used as reference for scaling the units.
     const REF_UNIT: Option<Self>;
 
+    /// Returns the name of `self`.
     fn name(&self) -> &'static str;
 
+    /// Returns the symbol used to represent `self`.
     fn symbol(&self) -> &'static str;
 
+    /// Returns the SI prefix of `self`, or None is `self` is not a SI unit.
     fn si_prefix(&self) -> Option<SIPrefix>;
 
+    /// Returns `true` if `self` is the reference unit of its unit type.
     #[inline]
     fn is_ref_unit(&self) -> bool {
         Self::REF_UNIT == Some(*self)
