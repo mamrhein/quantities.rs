@@ -9,27 +9,27 @@
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SIPrefix {
-    YOCTO,
-    ZEPTO,
-    ATTO,
-    FEMTO,
-    PICO,
-    NANO,
-    MICRO,
-    MILLI,
-    CENTI,
-    DECI,
-    NONE,
-    DECA,
-    HECTO,
-    KILO,
-    MEGA,
-    GIGA,
-    TERA,
-    PETA,
-    EXA,
-    ZETTA,
-    YOTTA,
+    YOCTO = -24,
+    ZEPTO = -21,
+    ATTO = -18,
+    FEMTO = -15,
+    PICO = -12,
+    NANO = -9,
+    MICRO = -6,
+    MILLI = -3,
+    CENTI = -2,
+    DECI = -1,
+    NONE = 0,
+    DECA = 1,
+    HECTO = 2,
+    KILO = 3,
+    MEGA = 6,
+    GIGA = 9,
+    TERA = 12,
+    PETA = 15,
+    EXA = 18,
+    ZETTA = 21,
+    YOTTA = 24,
 }
 
 impl SIPrefix {
@@ -88,30 +88,9 @@ impl SIPrefix {
     }
 
     /// Returns the exponent of base 10 represented by `self`.
+    #[inline(always)]
     pub const fn exp(&self) -> i8 {
-        match self {
-            SIPrefix::YOCTO => -24,
-            SIPrefix::ZEPTO => -21,
-            SIPrefix::ATTO => -18,
-            SIPrefix::FEMTO => -15,
-            SIPrefix::PICO => -12,
-            SIPrefix::NANO => -9,
-            SIPrefix::MICRO => -6,
-            SIPrefix::MILLI => -3,
-            SIPrefix::CENTI => -2,
-            SIPrefix::DECI => -1,
-            SIPrefix::NONE => 0,
-            SIPrefix::DECA => 1,
-            SIPrefix::HECTO => 2,
-            SIPrefix::KILO => 3,
-            SIPrefix::MEGA => 6,
-            SIPrefix::GIGA => 9,
-            SIPrefix::TERA => 12,
-            SIPrefix::PETA => 15,
-            SIPrefix::EXA => 18,
-            SIPrefix::ZETTA => 21,
-            SIPrefix::YOTTA => 24,
-        }
+        *self as i8
     }
 
     /// Returns the SI prefix with the abbreviation `abbr`, or `None` if there
