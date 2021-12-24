@@ -1,25 +1,25 @@
 [package]
-name = "quantities"
-version = "0.1.1"
+name = "qty-macros"
+version = "0.0.0"
 edition = "2021"
 authors = ["Michael Amrhein <michael@adrhinum.de>"]
-description = "Unit-safe computations with quantities."
+description = "Macros supporting the implementation of quantities."
 readme = "README.md"
 homepage = "https://github.com/mamrhein/quantities.rs"
 repository = "https://github.com/mamrhein/quantities.rs"
 documentation = "https://docs.rs/quantities/"
-license-file = "LICENSE.TXT"
+license-file = "../LICENSE.TXT"
 keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
 
 [dependencies]
-fpdec-core = "0.3.0"
-fpdec = { version = "0.4.0", optional = true }
-qty-macros = { version = "0.0", path = "qty-macros" }
+convert_case = "0.3.0"
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = {version="1.0", features=["full"]}
 
-[features]
-default = ["std"]
-std = []
+[dev-dependencies]
+trybuild = "1.0"
 
-[workspace]
-members = [".", "qty-macros"]
+[lib]
+proc-macro = true

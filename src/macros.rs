@@ -62,11 +62,10 @@ macro_rules! define_qty {
      $variant_id:ident,
      $variant_name:literal,
      $variant_symbol:literal) => {
-        #[derive(Copy, Clone, Debug, PartialEq)]
+        #[derive(Copy, Clone, Debug, PartialEq, VariantsAsConstants)]
         pub enum $unit_id {
             $variant_id,
         }
-        pub const $variant_id: $unit_id = $unit_id::$variant_id;
         impl Unit for $unit_id {
             const REF_UNIT: Option<Self> = None;
             fn name(&self) -> &'static str { $variant_name }
@@ -88,11 +87,10 @@ macro_rules! define_qty {
         $variant_symbol:literal
      )),+
     ) => {
-        #[derive(Copy, Clone, Debug, PartialEq)]
+        #[derive(Copy, Clone, Debug, PartialEq, EnumIter, VariantsAsConstants)]
         pub enum $unit_id {
             $( $variant_id, )+
         }
-        $( pub const $variant_id: $unit_id = $unit_id::$variant_id; )+
         impl Unit for $unit_id {
             const REF_UNIT: Option<Self> = None;
             fn name(&self) -> &'static str {
@@ -124,11 +122,10 @@ macro_rules! define_qty {
         $variant_si_prefix:ident,
         $variant_scale:literal
     )),+) => {
-        #[derive(Copy, Clone, Debug, PartialEq)]
+        #[derive(Copy, Clone, Debug, PartialEq, EnumIter, VariantsAsConstants)]
         pub enum $unit_id {
             $( $variant_id, )+
         }
-        $( pub const $variant_id: $unit_id = $unit_id::$variant_id; )+
         impl Unit for $unit_id {
             const REF_UNIT: Option<Self> = Some($unit_id::$ref_unit);
             fn name(&self) -> &'static str {

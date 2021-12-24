@@ -14,8 +14,8 @@ use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
 #[cfg(fpdec)]
 use fpdec::{Dec, Decimal};
-pub use si_prefixes::{SIPrefix, SI_PREFIXES};
-pub use unitless::{Unitless, NONUNIT};
+pub use si_prefixes::SIPrefix;
+pub use unitless::{Unitless, NON_UNIT};
 
 mod macros;
 mod si_prefixes;
@@ -153,7 +153,7 @@ impl<U: Unit> Div<Self> for Qty<U> {
 
     fn div(self, rhs: Self) -> Self::Output {
         match rhs.equiv_amount(self.unit) {
-            Some(equiv) => Self::Output::new(self.amount / equiv, NONUNIT),
+            Some(equiv) => Self::Output::new(self.amount / equiv, NON_UNIT),
             None => panic!("Incompatible units!"),
         }
     }

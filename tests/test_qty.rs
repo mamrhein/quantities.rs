@@ -10,9 +10,10 @@
 #[cfg(test)]
 mod tests {
     use core::ops::Mul;
+    use qty_macros::{EnumIter, VariantsAsConstants};
     use quantities::{
         define_qty, impl_mul_amnt_unit, opt, Amnt, AmountT, Qty, Quantity,
-        SIPrefix, Unit, NONUNIT,
+        SIPrefix, Unit, NON_UNIT,
     };
 
     define_qty!(
@@ -136,7 +137,7 @@ mod tests {
         let qty2 = amnt2 * unit1;
         let res = qty1 / qty2;
         assert_eq!(res.amount(), amnt1 / amnt2);
-        assert_eq!(res.unit(), NONUNIT);
+        assert_eq!(res.unit(), NON_UNIT);
     }
 
     #[test]
@@ -149,7 +150,7 @@ mod tests {
         let qty2 = amnt2 * unit2;
         let res = qty1 / qty2;
         assert_eq!(res.amount(), amnt1 / (amnt2 * Amnt!(0.4)));
-        assert_eq!(res.unit(), NONUNIT);
+        assert_eq!(res.unit(), NON_UNIT);
     }
 
     #[test]

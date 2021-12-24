@@ -11,6 +11,7 @@ use crate::{
     define_qty, impl_mul_amnt_unit, AmountT, Qty, Quantity, SIPrefix, Unit,
 };
 use core::ops::Mul;
+use qty_macros::VariantsAsConstants;
 
 define_qty!(
     /// Special "unitless" quantity.
@@ -19,7 +20,7 @@ define_qty!(
     /// divided by an instance of the same type of Quantity.
     Unitless,
     NonUnit,
-    NONUNIT,
+    NonUnit,
     "",
     ""
 );
@@ -32,14 +33,14 @@ mod tests {
     #[test]
     fn test_unitless() {
         let amnt = Amnt!(17.4);
-        let qty = Unitless::new(amnt, NONUNIT);
+        let qty = Unitless::new(amnt, NON_UNIT);
         assert_eq!(qty.amount(), amnt);
-        let qty = amnt * NONUNIT;
+        let qty = amnt * NON_UNIT;
         assert_eq!(qty.amount(), amnt);
-        assert_eq!(qty.unit(), NONUNIT);
-        let qty = NONUNIT * amnt;
+        assert_eq!(qty.unit(), NON_UNIT);
+        let qty = NON_UNIT * amnt;
         assert_eq!(qty.amount(), amnt);
-        assert_eq!(qty.unit(), NONUNIT);
+        assert_eq!(qty.unit(), NON_UNIT);
     }
 
     #[cfg(feature = "std")]
@@ -47,7 +48,7 @@ mod tests {
     fn test_unitless_to_string() {
         let amnt = Amnt!(184.09);
         let lit = amnt.to_string();
-        let qty = Unitless::new(amnt, NONUNIT);
+        let qty = Unitless::new(amnt, NON_UNIT);
         assert_eq!(qty.to_string(), lit);
     }
 }
