@@ -7,7 +7,9 @@
 // $Source$
 // $Revision$
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+use ::qty_macros::EnumIter;
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter)]
 pub enum SIPrefix {
     YOCTO = -24,
     ZEPTO = -21,
@@ -152,34 +154,36 @@ impl SIPrefix {
     }
 }
 
-/// Array of all SI prefixes sorted by exponent in ascending order.
-pub const SI_PREFIXES: [SIPrefix; 21] = [
-    SIPrefix::YOCTO,
-    SIPrefix::ZEPTO,
-    SIPrefix::ATTO,
-    SIPrefix::FEMTO,
-    SIPrefix::PICO,
-    SIPrefix::NANO,
-    SIPrefix::MICRO,
-    SIPrefix::MILLI,
-    SIPrefix::CENTI,
-    SIPrefix::DECI,
-    SIPrefix::NONE,
-    SIPrefix::DECA,
-    SIPrefix::HECTO,
-    SIPrefix::KILO,
-    SIPrefix::MEGA,
-    SIPrefix::GIGA,
-    SIPrefix::TERA,
-    SIPrefix::PETA,
-    SIPrefix::EXA,
-    SIPrefix::ZETTA,
-    SIPrefix::YOTTA,
-];
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_iter() {
+        let mut it = SIPrefix::iter();
+        assert_eq!(it.next(), Some(&SIPrefix::YOCTO));
+        assert_eq!(it.next(), Some(&SIPrefix::ZEPTO));
+        assert_eq!(it.next(), Some(&SIPrefix::ATTO));
+        assert_eq!(it.next(), Some(&SIPrefix::FEMTO));
+        assert_eq!(it.next(), Some(&SIPrefix::PICO));
+        assert_eq!(it.next(), Some(&SIPrefix::NANO));
+        assert_eq!(it.next(), Some(&SIPrefix::MICRO));
+        assert_eq!(it.next(), Some(&SIPrefix::MILLI));
+        assert_eq!(it.next(), Some(&SIPrefix::CENTI));
+        assert_eq!(it.next(), Some(&SIPrefix::DECI));
+        assert_eq!(it.next(), Some(&SIPrefix::NONE));
+        assert_eq!(it.next(), Some(&SIPrefix::DECA));
+        assert_eq!(it.next(), Some(&SIPrefix::HECTO));
+        assert_eq!(it.next(), Some(&SIPrefix::KILO));
+        assert_eq!(it.next(), Some(&SIPrefix::MEGA));
+        assert_eq!(it.next(), Some(&SIPrefix::GIGA));
+        assert_eq!(it.next(), Some(&SIPrefix::TERA));
+        assert_eq!(it.next(), Some(&SIPrefix::PETA));
+        assert_eq!(it.next(), Some(&SIPrefix::EXA));
+        assert_eq!(it.next(), Some(&SIPrefix::ZETTA));
+        assert_eq!(it.next(), Some(&SIPrefix::YOTTA));
+        assert_eq!(it.next(), None);
+    }
 
     #[test]
     fn test_si_prefix_attrs() {
