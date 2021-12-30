@@ -7,23 +7,16 @@
 // $Source$
 // $Revision$
 
-use crate::{
-    define_qty, impl_mul_amnt_unit, AmountT, Qty, Quantity, SIPrefix, Unit,
-};
+use crate::{quantity, AmountT, Qty, Quantity, SIPrefix, Unit};
 use core::ops::Mul;
-use qty_macros::VariantsAsConstants;
 
-define_qty!(
-    /// Special "unitless" quantity.
-    ///
-    /// An instances of this type is returned when an instance of a Quantity is
-    /// divided by an instance of the same type of Quantity.
-    Unitless,
-    NonUnit,
-    NonUnit,
-    "",
-    ""
-);
+#[quantity]
+#[unit(NonUnit, "")]
+/// Special "unitless" quantity.
+///
+/// An instances of this type is returned when an instance of a Quantity is
+/// divided by an instance of the same type of Quantity.
+pub struct Unitless {}
 
 #[cfg(test)]
 mod tests {

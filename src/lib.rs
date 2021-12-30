@@ -14,10 +14,10 @@ use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
 #[cfg(fpdec)]
 use fpdec::{Dec, Decimal};
+pub use qty_macros::quantity;
 pub use si_prefixes::SIPrefix;
 pub use unitless::{Unitless, NON_UNIT};
 
-mod macros;
 mod si_prefixes;
 mod unitless;
 
@@ -30,6 +30,25 @@ pub type AmountT = f64;
 #[cfg(all(not(fpdec), target_pointer_width = "32"))]
 /// Type used for the mumerical part of a Quantity.
 pub type AmountT = f32;
+
+#[cfg(fpdec)]
+#[allow(non_snake_case)]
+#[macro_export]
+/// Converts a numerical literal to an AmountT.
+macro_rules! Amnt {
+    ($lit:literal) => {
+        Dec!($lit)
+    };
+}
+#[cfg(not(fpdec))]
+#[allow(non_snake_case)]
+#[macro_export]
+/// Converts a numerical literal to an AmountT.
+macro_rules! Amnt {
+    ($lit:literal) => {
+        $lit
+    };
+}
 
 pub trait Unit: Copy + PartialEq + Sized + Mul<AmountT> {
     /// Optional unit used as reference for scaling the units.

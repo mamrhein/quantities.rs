@@ -7,9 +7,13 @@
 // $Source$
 // $Revision$
 
+mod quantity_attr_helper;
+
+use crate::quantity_attr_helper::{analyze, codegen, parse};
 use ::convert_case::{Case, Casing};
 use ::proc_macro::TokenStream;
 use ::proc_macro2::{Span, TokenStream as TokenStream2};
+use ::proc_macro_error::proc_macro_error;
 use ::quote::quote;
 use ::syn::{parse_macro_input, Ident, ItemEnum};
 
@@ -65,4 +69,13 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
         }
     );
     output.into()
+}
+
+#[proc_macro_attribute]
+#[proc_macro_error]
+pub fn quantity(args: TokenStream, item: TokenStream) -> TokenStream {
+    let mut ast = parse(args.into(), item.into());
+    let qty_def = analyze(&mut ast);
+    let code = codegen(&qty_def, &ast.attrs);
+    code.into()
 }

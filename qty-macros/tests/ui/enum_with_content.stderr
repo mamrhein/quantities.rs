@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+  --> tests/ui/enum_with_content.rs:12:10
+   |
+12 | #[derive(VariantsAsConstants, Debug, PartialEq)]
+   |          ^^^^^^^^^^^^^^^^^^^
+   |
+   = help: message: The given enum must be a fieldless enum.

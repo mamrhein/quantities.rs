@@ -13,13 +13,14 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
 
 [dependencies]
-convert_case = "0.3.0"
-proc-macro2 = "1.0"
-quote = "1.0"
-syn = {version="1.0", features=["full"]}
+convert_case = "0.3"
+proc-macro2 = "1"
+proc-macro-error = "1"
+quote = "1"
+syn = {version="1", features=["full"]}
 
 [dev-dependencies]
-trybuild = "1.0"
+trybuild = "1"
 
 [lib]
 proc-macro = true
