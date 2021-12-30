@@ -8,6 +8,7 @@
 // $Revision$
 
 use ::convert_case::{Case, Casing};
+use ::core::str::FromStr;
 use ::proc_macro2::{Span, TokenStream};
 use ::proc_macro_error::{abort, abort_call_site};
 use ::quote::quote;
@@ -239,8 +240,18 @@ pub(crate) fn analyze(ast: &mut Ast) -> QtyDef {
         qty_def.ref_unit_ident = Some(ref_unit_def.unit_ident.clone());
         qty_def.units = unit_defs_with_scale_from_attrs(&unit_attrs);
         qty_def.units.push(ref_unit_def);
+        qty_def.units.sort_by(|a, b| {
+            let x = f64::from_str(a.scale.as_ref().unwrap().base10_digits())
+                .unwrap();
+            let y = f64::from_str(b.scale.as_ref().unwrap().base10_digits())
+                .unwrap();
+            x.partial_cmp(&y).unwrap()
+        });
     } else {
         qty_def.units = unit_defs_without_scale_from_attrs(&unit_attrs);
+        qty_def
+            .units
+            .sort_by(|a, b| a.name.value().cmp(&b.name.value()));
     }
     qty_def
 }
@@ -533,6 +544,7 @@ mod internal_fn_tests {
         let args = quote!();
         let item = quote!(
             #[ref_unit(Megapop, "Mp", Mega)]
+            #[unit(Gigapop, "Gp", Giga, 1000.0)]
             #[unit(Pop, "p", 0.000001)]
             /// Quantity Foo
             struct Foo {}
@@ -545,13 +557,13 @@ mod internal_fn_tests {
         let ast = get_ast();
         assert_eq!(ast.ident.to_string(), "Foo");
         assert!(ast.fields.is_empty());
-        assert_eq!(ast.attrs.len(), 3);
+        assert_eq!(ast.attrs.len(), 4);
         let attr_names: Vec<String> = ast
             .attrs
             .iter()
             .map(|attr| attr.path.segments.first().unwrap().ident.to_string())
             .collect();
-        assert_eq!(attr_names, ["ref_unit", "unit", "doc"]);
+        assert_eq!(attr_names, ["ref_unit", "unit", "unit", "doc"]);
     }
 
     #[test]
@@ -573,7 +585,7 @@ mod internal_fn_tests {
         );
         assert_eq!(qty_def.qty_ident.to_string(), "Foo");
         assert_eq!(qty_def.ref_unit_ident.unwrap().to_string(), "Megapop");
-        assert_eq!(qty_def.units.len(), 2);
+        assert_eq!(qty_def.units.len(), 3);
         let unit = &qty_def.units[0];
         assert_eq!(unit.unit_ident.to_string(), "Pop");
         assert_eq!(unit.name.value(), "Pop");
@@ -586,5 +598,11 @@ mod internal_fn_tests {
         assert_eq!(unit.symbol.value(), "Mp");
         assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "Mega");
         assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1.0");
+        let unit = &qty_def.units[2];
+        assert_eq!(unit.unit_ident.to_string(), "Gigapop");
+        assert_eq!(unit.name.value(), "Gigapop");
+        assert_eq!(unit.symbol.value(), "Gp");
+        assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "Giga");
+        assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1000.0");
     }
 }
