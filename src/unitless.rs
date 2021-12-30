@@ -7,8 +7,7 @@
 // $Source$
 // $Revision$
 
-use crate::{quantity, AmountT, Qty, Quantity, SIPrefix, Unit};
-use core::ops::Mul;
+use crate::prelude::*;
 
 #[quantity]
 #[unit(NonUnit, "")]

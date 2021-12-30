@@ -9,10 +9,8 @@
 
 #[cfg(test)]
 mod quantity_with_ref_unit_tests {
-    use core::ops::Mul;
-    use quantities::{
-        quantity, Amnt, AmountT, Qty, Quantity, SIPrefix, Unit, NON_UNIT,
-    };
+    use quantities::prelude::*;
+    use quantities::NON_UNIT;
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -166,10 +164,8 @@ mod quantity_with_ref_unit_tests {
 
 #[cfg(test)]
 mod quantity_without_ref_unit_tests {
-    use core::ops::Mul;
-    use quantities::{
-        quantity, Amnt, AmountT, Qty, Quantity, SIPrefix, Unit, NON_UNIT,
-    };
+    use quantities::prelude::*;
+    use quantities::NON_UNIT;
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -266,8 +262,7 @@ mod quantity_without_ref_unit_tests {
 
 #[cfg(test)]
 mod quantity_single_unit_tests {
-    use core::ops::Mul;
-    use quantities::{quantity, Amnt, AmountT, Qty, Quantity, SIPrefix, Unit};
+    use quantities::prelude::*;
 
     #[quantity]
     #[unit(Pop, "p")]

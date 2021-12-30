@@ -14,10 +14,10 @@ use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
 #[cfg(fpdec)]
 use fpdec::{Dec, Decimal};
-pub use qty_macros::quantity;
 pub use si_prefixes::SIPrefix;
 pub use unitless::{Unitless, NON_UNIT};
 
+pub mod prelude;
 mod si_prefixes;
 mod unitless;
 

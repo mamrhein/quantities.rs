@@ -7,11 +7,11 @@
 // $Source$
 // $Revision$
 
-use convert_case::{Case, Casing};
-use proc_macro2::{Span, TokenStream};
-use proc_macro_error::{abort, abort_call_site};
-use quote::quote;
-use syn;
+use ::convert_case::{Case, Casing};
+use ::proc_macro2::{Span, TokenStream};
+use ::proc_macro_error::{abort, abort_call_site};
+use ::quote::quote;
+use ::syn;
 
 pub(crate) struct UnitDef {
     unit_ident: syn::Ident,
