@@ -14,7 +14,7 @@ mod quantity_with_ref_unit_tests {
 
     /// Foo, a completely useless quantity
     #[quantity]
-    #[ref_unit(A, "a")]
+    #[ref_unit(A, "a", MEGA)]
     #[unit(B, "b", 0.4)]
     struct Foo {}
 
@@ -22,6 +22,10 @@ mod quantity_with_ref_unit_tests {
     fn test_unit() {
         let a = A;
         let b = B;
+        assert_eq!(a.name(), "A");
+        assert_eq!(a.symbol(), "a");
+        assert_eq!(a.si_prefix(), Some(SIPrefix::MEGA));
+        assert_eq!(a.scale().unwrap(), Amnt!(1.0));
         assert_eq!(b.name(), "B");
         assert_eq!(b.symbol(), "b");
         assert_eq!(b.si_prefix(), None);

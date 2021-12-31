@@ -420,7 +420,8 @@ fn codegen_fn_si_prefix(
             let unit_si_prefix: &syn::Ident = unit.si_prefix.as_ref().unwrap();
             code = quote!(
                 #code
-                #unit_enum_ident::#unit_ident => #unit_si_prefix,
+                #unit_enum_ident::#unit_ident =>
+                    Some(SIPrefix::#unit_si_prefix),
             )
         }
     }
@@ -543,8 +544,8 @@ mod internal_fn_tests {
     fn get_ast() -> Ast {
         let args = quote!();
         let item = quote!(
-            #[ref_unit(Megapop, "Mp", Mega)]
-            #[unit(Gigapop, "Gp", Giga, 1000.0)]
+            #[ref_unit(Megapop, "Mp", MEGA)]
+            #[unit(Gigapop, "Gp", GIGA, 1000.0)]
             #[unit(Pop, "p", 0.000001)]
             /// Quantity Foo
             struct Foo {}
@@ -596,13 +597,13 @@ mod internal_fn_tests {
         assert_eq!(unit.unit_ident.to_string(), "Megapop");
         assert_eq!(unit.name.value(), "Megapop");
         assert_eq!(unit.symbol.value(), "Mp");
-        assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "Mega");
+        assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "MEGA");
         assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1.0");
         let unit = &qty_def.units[2];
         assert_eq!(unit.unit_ident.to_string(), "Gigapop");
         assert_eq!(unit.name.value(), "Gigapop");
         assert_eq!(unit.symbol.value(), "Gp");
-        assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "Giga");
+        assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "GIGA");
         assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1000.0");
     }
 }
