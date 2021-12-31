@@ -57,9 +57,28 @@ and provide mechanisms to convert between them.
 The essential functionality of the package is provided by the two traits 
 `Quantity` and `Unit` as well as the generic struct `Qty<U: Unit>`.
 
-A **basic** type of quantity can easily be defined using the macro 
-`define_qty`. In a future version, another macro will allow to create a
-**derived** type of quantity based on more basic types of quantities.
+A **basic** type of quantity can easily be defined using the proc-macro
+attribute `quantity`.
+
+Example:
+
+```rust
+# use quantities::prelude::*;
+#[quantity]
+#[ref_unit(Kilogram, "kg", KILO)]
+#[unit(Milligram, "mg", MILLI, 0.000001)]
+#[unit(Carat, "ct", 0.0002)]
+#[unit(Gram, "g", NONE, 0.001)]
+#[unit(Ounce, "oz", 0.028349523125)]
+#[unit(Pound, "lb", 0.45359237)]
+#[unit(Stone, "st", 6.35029318)]
+#[unit(Tonne, "t", MEGA, 1000.)]
+/// The quantity of matter in a physical body.
+struct Mass {}
+```
+
+In a future version, the macro will also allow to create a **derived** type of
+quantity based on more basic types of quantities.
 
 ### Commonly Used Quantities
 
