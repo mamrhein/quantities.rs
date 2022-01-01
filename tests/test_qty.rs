@@ -46,7 +46,6 @@ mod quantity_with_ref_unit_tests {
         assert_eq!(qty.unit(), unit);
     }
 
-    #[cfg(feature = "std")]
     #[test]
     fn test_qty_to_string() {
         let qty = Foo::new(Amnt!(184.09), FooUnit::A);
