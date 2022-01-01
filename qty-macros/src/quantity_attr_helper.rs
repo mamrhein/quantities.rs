@@ -94,7 +94,9 @@ const UNIT_ATTR_HELP: &str =
 fn get_unit_attrs(
     attrs: &Vec<syn::Attribute>,
 ) -> (Vec<syn::Attribute>, Option<syn::Attribute>) {
-    const ERROR: &str =
+    const MORE_THAN_ONE_REFUNIT_ATTR_ERROR: &str =
+        "There can only be one `refunit` attribute.";
+    const NO_UNIT_ATTR_ERROR: &str =
         "At least one unit description must be given via attribute `unit`.";
 
     let mut unit_attrs: Vec<syn::Attribute> = vec![];
@@ -103,11 +105,14 @@ fn get_unit_attrs(
         if is_unit_attr(attr) {
             unit_attrs.push(attr.clone());
         } else if is_ref_unit_attr(attr) {
+            if opt_ref_unit_attr.is_some() {
+                abort!(attr, MORE_THAN_ONE_REFUNIT_ATTR_ERROR);
+            }
             opt_ref_unit_attr = Some(attr.clone());
         }
     }
     if unit_attrs.len() == 0 {
-        abort_call_site!(ERROR; help = UNIT_ATTR_HELP);
+        abort_call_site!(NO_UNIT_ATTR_ERROR; help = UNIT_ATTR_HELP);
     }
     (unit_attrs, opt_ref_unit_attr)
 }
