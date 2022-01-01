@@ -47,10 +47,10 @@ Examples:
 There may be different systems which define quantities, their units and the
 relations between these units in a different way.
 
-This is not directly supported by this package. For each type of quantity there
-can be only no or exactly one reference unit. But, if you have units from
-different systems for the same type of quantity, you can define these units
-and provide mechanisms to convert between them.
+This is not directly supported by this package. For each type of quantity
+there can be only no or exactly one reference unit. But, if you have units
+from different systems for the same type of quantity, you can define these
+units and provide mechanisms to convert between them.
 
 ### The Basics: Quantity and Unit
 
@@ -58,7 +58,16 @@ The essential functionality of the package is provided by the two traits
 `Quantity` and `Unit` as well as the generic struct `Qty<U: Unit>`.
 
 A **basic** type of quantity can easily be defined using the proc-macro
-attribute `quantity`.
+attribute `quantity`, optionally followed by an attribute `refunit` and
+followed by at least one attribute `unit`.
+
+The macro generates an enum with the given units (incl. the refunit, if given)
+as variants, an implemention of trait `Unit` for this enum and a type alias of
+`Qty` with the enum as parameter and named after the given struct.
+
+In addition, it creates a constant for each enum variant, thus providing a
+constant for each unit. This implies that the identifiers of all units over
+all defined quantitities have to be unique!
 
 Example:
 
@@ -75,10 +84,55 @@ Example:
 #[unit(Tonne, "t", MEGA, 1000.)]
 /// The quantity of matter in a physical body.
 struct Mass {}
+
+assert_eq!(MILLIGRAM.name(), "Milligram");
+assert_eq!(POUND.symbol(), "lb");
+assert_eq!(TONNE.si_prefix(), Some(SIPrefix::MEGA));
+assert_eq!(CARAT.scale(), Some(Amnt!(0.0002)));
 ```
 
 In a future version, the macro will also allow to create a **derived** type of
 quantity based on more basic types of quantities.
+
+### Instantiating quantities
+
+An instance of a quantity type can be created by calling the function `new`,
+giving an amount and a unit. Alternatively, a unit can be multiplied by an
+amount.
+
+Example:
+
+```rust
+# use quantities::prelude::*;
+# #[quantity]
+# #[ref_unit(Kilogram, "kg", KILO)]
+# #[unit(Gram, "g", NONE, 0.001)]
+# struct Mass {}
+let m = Mass::new(Amnt!(17.4), GRAM);
+assert_eq!(m.to_string(), "17.4 g");
+let m = Amnt!(17.4) * GRAM;
+assert_eq!(m.to_string(), "17.4 g");
+```
+
+### Unit-safe computations
+
+If the quantity type has a refernce unit, a quantity instance can be converted
+to a quantity instance with a different unit of the same type by calling the
+method `convert`.
+
+Example:
+
+```rust
+# use quantities::prelude::*;
+# #[quantity]
+# #[ref_unit(Kilogram, "kg", KILO)]
+# #[unit(Carat, "ct", 0.0002)]
+# #[unit(Gram, "g", NONE, 0.001)]
+# struct Mass {}
+let x = Mass::new(Amnt!(13.5), GRAM);
+let y = x.convert(CARAT).unwrap();
+assert_eq!(y.to_string(), "67.5 ct");
+```
 
 ### Commonly Used Quantities
 
