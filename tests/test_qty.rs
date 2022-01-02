@@ -16,6 +16,7 @@ mod quantity_with_ref_unit_tests {
     #[quantity]
     #[ref_unit(A, "a", MEGA)]
     #[unit(B, "b", 0.4)]
+    #[unit(C, "c", 0.01)]
     struct Foo {}
 
     #[test]
@@ -61,6 +62,36 @@ mod quantity_with_ref_unit_tests {
         let qty = equiv.convert(FooUnit::B).unwrap();
         assert_eq!(qty.amount(), Amnt!(17.4));
         assert_eq!(qty.unit(), FooUnit::B);
+    }
+
+    #[test]
+    fn test_cmp_same_unit() {
+        let qty1 = Amnt!(17.4) * FooUnit::A;
+        let qty2 = Amnt!(0.37) * FooUnit::A;
+        let qty3 = qty1;
+        assert!(qty1 == qty3);
+        assert!(qty3 == qty1);
+        assert!(qty1 != qty2);
+        assert!(qty2 != qty1);
+        assert!(qty2 < qty1);
+        assert!(qty1 > qty2);
+        assert!(qty2 <= qty3);
+        assert!(qty3 >= qty2);
+    }
+
+    #[test]
+    fn test_cmp_diff_unit() {
+        let qty1 = Amnt!(17.4) * FooUnit::A;
+        let qty2 = Amnt!(0.37) * FooUnit::B;
+        let qty3 = qty1.convert(FooUnit::C).unwrap();
+        assert!(qty1 == qty3);
+        assert!(qty3 == qty1);
+        assert!(qty1 != qty2);
+        assert!(qty2 != qty1);
+        assert!(qty2 < qty1);
+        assert!(qty1 > qty2);
+        assert!(qty2 <= qty3);
+        assert!(qty3 >= qty2);
     }
 
     #[test]
@@ -174,6 +205,7 @@ mod quantity_without_ref_unit_tests {
     #[quantity]
     #[unit(A, "a")]
     #[unit(B, "b")]
+    #[unit(C, "c")]
     struct Foo {}
 
     #[test]
@@ -194,6 +226,36 @@ mod quantity_without_ref_unit_tests {
         assert!(qty.convert(A).is_none());
         let qty = Foo::new(Amnt!(6.25), A);
         assert!(qty.convert(B).is_none());
+    }
+
+    #[test]
+    fn test_cmp_same_unit() {
+        let qty1 = Amnt!(17.4) * FooUnit::A;
+        let qty2 = Amnt!(0.37) * FooUnit::A;
+        let qty3 = qty1;
+        assert!(qty1 == qty3);
+        assert!(qty3 == qty1);
+        assert!(qty1 != qty2);
+        assert!(qty2 != qty1);
+        assert!(qty2 < qty1);
+        assert!(qty1 > qty2);
+        assert!(qty2 <= qty3);
+        assert!(qty3 >= qty2);
+    }
+
+    #[test]
+    fn test_cmp_diff_unit() {
+        let qty1 = Amnt!(17.4) * FooUnit::A;
+        let qty2 = Amnt!(0.37) * FooUnit::B;
+        let qty3 = Amnt!(17.4000) * FooUnit::A;
+        assert!(qty1 == qty3);
+        assert!(qty3 == qty1);
+        assert!(qty1 != qty2);
+        assert!(qty2 != qty1);
+        assert!(!(qty2 < qty1));
+        assert!(!(qty1 > qty2));
+        assert!(!(qty2 <= qty3));
+        assert!(!(qty3 >= qty2));
     }
 
     #[test]

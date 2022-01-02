@@ -11,6 +11,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(dead_code)]
 
+use core::cmp::Ordering;
 use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
 #[cfg(fpdec)]
@@ -143,6 +144,34 @@ impl<U: Unit> Quantity<U> for Qty<U> {
     #[inline(always)]
     fn unit(&self) -> U {
         self.unit
+    }
+}
+
+impl<U: Unit> PartialEq for Qty<U> {
+    fn eq(&self, other: &Self) -> bool {
+        if self.unit == other.unit {
+            self.amount == other.amount
+        } else {
+            match other.equiv_amount(self.unit) {
+                None => false,
+                Some(equiv_amount) => self.amount == equiv_amount,
+            }
+        }
+    }
+}
+
+impl<U: Unit> Eq for Qty<U> {}
+
+impl<U: Unit> PartialOrd for Qty<U> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        if self.unit == other.unit {
+            self.amount().partial_cmp(&other.amount())
+        } else {
+            match self.equiv_amount(other.unit) {
+                None => None,
+                Some(equiv_amount) => equiv_amount.partial_cmp(&other.amount()),
+            }
+        }
     }
 }
 
