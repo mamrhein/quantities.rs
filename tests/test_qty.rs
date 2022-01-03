@@ -10,7 +10,7 @@
 #[cfg(test)]
 mod quantity_with_ref_unit_tests {
     use quantities::prelude::*;
-    use quantities::NON_UNIT;
+    use quantities::ONE;
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -165,7 +165,7 @@ mod quantity_with_ref_unit_tests {
         let qty2 = amnt2 * unit1;
         let res = qty1 / qty2;
         assert_eq!(res.amount(), amnt1 / amnt2);
-        assert_eq!(res.unit(), NON_UNIT);
+        assert_eq!(res.unit(), ONE);
     }
 
     #[test]
@@ -178,7 +178,7 @@ mod quantity_with_ref_unit_tests {
         let qty2 = amnt2 * unit2;
         let res = qty1 / qty2;
         assert_eq!(res.amount(), amnt1 / (amnt2 * Amnt!(0.4)));
-        assert_eq!(res.unit(), NON_UNIT);
+        assert_eq!(res.unit(), ONE);
     }
 
     #[test]
@@ -199,7 +199,7 @@ mod quantity_with_ref_unit_tests {
 #[cfg(test)]
 mod quantity_without_ref_unit_tests {
     use quantities::prelude::*;
-    use quantities::NON_UNIT;
+    use quantities::ONE;
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -313,7 +313,7 @@ mod quantity_without_ref_unit_tests {
         let qty2 = amnt2 * unit1;
         let res = qty1 / qty2;
         assert_eq!(res.amount(), amnt1 / amnt2);
-        assert_eq!(res.unit(), NON_UNIT);
+        assert_eq!(res.unit(), ONE);
     }
 
     #[test]

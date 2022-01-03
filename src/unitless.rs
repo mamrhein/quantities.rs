@@ -7,15 +7,54 @@
 // $Source$
 // $Revision$
 
-use crate::prelude::*;
+use crate::{AmountT, Qty, Quantity, SIPrefix, Unit};
+use std::ops::Mul;
 
-#[quantity]
-#[unit(NonUnit, "")]
 /// Special "unitless" quantity.
 ///
-/// An instances of this type is returned when an instance of a Quantity is
-/// divided by an instance of the same type of Quantity.
-pub struct Unitless {}
+/// An instances of this type is returned when an instance of a quantity is
+/// divided by an instance of the same type of quantity.
+pub type Unitless = Qty<One>;
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub enum One {
+    One,
+}
+
+/// Special singleton used as "unit" for the "unitless" quantity.
+pub const ONE: One = One::One;
+
+impl Unit for One {
+    const REF_UNIT: Option<Self> = None;
+    fn name(&self) -> &'static str {
+        "NonUnit"
+    }
+    fn symbol(&self) -> &'static str {
+        ""
+    }
+    fn si_prefix(&self) -> Option<SIPrefix> {
+        None
+    }
+    fn scale(&self) -> Option<AmountT> {
+        None
+    }
+}
+
+impl Mul<One> for AmountT {
+    type Output = Unitless;
+    #[inline(always)]
+    fn mul(self, rhs: One) -> Self::Output {
+        Unitless::new(self, rhs)
+    }
+}
+
+impl Mul<AmountT> for One {
+    type Output = Unitless;
+    #[inline(always)]
+    fn mul(self, rhs: AmountT) -> Self::Output {
+        Unitless::new(rhs, self)
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -25,14 +64,14 @@ mod tests {
     #[test]
     fn test_unitless() {
         let amnt = Amnt!(17.4);
-        let qty = Unitless::new(amnt, NON_UNIT);
+        let qty = Unitless::new(amnt, ONE);
         assert_eq!(qty.amount(), amnt);
-        let qty = amnt * NON_UNIT;
+        let qty = amnt * ONE;
         assert_eq!(qty.amount(), amnt);
-        assert_eq!(qty.unit(), NON_UNIT);
-        let qty = NON_UNIT * amnt;
+        assert_eq!(qty.unit(), ONE);
+        let qty = ONE * amnt;
         assert_eq!(qty.amount(), amnt);
-        assert_eq!(qty.unit(), NON_UNIT);
+        assert_eq!(qty.unit(), ONE);
     }
 
     #[cfg(feature = "std")]
@@ -40,7 +79,7 @@ mod tests {
     fn test_unitless_to_string() {
         let amnt = Amnt!(184.09);
         let lit = amnt.to_string();
-        let qty = Unitless::new(amnt, NON_UNIT);
+        let qty = Unitless::new(amnt, ONE);
         assert_eq!(qty.to_string(), lit);
     }
 }
