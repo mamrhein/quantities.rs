@@ -16,13 +16,13 @@ other types of quantities raised by some exponent.
 
 Examples:
 
-* Volume = Length ^ 3
+* Volume = Length ³
 
-* Velocity = Length ^ 1 * Duration ^ -1
+* Velocity = Length ¹ · Duration ⁻¹
 
-* Acceleration = Length ^ 1 * Duration ^ -2
+* Acceleration = Length ¹ · Duration ⁻²
 
-* Force = Mass ^ 1 * Acceleration ^ 1
+* Force = Mass ¹ · Acceleration ¹
 
 Each type of quantity may have one special unit which is used as a reference
 for the definition of all other units, for example Meter, Kilogram and
@@ -35,11 +35,11 @@ that follows the formula defining the type of quantity.
 
 Examples:
 
-* Velocity -> Meter per Second = Meter ^ 1 * Second ^ -1
+* Velocity -> Meter per Second = Meter ¹ · Second ⁻¹
 
-* Acceleration -> Meter per Second squared = Meter ^ 1 * Second ^ -2
+* Acceleration -> Meter per Second squared = Meter ¹ · Second ⁻²
 
-* Force -> Newton = Kilogram ^ 1 * Meter ^ 1 * Second ^ -2
+* Force -> Newton = Kilogram ¹ · Meter ¹ · Second ⁻²
 
 
 ### "Systems of Measure"
