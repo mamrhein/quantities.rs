@@ -322,7 +322,7 @@ fn codegen_qty_single_unit(
 ) -> TokenStream {
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
-        #[derive(Copy, Clone, Debug, PartialEq)]
+        #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
             #unit_ident,
         }
@@ -402,7 +402,7 @@ fn codegen_qty_without_ref_unit(
     let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
-        #[derive(Copy, Clone, Debug, PartialEq)]
+        #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident { #code_unit_variants }
         impl Unit for #unit_enum_ident {
             const REF_UNIT: Option<Self> = None;
@@ -480,7 +480,7 @@ fn codegen_qty_with_ref_unit(
     let code_fn_scale = codegen_fn_scale(unit_enum_ident, units);
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
-        #[derive(Copy, Clone, Debug, PartialEq)]
+        #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
             #code_unit_variants
         }
@@ -537,8 +537,8 @@ pub(crate) fn codegen(
     quote!(
         #code_attrs
         #code_qty
-        #code_impl_mul
         #code_unit_consts
+        #code_impl_mul
     )
 }
 
