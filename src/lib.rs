@@ -91,6 +91,11 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
 pub trait Quantity<U: Unit>:
     Copy + Sized + Add<Self> + Sub<Self> + Div<Self> + Mul<AmountT>
 {
+    /// Returns an iterator over the variants of `U`.
+    fn iter_units<'a>() -> core::slice::Iter<'a, U> {
+        U::iter()
+    }
+
     /// Returns a new instance of `Quantity<U>`.
     fn new(amount: AmountT, unit: U) -> Self;
 
