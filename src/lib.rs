@@ -52,9 +52,12 @@ macro_rules! Amnt {
     };
 }
 
-pub trait Unit: Copy + PartialEq + Sized + Mul<AmountT> {
+pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
     /// Optional unit used as reference for scaling the units.
     const REF_UNIT: Option<Self>;
+
+    /// Returns an iterator over the variants of `Self`.
+    fn iter<'a>() -> core::slice::Iter<'a, Self>;
 
     /// Returns the name of `self`.
     fn name(&self) -> &'static str;

@@ -8,7 +8,7 @@
 // $Revision$
 
 use crate::{AmountT, Qty, Quantity, SIPrefix, Unit};
-use std::ops::Mul;
+use core::ops::Mul;
 
 /// Special "unitless" quantity.
 ///
@@ -16,9 +16,13 @@ use std::ops::Mul;
 /// divided by an instance of the same type of quantity.
 pub type Unitless = Qty<One>;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum One {
     One,
+}
+
+impl One {
+    const VARIANTS: [Self; 1] = [ONE];
 }
 
 /// Special singleton used as "unit" for the "unitless" quantity.
@@ -26,8 +30,11 @@ pub const ONE: One = One::One;
 
 impl Unit for One {
     const REF_UNIT: Option<Self> = None;
+    fn iter<'a>() -> core::slice::Iter<'a, Self> {
+        Self::VARIANTS.iter()
+    }
     fn name(&self) -> &'static str {
-        "NonUnit"
+        "One"
     }
     fn symbol(&self) -> &'static str {
         ""

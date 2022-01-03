@@ -45,7 +45,7 @@ pub(crate) fn parse(args: TokenStream, item: TokenStream) -> Ast {
     const HELP: &str = "Use `#[quantity]`.";
 
     if !args.is_empty() {
-        if let Ok(expr) = syn::parse2::<syn::Expr>(args.into()) {
+        if let Ok(expr) = syn::parse2::<syn::Expr>(args) {
             abort!(expr, ERROR; help = HELP)
         } else {
             abort_call_site!(ERROR; help = HELP)
@@ -63,10 +63,10 @@ fn check_struct(ast: &Ast) {
     const FIELDS_ERROR: &str = "Given struct must not have fields.";
     let help = format!("Use `struct {};`", ast.ident);
 
-    if ast.generics.params.len() != 0 {
+    if !ast.generics.params.is_empty() {
         abort!(ast.generics, GENERICS_ERROR; help = help.as_str());
     }
-    if ast.fields.len() != 0 {
+    if !ast.fields.is_empty() {
         abort!(ast.fields, FIELDS_ERROR; help = help.as_str());
     }
 }
@@ -111,7 +111,7 @@ fn get_unit_attrs(
             opt_ref_unit_attr = Some(attr.clone());
         }
     }
-    if unit_attrs.len() == 0 {
+    if unit_attrs.is_empty() {
         abort_call_site!(NO_UNIT_ATTR_ERROR; help = UNIT_ATTR_HELP);
     }
     (unit_attrs, opt_ref_unit_attr)
@@ -237,7 +237,7 @@ fn unit_defs_without_scale_from_attrs(
 pub(crate) fn analyze(ast: &mut Ast) -> QtyDef {
     check_struct(ast);
     let attrs = &mut ast.attrs;
-    let (unit_attrs, opt_ref_unit_attr) = get_unit_attrs(&attrs);
+    let (unit_attrs, opt_ref_unit_attr) = get_unit_attrs(attrs);
     attrs.retain(|attr| !(is_unit_attr(attr) || is_ref_unit_attr(attr)));
     let mut qty_def = QtyDef::new(ast.ident.clone());
     if let Some(ref_unit_attr) = opt_ref_unit_attr {
@@ -286,7 +286,7 @@ fn codegen_unit_constants(
         code = quote!(
             #code
             pub const #const_ident: #enum_ident = #enum_ident::#unit_ident;
-        )
+        );
     }
     code
 }
@@ -326,8 +326,14 @@ fn codegen_qty_single_unit(
         pub enum #unit_enum_ident {
             #unit_ident,
         }
+        impl #unit_enum_ident {
+            const VARIANTS: [Self; 1] = [#unit_enum_ident::#unit_ident];
+        }
         impl Unit for #unit_enum_ident {
             const REF_UNIT: Option<Self> = None;
+            fn iter<'a>() -> core::slice::Iter<'a, Self> {
+                Self::VARIANTS.iter()
+            }
             fn name(&self) -> &'static str { #unit_name }
             fn symbol(&self) -> &'static str { #unit_symbol }
             fn si_prefix(&self) -> Option<SIPrefix> { None }
@@ -345,6 +351,27 @@ fn codegen_unit_variants(units: &Vec<UnitDef>) -> TokenStream {
             #unit_ident,
         )
     }
+    code
+}
+
+fn codegen_unit_variants_array(
+    unit_enum_ident: &syn::Ident,
+    units: &Vec<UnitDef>,
+) -> TokenStream {
+    let mut code = TokenStream::new();
+    let n_variants = units.len();
+    for unit in units {
+        let unit_ident = unit.unit_ident.clone();
+        code = quote!(
+            #code
+            #unit_enum_ident::#unit_ident,
+        );
+    }
+    code = quote!(
+        impl #unit_enum_ident {
+            const VARIANTS: [#unit_enum_ident; #n_variants] = [#code];
+        }
+    );
     code
 }
 
@@ -398,14 +425,20 @@ fn codegen_qty_without_ref_unit(
     units: &Vec<UnitDef>,
 ) -> TokenStream {
     let code_unit_variants = codegen_unit_variants(units);
+    let code_unit_variants_array =
+        codegen_unit_variants_array(unit_enum_ident, units);
     let code_fn_name = codegen_fn_name(unit_enum_ident, units);
     let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident { #code_unit_variants }
+        #code_unit_variants_array
         impl Unit for #unit_enum_ident {
             const REF_UNIT: Option<Self> = None;
+            fn iter<'a>() -> core::slice::Iter<'a, Self> {
+                Self::VARIANTS.iter()
+            }
             #code_fn_name
             #code_fn_symbol
             fn si_prefix(&self) -> Option<SIPrefix> { None }
@@ -474,6 +507,8 @@ fn codegen_qty_with_ref_unit(
     units: &Vec<UnitDef>,
 ) -> TokenStream {
     let code_unit_variants = codegen_unit_variants(units);
+    let code_unit_variants_array =
+        codegen_unit_variants_array(unit_enum_ident, units);
     let code_fn_name = codegen_fn_name(unit_enum_ident, units);
     let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
     let code_fn_si_prefix = codegen_fn_si_prefix(unit_enum_ident, units);
@@ -484,9 +519,13 @@ fn codegen_qty_with_ref_unit(
         pub enum #unit_enum_ident {
             #code_unit_variants
         }
+        #code_unit_variants_array
         impl Unit for #unit_enum_ident {
             const REF_UNIT: Option<Self> =
                 Some(#unit_enum_ident::#ref_unit_ident);
+            fn iter<'a>() -> core::slice::Iter<'a, Self> {
+                Self::VARIANTS.iter()
+            }
             #code_fn_name
             #code_fn_symbol
             #code_fn_si_prefix
