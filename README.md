@@ -94,6 +94,24 @@ assert_eq!(CARAT.scale(), Some(Amnt!(0.0002)));
 In a future version, the macro will also allow to create a **derived** type of
 quantity based on more basic types of quantities.
 
+### Which type to be used for the numerical part? 
+
+The package allows to use either `float` of `fixed-point decimal` values for
+the numerical part of a `Quantity` value.
+
+Internally the type alias `AmountT` is used. This alias can be controlled by
+the optional feature `fpdec` via `Cargo.toml`.
+
+When feature `fpdec` is off (= default), `AmountT` is defined as `f64` on a
+64-bit system or as `f32` on a 32-bit system.
+
+When feature `fpdec` is activated, `AmountT` is defined as `Decimal` (imported
+from crate `fpdec`).
+
+The macro `Amnt!` can be used to convert float literals correctly to `AmountT`
+depending on the configuration. This is done automatically for the scale 
+values of units by the proc-macro `quantity` described above.
+
 ### Instantiating quantities
 
 An instance of a quantity type can be created by calling the function `new`,
@@ -132,6 +150,43 @@ Example:
 let x = Mass::new(Amnt!(13.5), GRAM);
 let y = x.convert(CARAT).unwrap();
 assert_eq!(y.to_string(), "67.5 ct");
+```
+
+Quantity values with the same unit can always be added or subtracted. Adding
+or subtracting values with different values requires the units to convertable
+into each other.
+
+Example:
+
+```rust
+# use quantities::prelude::*;
+# #[quantity]
+# #[ref_unit(Kilogram, "kg", KILO)]
+# #[unit(Gram, "g", NONE, 0.001)]
+# struct Mass {}
+let x = Amnt!(17.4) * GRAM;
+let y = Amnt!(1.407) * KILOGRAM;
+let z = x + y;
+assert_eq!(z.to_string(), "1424.4 g");
+let z = y + x;
+assert_eq!(z.to_string(), "1.4244 kg");
+```
+
+Quantity values can always be multiplied or divided by numerical values, 
+preserving the unit.
+
+Example:
+
+```rust
+# use quantities::prelude::*;
+# #[quantity]
+# #[ref_unit(Kilogram, "kg", KILO)]
+# #[unit(Gram, "g", NONE, 0.001)]
+# struct Mass {}
+let x = Amnt!(7.4);
+let y = Amnt!(1.7) * KILOGRAM;
+let z = x * y;
+assert_eq!(z.to_string(), "12.58 kg");
 ```
 
 ### Commonly Used Quantities
