@@ -1,0 +1,10 @@
+error: Attribute `quantity` takes no arguments.
+
+  = help: Use `#[quantity]`.
+
+  --> tests/ui/invalid_args.rs:13:1
+   |
+13 | #[quantity(fn baz)]
+   | ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)

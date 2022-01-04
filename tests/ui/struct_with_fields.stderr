@@ -1,0 +1,11 @@
+error: Given struct must not have fields.
+
+  = help: Use `struct Foo {};`
+
+  --> tests/ui/struct_with_fields.rs:17:12
+   |
+17 |   struct Foo {
+   |  ____________^
+18 | |     baz: i32,
+19 | | }
+   | |_^

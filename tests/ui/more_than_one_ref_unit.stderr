@@ -1,0 +1,5 @@
+error: There can only be one `refunit` attribute.
+  --> tests/ui/more_than_one_ref_unit.rs:15:1
+   |
+15 | #[ref_unit(B, "b")]
+   | ^^^^^^^^^^^^^^^^^^^

@@ -1,0 +1,9 @@
+error: 2 or 3 comma-separated args expected.
+
+  = help: Use `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
+or  `#[ref_unit(<ident>, "<symbol>")]`.
+
+  --> tests/ui/wrong_number_of_args_ref_unit.rs:14:1
+   |
+14 | #[ref_unit(A, "a", MEGA, 1.0)]
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

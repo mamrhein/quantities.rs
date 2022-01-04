@@ -1,0 +1,8 @@
+error: Given struct must not have generic parameters.
+
+  = help: Use `struct Foo {};`
+
+  --> tests/ui/struct_with_generic_params.rs:17:11
+   |
+17 | struct Foo<T> {}
+   |           ^^^
