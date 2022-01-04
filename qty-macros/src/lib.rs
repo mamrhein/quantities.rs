@@ -7,6 +7,8 @@
 // $Source$
 // $Revision$
 
+#![doc = include_str ! ("../README.md")]
+
 mod quantity_attr_helper;
 
 use crate::quantity_attr_helper::{analyze, codegen, parse};
@@ -154,11 +156,42 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// This implies that the identifiers of all units over all defined
 /// quantitities have to be unique!
 ///
+/// The attribute `#[quantity]` can optionally be followed by an attribute
+/// `#[ref_unit]` and must be followed by at least one attribute `#[unit]`.
+///
+/// To define a quantity with a reference unit, use
+///
+/// `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
+///
+/// or
+///
+/// `#[ref_unit(<ident>, "<symbol>")]`,
+///
+/// followed by one ore more unit attributes in the form
+///
+/// `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
+///
+/// or
+///
+/// `#[unit(<ident>, "<symbol>", <scale>)]`.
+///
+/// To define a quantity without a reference unit, use one ore more unit
+/// attributes in the form
+///
+/// `#[unit(<ident>, "<symbol>"]`.
+///
 /// # Panics
 ///
 /// The macro panics in the followong cases:
 ///
-/// *
+/// * Invalid arguments given to the attribute `#[quantity]`.
+/// * The given item is not a struct.
+/// * The given struct does have generic parameters and/or fields.
+/// * More than one attribute `#[ref_unit]` is given.
+/// * No attribute `#[unit]` is given.
+/// * Wrong number or wrong type of arguments given to attribute `#[ref_unit]`.
+/// * Wrong number of arguments given to an attribute `#[unit]`.
+/// * No <scale> argument given to an attribute `#[unit]` when required.
 ///
 /// # Example
 ///
