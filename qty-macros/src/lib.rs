@@ -32,6 +32,7 @@ use ::syn::{parse_macro_input, Ident, ItemEnum};
 ///
 /// ```rust
 /// # use qty_macros::VariantsAsConstants;
+/// # #[allow(non_camel_case_types)]
 /// #[derive(VariantsAsConstants)]
 /// enum TestEnum {
 ///     MultiCamelCase,
@@ -44,6 +45,7 @@ use ::syn::{parse_macro_input, Ident, ItemEnum};
 /// This results in the following additional code:
 ///
 /// ```rust
+/// # #[allow(non_camel_case_types)]
 /// # enum TestEnum {
 /// #     MultiCamelCase,
 /// #     snake_case,
