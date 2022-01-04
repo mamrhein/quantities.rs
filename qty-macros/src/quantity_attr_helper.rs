@@ -41,19 +41,20 @@ impl QtyDef {
 pub(crate) type Ast = syn::ItemStruct;
 
 pub(crate) fn parse(args: TokenStream, item: TokenStream) -> Ast {
-    const ERROR: &str = "Attribute `quantity` takes no arguments.";
-    const HELP: &str = "Use `#[quantity]`.";
+    const ARGS_ERROR: &str = "Attribute `quantity` takes no arguments.";
+    const ARGS_HELP: &str = "Use `#[quantity]`.";
+    const ITEM_HELP: &str = "Use `#[quantity]\n  ...\nstruct <ident> {}`.";
 
     if !args.is_empty() {
         if let Ok(expr) = syn::parse2::<syn::Expr>(args) {
-            abort!(expr, ERROR; help = HELP)
+            abort!(expr, ARGS_ERROR; help = ARGS_HELP)
         } else {
-            abort_call_site!(ERROR; help = HELP)
+            abort_call_site!(ARGS_ERROR; help = ARGS_HELP)
         }
     }
     match syn::parse2::<Ast>(item.clone()) {
         Ok(item) => item,
-        Err(error) => abort!(item, error; help = HELP),
+        Err(error) => abort!(item, error; help = ITEM_HELP),
     }
 }
 
@@ -61,7 +62,7 @@ fn check_struct(ast: &Ast) {
     const GENERICS_ERROR: &str =
         "Given struct must not have generic parameters.";
     const FIELDS_ERROR: &str = "Given struct must not have fields.";
-    let help = format!("Use `struct {};`", ast.ident);
+    let help = format!("Use `struct {} {{}};`", ast.ident);
 
     if !ast.generics.params.is_empty() {
         abort!(ast.generics, GENERICS_ERROR; help = help.as_str());
