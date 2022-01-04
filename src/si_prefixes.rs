@@ -9,28 +9,53 @@
 
 use ::qty_macros::EnumIter;
 
+/// Enum of unit prefixes defined for the System of Units (SI).
+///
+/// These prefixes can be added to unit names to name multiples and submultiples
+/// of the original unit.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter)]
 pub enum SIPrefix {
+    /// 10⁻²⁴
     YOCTO = -24,
+    /// 10⁻²¹
     ZEPTO = -21,
+    /// 10⁻¹⁸
     ATTO = -18,
+    /// 10⁻¹⁵
     FEMTO = -15,
+    /// 10⁻¹²
     PICO = -12,
+    /// 10⁻⁹
     NANO = -9,
+    /// 10⁻⁶
     MICRO = -6,
+    /// 10⁻³
     MILLI = -3,
+    /// 10⁻²
     CENTI = -2,
+    /// 10⁻¹
     DECI = -1,
+    /// 10⁰
     NONE = 0,
+    /// 10¹
     DECA = 1,
+    /// 10²
     HECTO = 2,
+    /// 10³
     KILO = 3,
+    /// 10⁶
     MEGA = 6,
+    /// 10⁹
     GIGA = 9,
+    /// 10¹²
     TERA = 12,
+    /// 10¹⁵
     PETA = 15,
+    /// 10¹⁸
     EXA = 18,
+    /// 10²¹
     ZETTA = 21,
+    /// 10²⁴
     YOTTA = 24,
 }
 
