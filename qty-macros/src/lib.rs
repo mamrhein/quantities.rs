@@ -193,7 +193,7 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// * No attribute `#[unit]` is given.
 /// * Wrong number or wrong type of arguments given to attribute `#[ref_unit]`.
 /// * Wrong number of arguments given to an attribute `#[unit]`.
-/// * No <scale> argument given to an attribute `#[unit]` when required.
+/// * No \<scale\> argument given to an attribute `#[unit]` when required.
 ///
 /// # Example
 ///
