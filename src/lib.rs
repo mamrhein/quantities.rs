@@ -24,13 +24,13 @@ mod si_prefixes;
 mod unitless;
 
 #[cfg(fpdec)]
-/// Type used for the mumerical part of a Quantity.
+/// Type used for the numerical part of a Quantity.
 pub type AmountT = Decimal;
 #[cfg(all(not(fpdec), target_pointer_width = "64"))]
-/// Type used for the mumerical part of a Quantity.
+/// Type used for the numerical part of a Quantity.
 pub type AmountT = f64;
 #[cfg(all(not(fpdec), target_pointer_width = "32"))]
-/// Type used for the mumerical part of a Quantity.
+/// Type used for the numerical part of a Quantity.
 pub type AmountT = f32;
 
 #[cfg(fpdec)]
@@ -52,6 +52,7 @@ macro_rules! Amnt {
     };
 }
 
+/// The abstract type of units used to define quantities.
 pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
     /// Optional unit used as reference for scaling the units.
     const REF_UNIT: Option<Self>;
@@ -88,6 +89,7 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
     }
 }
 
+/// The abstract type of quantities.
 pub trait Quantity<U: Unit>:
     Copy + Sized + Add<Self> + Sub<Self> + Div<Self> + Mul<AmountT>
 {
@@ -124,6 +126,7 @@ pub trait Quantity<U: Unit>:
 }
 
 #[derive(Copy, Clone, Debug)]
+/// Generic struct that implements trait `Quantity`.
 pub struct Qty<U: Unit> {
     amount: AmountT,
     unit: U,
