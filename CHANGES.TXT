@@ -1,3 +1,10 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.2.0     Replaced macro 'define-qty' by proc_macro_attribute 'quantity'.
+          Added impls of traits 'PartialEq', 'Eq' and 'PartialOrd'.
+          Added mod prelude.
+          Renamed NON_UNIT to ONE.
+          Added fn Unit::iter and fn Quantity::iter_units.
+          Enhanced documentation.
+
 0.1.0     First public version.
