@@ -213,6 +213,7 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// This results in the following code:
 ///
 /// ```compile_fail
+/// #[doc = " The quantity of matter in a physical body."]
 /// pub type Mass = Qty<MassUnit>;
 /// #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 /// pub enum MassUnit { Milligram, Gram, Ounce, Pound, Kilogram, Tonne }

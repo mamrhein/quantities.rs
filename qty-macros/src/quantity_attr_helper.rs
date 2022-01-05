@@ -263,9 +263,9 @@ pub(crate) fn analyze(ast: &mut Ast) -> QtyDef {
 }
 
 fn codegen_attrs(attrs: &Vec<syn::Attribute>) -> TokenStream {
-    let code = TokenStream::new();
+    let mut code = TokenStream::new();
     for attr in attrs {
-        quote!(
+        code = quote!(
             #code
             #attr
         );
@@ -650,5 +650,15 @@ mod internal_fn_tests {
         assert_eq!(unit.symbol.value(), "Gp");
         assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "GIGA");
         assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1000.0");
+    }
+
+    #[test]
+    fn test_codegen() {
+        let mut ast = get_ast();
+        let _qty_def = analyze(&mut ast);
+        let code_attrs = codegen_attrs(&ast.attrs);
+        assert!(!code_attrs.is_empty());
+        let doc = code_attrs.to_string();
+        assert_eq!(doc, "# [doc = r\" Quantity Foo\"]");
     }
 }
