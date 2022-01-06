@@ -212,6 +212,17 @@ mod quantity_with_ref_unit_tests {
         assert_eq!(res.amount(), amnt1 * amnt2);
         assert_eq!(res.unit(), qty1.unit());
     }
+
+    #[test]
+    fn test_div_amnt() {
+        let amnt1 = Amnt!(15.54);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(3.7);
+        let qty1 = amnt1 * unit1;
+        let res = qty1 / amnt2;
+        assert_eq!(res.amount(), amnt1 / amnt2);
+        assert_eq!(res.unit(), qty1.unit());
+    }
 }
 
 #[cfg(test)]

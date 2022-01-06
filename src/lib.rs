@@ -236,3 +236,12 @@ impl<U: Unit> Mul<AmountT> for Qty<U> {
         Self::Output::new(self.amount * rhs, self.unit)
     }
 }
+
+impl<U: Unit> Div<AmountT> for Qty<U> {
+    type Output = Self;
+
+    #[inline(always)]
+    fn div(self, rhs: AmountT) -> Self::Output {
+        Self::Output::new(self.amount / rhs, self.unit)
+    }
+}
