@@ -7,8 +7,7 @@
 // $Source$
 // $Revision$
 
-use crate::{AmountT, Qty, Quantity, SIPrefix, Unit};
-use core::ops::Mul;
+use crate::prelude::*;
 
 /// Special "unitless" quantity.
 ///
@@ -66,7 +65,6 @@ impl Mul<AmountT> for One {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Amnt, Dec, Decimal};
 
     #[test]
     fn test_unitless() {
