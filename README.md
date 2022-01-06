@@ -167,7 +167,8 @@ Example:
 let x = Amnt!(17.4) * GRAM;
 let y = Amnt!(1.407) * KILOGRAM;
 let z = x + y;
-assert_eq!(z.to_string(), "1424.4 g");
+assert_eq!(z.amount(), Amnt!(1424.4));
+assert_eq!(z.unit(), GRAM);
 let z = y + x;
 assert_eq!(z.to_string(), "1.4244 kg");
 ```

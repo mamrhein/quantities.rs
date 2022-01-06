@@ -66,7 +66,7 @@ impl Mul<AmountT> for One {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Amnt;
+    use crate::{Amnt, Dec, Decimal};
 
     #[test]
     fn test_unitless() {

@@ -14,8 +14,8 @@
 use core::cmp::Ordering;
 use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
-#[cfg(fpdec)]
-use fpdec::{Dec, Decimal};
+#[cfg(feature = "fpdec")]
+pub use fpdec::{Dec, Decimal};
 pub use si_prefixes::SIPrefix;
 pub use unitless::{Unitless, ONE};
 
@@ -23,17 +23,17 @@ pub mod prelude;
 mod si_prefixes;
 mod unitless;
 
-#[cfg(fpdec)]
+#[cfg(feature = "fpdec")]
 /// Type used for the numerical part of a Quantity.
 pub type AmountT = Decimal;
-#[cfg(all(not(fpdec), target_pointer_width = "64"))]
+#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
 /// Type used for the numerical part of a Quantity.
 pub type AmountT = f64;
-#[cfg(all(not(fpdec), target_pointer_width = "32"))]
+#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
 /// Type used for the numerical part of a Quantity.
 pub type AmountT = f32;
 
-#[cfg(fpdec)]
+#[cfg(feature = "fpdec")]
 #[allow(non_snake_case)]
 #[macro_export]
 /// Converts a numerical literal to an AmountT.
@@ -42,7 +42,7 @@ macro_rules! Amnt {
         Dec!($lit)
     };
 }
-#[cfg(not(fpdec))]
+#[cfg(not(feature = "fpdec"))]
 #[allow(non_snake_case)]
 #[macro_export]
 /// Converts a numerical literal to an AmountT.

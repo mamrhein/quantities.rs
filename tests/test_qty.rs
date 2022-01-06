@@ -162,7 +162,7 @@ mod quantity_with_ref_unit_tests {
     fn test_sub_diff_unit() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
-        let amnt2 = Amnt!(0.37);
+        let amnt2 = Amnt!(0.3);
         let unit2 = FooUnit::B;
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit2;
@@ -178,7 +178,7 @@ mod quantity_with_ref_unit_tests {
     fn test_div_same_unit() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
-        let amnt2 = Amnt!(0.37);
+        let amnt2 = Amnt!(0.3);
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit1;
         let res = qty1 / qty2;
@@ -190,7 +190,7 @@ mod quantity_with_ref_unit_tests {
     fn test_div_diff_unit() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
-        let amnt2 = Amnt!(0.37);
+        let amnt2 = Amnt!(0.3);
         let unit2 = FooUnit::B;
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit2;
@@ -344,7 +344,7 @@ mod quantity_without_ref_unit_tests {
     fn test_div_same_unit() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
-        let amnt2 = Amnt!(0.37);
+        let amnt2 = Amnt!(0.3);
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit1;
         let res = qty1 / qty2;
@@ -356,7 +356,7 @@ mod quantity_without_ref_unit_tests {
     #[should_panic]
     fn test_div_diff_unit() {
         let qty1 = Amnt!(17.4) * A;
-        let qty2 = Amnt!(0.37) * B;
+        let qty2 = Amnt!(0.3) * B;
         let _res = qty1 / qty2;
     }
 }
