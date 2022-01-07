@@ -86,5 +86,6 @@ mod tests {
         let lit = amnt.to_string();
         let qty = Unitless::new(amnt, ONE);
         assert_eq!(qty.to_string(), lit);
+        assert_eq!(format!("{}", qty), lit);
     }
 }
