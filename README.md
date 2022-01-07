@@ -1,6 +1,6 @@
 Unit-safe computations with quantities.
 
-### What is a Quantity?
+# What is a Quantity?
 
 "The value of a quantity is generally expressed as the product of a number
 and a unit. The unit is simply a particular example of the quantity concerned
@@ -42,7 +42,7 @@ Examples:
 * Force -> Newton = Kilogram ¹ · Meter ¹ · Second ⁻²
 
 
-### "Systems of Measure"
+# "Systems of Measure"
 
 There may be different systems which define quantities, their units and the
 relations between these units in a different way.
@@ -52,7 +52,7 @@ there can be only no or exactly one reference unit. But, if you have units
 from different systems for the same type of quantity, you can define these
 units and provide mechanisms to convert between them.
 
-### The Basics: Quantity and Unit
+# The Basics: Quantity and Unit
 
 The essential functionality of the package is provided by the two traits 
 `Quantity` and `Unit` as well as the generic struct `Qty<U: Unit>`.
@@ -94,13 +94,14 @@ assert_eq!(CARAT.scale(), Some(Amnt!(0.0002)));
 In a future version, the macro will also allow to create a **derived** type of
 quantity based on more basic types of quantities.
 
-### Which type to be used for the numerical part? 
+# Type of the numerical part
 
 The package allows to use either `float` of `fixed-point decimal` values for
 the numerical part of a `Quantity` value.
 
 Internally the type alias `AmountT` is used. This alias can be controlled by
-the optional feature `fpdec` via `Cargo.toml`.
+the optional feature `fpdec` (see 
+[features](#crate-features).
 
 When feature `fpdec` is off (= default), `AmountT` is defined as `f64` on a
 64-bit system or as `f32` on a 32-bit system.
@@ -112,7 +113,7 @@ The macro `Amnt!` can be used to convert float literals correctly to `AmountT`
 depending on the configuration. This is done automatically for the scale 
 values of units by the proc-macro `quantity` described above.
 
-### Instantiating quantities
+# Instantiating quantities
 
 An instance of a quantity type can be created by calling the function `new`,
 giving an amount and a unit. Alternatively, a unit can be multiplied by an
@@ -132,7 +133,7 @@ let m = Amnt!(17.4) * GRAM;
 assert_eq!(m.to_string(), "17.4 g");
 ```
 
-### Unit-safe computations
+# Unit-safe computations
 
 If the quantity type has a refernce unit, a quantity instance can be converted
 to a quantity instance with a different unit of the same type by calling the
@@ -190,8 +191,29 @@ let z = x * y;
 assert_eq!(z.to_string(), "12.58 kg");
 ```
 
-### Commonly Used Quantities
+# Commonly Used Quantities
 
-The package will provide definitions of many commonly used quantities; each
-can be activated by a feature with a corresponding name.
+The package provides optional modules with definitions of commonly used
+quantities; each can be activated by a feature with a corresponding name
+(see [below](#predefined-quantities)).
 
+# Crate features
+
+By default, only the feature `std` is enabled.
+
+## Ecosystem
+
+* **std** - When enabled, this will cause `quantities` to use the standard
+  library, so that conversion to string, formatting and printing are 
+  available. When disabled, the use of crate `alloc` together with a
+  system-specific allocator is needed to use that functionality.
+
+## Optional dependencies
+
+* **fpdec** - When enabled, instead of `f64` or `f32` `fpdec::Decimal` is used as 
+  `AmountT` (see [above](#type-of-the-numerical-part)).
+
+## Predefined quantities
+
+With the following features additional modules can be enabled, each providing
+a predefined quantity.
