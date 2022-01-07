@@ -217,3 +217,5 @@ By default, only the feature `std` is enabled.
 
 With the following features additional modules can be enabled, each providing
 a predefined quantity.
+
+* **mass** - module [mass] - quantity [Mass](mass::Mass)

@@ -321,8 +321,10 @@ fn codegen_qty_single_unit(
     unit_name: &syn::LitStr,
     unit_symbol: &syn::LitStr,
 ) -> TokenStream {
+    let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
+        #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
             #unit_ident,
@@ -430,8 +432,10 @@ fn codegen_qty_without_ref_unit(
         codegen_unit_variants_array(unit_enum_ident, units);
     let code_fn_name = codegen_fn_name(unit_enum_ident, units);
     let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
+    let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
+        #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident { #code_unit_variants }
         #code_unit_variants_array
@@ -514,8 +518,10 @@ fn codegen_qty_with_ref_unit(
     let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
     let code_fn_si_prefix = codegen_fn_si_prefix(unit_enum_ident, units);
     let code_fn_scale = codegen_fn_scale(unit_enum_ident, units);
+    let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     quote!(
         pub type #qty_ident = Qty<#unit_enum_ident>;
+        #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
             #code_unit_variants

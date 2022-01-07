@@ -23,6 +23,9 @@ pub mod prelude;
 mod si_prefixes;
 mod unitless;
 
+#[cfg(feature = "mass")]
+pub mod mass;
+
 #[cfg(feature = "fpdec")]
 /// Type used for the numerical part of a Quantity.
 ///
