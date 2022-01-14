@@ -7,19 +7,19 @@
 // $Source$
 // $Revision$
 
-use ::convert_case::{Case, Casing};
-use ::core::str::FromStr;
-use ::proc_macro2::{Span, TokenStream};
-use ::proc_macro_error::{abort, abort_call_site};
-use ::quote::quote;
-use ::syn;
+use convert_case::{Case, Casing};
+use proc_macro2::{Span, TokenStream};
+use proc_macro_error::{abort, abort_call_site};
+use quote::quote;
+use syn;
 
 pub(crate) struct UnitDef {
     unit_ident: syn::Ident,
     name: syn::LitStr,
     symbol: syn::LitStr,
     si_prefix: Option<syn::Ident>,
-    scale: Option<syn::LitFloat>,
+    scale: Option<syn::Lit>,
+    doc: Option<syn::LitStr>,
 }
 
 pub(crate) struct QtyDef {
@@ -85,11 +85,14 @@ fn is_ref_unit_attr(attr: &syn::Attribute) -> bool {
 }
 
 const ARGS_LIST_ERROR: &str =
-    "A comma-separated list of 2 to 4 arguments expected.";
+    "A comma-separated list of 2 to 5 arguments expected.";
 
 const UNIT_ATTR_HELP: &str =
-    "Use `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>)]`\n\
+    "Use `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>, \"<doc>\")]`\n\
+     or  `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>)]`\n\
+     or  `#[unit(<ident>, \"<symbol>\", <scale>, \"<doc>\")]`\n\
      or  `#[unit(<ident>, \"<symbol>\", <scale>)]`\n\
+     or  `#[unit(<ident>, \"<symbol>\", \"<doc>\")]`\n\
      or  `#[unit(<ident>, \"<symbol>\")]`.";
 
 fn get_unit_attrs(
@@ -135,12 +138,18 @@ impl syn::parse::Parse for UnitDef {
                 return Err(syn::Error::new(input.span(), ARGS_LIST_ERROR));
             }
         };
-        let mut scale: Option<syn::LitFloat> = None;
-        if input.peek(syn::LitFloat) {
-            scale = Some(input.parse::<syn::LitFloat>()?);
+        let mut scale: Option<syn::Lit> = None;
+        if input.peek(syn::LitFloat) || input.peek(syn::LitInt) {
+            scale = Some(input.parse::<syn::Lit>()?);
+            let opt_comma: Option<syn::Token![,]> = input.parse()?;
+            if opt_comma.is_none() && !input.is_empty() {
+                return Err(syn::Error::new(input.span(), ARGS_LIST_ERROR));
+            }
         };
-        // Allow trailing comma:
-        let _: Option<syn::Token![,]> = input.parse()?;
+        let mut doc: Option<syn::LitStr> = None;
+        if input.peek(syn::LitStr) {
+            doc = Some(input.parse::<syn::LitStr>()?);
+        }
         // Check if input is exhausted:
         if !input.is_empty() {
             return Err(syn::Error::new(input.span(), ARGS_LIST_ERROR));
@@ -155,28 +164,30 @@ impl syn::parse::Parse for UnitDef {
             symbol,
             si_prefix,
             scale,
+            doc,
         })
     }
 }
 
 fn ref_unit_def_from_attr(ref_unit_attr: &syn::Attribute) -> UnitDef {
     const WRONG_NUMBER_OF_ARGS_ERROR: &str =
-        "2 or 3 comma-separated args expected.";
+        "2, 3 or 4 comma-separated args expected.";
     const WRONG_TYPE_OF_ARG_ERROR: &str = "No scale expected for ref_unit.";
     const HELP: &str =
-        "Use `#[ref_unit(<ident>, \"<symbol>\", <si_prefix>)]`\n\
+        "Use `#[ref_unit(<ident>, \"<symbol>\", <si_prefix>, \"<doc>\")]`\n\
+         or  `#[ref_unit(<ident>, \"<symbol>\", <si_prefix>)]`\n\
+         or  `#[ref_unit(<ident>, \"<symbol>\", \"<doc>\")]`\n\
          or  `#[ref_unit(<ident>, \"<symbol>\")]`.";
 
     match ref_unit_attr.parse_args::<UnitDef>() {
         Ok(mut unit_def) => {
             if unit_def.scale.is_some() {
-                if unit_def.si_prefix.is_some() {
-                    abort!(ref_unit_attr, WRONG_NUMBER_OF_ARGS_ERROR; help = HELP);
-                } else {
-                    abort!(ref_unit_attr, WRONG_TYPE_OF_ARG_ERROR; help = HELP);
-                }
+                abort!(ref_unit_attr, WRONG_TYPE_OF_ARG_ERROR; help = HELP);
             }
-            unit_def.scale = Some(syn::LitFloat::new("1.0", Span::call_site()));
+            unit_def.scale = Some(syn::Lit::Float(syn::LitFloat::new(
+                "1.0",
+                Span::call_site(),
+            )));
             unit_def
         }
         Err(_) => {
@@ -189,10 +200,12 @@ fn unit_defs_with_scale_from_attrs(
     attrs: &Vec<syn::Attribute>,
 ) -> Vec<UnitDef> {
     const WRONG_NUMBER_OF_ARGS_ERROR: &str =
-        "3 or 4 comma-separated args expected.";
+        "3, 4 or 5 comma-separated args expected.";
     const NO_SCALE_ERROR: &str = "<scale> arg expected.";
     const HELP: &str =
-        "Use `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>)]`\n\
+        "Use `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>, \"<doc>\")]`
+         or  `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>)]`\n\
+         or  `#[unit(<ident>, \"<symbol>\", <scale>, \"<doc>\")]`\n\
          or  `#[unit(<ident>, \"<symbol>\", <scale>)]`.";
 
     let mut unit_defs: Vec<UnitDef> = vec![];
@@ -215,8 +228,10 @@ fn unit_defs_with_scale_from_attrs(
 fn unit_defs_without_scale_from_attrs(
     attrs: &Vec<syn::Attribute>,
 ) -> Vec<UnitDef> {
-    const WRONG_NUMBER_OF_ARGS_ERROR: &str = "2 comma-separated args expected.";
-    const HELP: &str = "Use `#[unit(<ident>, \"<symbol>\"]`.";
+    const WRONG_NUMBER_OF_ARGS_ERROR: &str =
+        "2 or 3 comma-separated args expected.";
+    const HELP: &str = "Use `#[unit(<ident>, \"<symbol>\", \"<doc>\")]`\n\
+         or  `#[unit(<ident>, \"<symbol>\")]`.";
 
     let mut unit_defs: Vec<UnitDef> = vec![];
     for attr in attrs {
@@ -235,6 +250,15 @@ fn unit_defs_without_scale_from_attrs(
     unit_defs
 }
 
+#[inline]
+pub(crate) fn opt_lit_to_f64(lit: &Option<syn::Lit>) -> f64 {
+    match lit.as_ref().unwrap() {
+        syn::Lit::Float(f) => f.base10_parse().unwrap(),
+        syn::Lit::Int(i) => i.base10_parse().unwrap(),
+        _ => abort!(lit, "Internal error: unexspected non-numeric literal."),
+    }
+}
+
 pub(crate) fn analyze(ast: &mut Ast) -> QtyDef {
     check_struct(ast);
     let attrs = &mut ast.attrs;
@@ -247,10 +271,8 @@ pub(crate) fn analyze(ast: &mut Ast) -> QtyDef {
         qty_def.units = unit_defs_with_scale_from_attrs(&unit_attrs);
         qty_def.units.push(ref_unit_def);
         qty_def.units.sort_by(|a, b| {
-            let x = f64::from_str(a.scale.as_ref().unwrap().base10_digits())
-                .unwrap();
-            let y = f64::from_str(b.scale.as_ref().unwrap().base10_digits())
-                .unwrap();
+            let x = opt_lit_to_f64(&a.scale);
+            let y = opt_lit_to_f64(&b.scale);
             x.partial_cmp(&y).unwrap()
         });
     } else {
@@ -284,10 +306,24 @@ fn codegen_unit_constants(
             unit_ident.to_string().to_case(Case::UpperSnake).as_str(),
             Span::call_site(),
         );
-        code = quote!(
-            #code
-            pub const #const_ident: #enum_ident = #enum_ident::#unit_ident;
-        );
+        match &unit.doc {
+            None => {
+                code = quote!(
+                    #code
+                    pub const #const_ident: #enum_ident =
+                        #enum_ident::#unit_ident;
+                )
+            }
+            Some(doc) => {
+                let unit_doc = doc.value();
+                code = quote!(
+                    #code
+                    #[doc = #unit_doc]
+                    pub const #const_ident: #enum_ident =
+                        #enum_ident::#unit_ident;
+                )
+            }
+        };
     }
     code
 }
@@ -349,10 +385,22 @@ fn codegen_unit_variants(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
         let unit_ident = unit.unit_ident.clone();
-        code = quote!(
-            #code
-            #unit_ident,
-        )
+        match &unit.doc {
+            None => {
+                code = quote!(
+                    #code
+                    #unit_ident,
+                )
+            }
+            Some(doc) => {
+                let unit_doc = doc.value();
+                code = quote!(
+                    #code
+                    #[doc = #unit_doc]
+                    #unit_ident,
+                )
+            }
+        };
     }
     code
 }
@@ -486,7 +534,7 @@ fn codegen_fn_scale(
     for unit in units {
         if unit.scale.is_some() {
             let unit_ident = &unit.unit_ident;
-            let unit_scale: &syn::LitFloat = unit.scale.as_ref().unwrap();
+            let unit_scale: &syn::Lit = unit.scale.as_ref().unwrap();
             code = quote!(
                 #code
                 #unit_enum_ident::#unit_ident => Some(Amnt!(#unit_scale)),
@@ -595,8 +643,8 @@ mod internal_fn_tests {
     fn get_ast() -> Ast {
         let args = quote!();
         let item = quote!(
-            #[ref_unit(Megapop, "Mp", MEGA)]
-            #[unit(Gigapop, "Gp", GIGA, 1000.0)]
+            #[ref_unit(Megapop, "Mp", MEGA, "1000000·p\nFoo's reference unit")]
+            #[unit(Gigapop, "Gp", GIGA, 1000, "1000000000·p")]
             #[unit(Pop, "p", 0.000001)]
             /// Quantity Foo
             struct Foo {}
@@ -643,28 +691,47 @@ mod internal_fn_tests {
         assert_eq!(unit.name.value(), "Pop");
         assert_eq!(unit.symbol.value(), "p");
         assert!(unit.si_prefix.is_none());
-        assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "0.000001");
+        assert_eq!(opt_lit_to_f64(&unit.scale), 0.000001);
+        assert!(unit.doc.is_none());
         let unit = &qty_def.units[1];
         assert_eq!(unit.unit_ident.to_string(), "Megapop");
         assert_eq!(unit.name.value(), "Megapop");
         assert_eq!(unit.symbol.value(), "Mp");
         assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "MEGA");
-        assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1.0");
+        assert_eq!(opt_lit_to_f64(&unit.scale), 1.);
+        assert_eq!(
+            unit.doc.as_ref().unwrap().value(),
+            "1000000·p\nFoo's reference unit"
+        );
         let unit = &qty_def.units[2];
         assert_eq!(unit.unit_ident.to_string(), "Gigapop");
         assert_eq!(unit.name.value(), "Gigapop");
         assert_eq!(unit.symbol.value(), "Gp");
         assert_eq!(unit.si_prefix.as_ref().unwrap().to_string(), "GIGA");
-        assert_eq!(unit.scale.as_ref().unwrap().base10_digits(), "1000.0");
+        assert_eq!(opt_lit_to_f64(&unit.scale), 1000.);
+        assert_eq!(unit.doc.as_ref().unwrap().value(), "1000000000·p");
     }
 
     #[test]
-    fn test_codegen() {
+    fn test_codegen_remaining_attrs() {
         let mut ast = get_ast();
         let _qty_def = analyze(&mut ast);
         let code_attrs = codegen_attrs(&ast.attrs);
         assert!(!code_attrs.is_empty());
         let doc = code_attrs.to_string();
         assert_eq!(doc, "# [doc = r\" Quantity Foo\"]");
+    }
+
+    #[test]
+    fn test_codegen_unit_variants() {
+        let mut ast = get_ast();
+        let qty_def = analyze(&mut ast);
+        let code_unit_variants = codegen_unit_variants(&qty_def.units);
+        assert_eq!(
+            code_unit_variants.to_string(),
+            "Pop , \
+             # [doc = \"1000000·p\\nFoo's reference unit\"] Megapop , \
+             # [doc = \"1000000000·p\"] Gigapop ,"
+        );
     }
 }

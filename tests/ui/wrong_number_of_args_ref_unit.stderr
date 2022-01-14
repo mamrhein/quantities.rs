@@ -1,6 +1,8 @@
-error: 2 or 3 comma-separated args expected.
+error: No scale expected for ref_unit.
 
-  = help: Use `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
+  = help: Use `#[ref_unit(<ident>, "<symbol>", <si_prefix>, "<doc>")]`
+or  `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
+or  `#[ref_unit(<ident>, "<symbol>", "<doc>")]`
 or  `#[ref_unit(<ident>, "<symbol>")]`.
 
   --> tests/ui/wrong_number_of_args_ref_unit.rs:14:1

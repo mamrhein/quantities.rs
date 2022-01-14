@@ -1,7 +1,10 @@
 error: At least one unit description must be given via attribute `unit`.
 
-  = help: Use `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
+  = help: Use `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>, "<doc>")]`
+or  `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
+or  `#[unit(<ident>, "<symbol>", <scale>, "<doc>")]`
 or  `#[unit(<ident>, "<symbol>", <scale>)]`
+or  `#[unit(<ident>, "<symbol>", "<doc>")]`
 or  `#[unit(<ident>, "<symbol>")]`.
 
   --> tests/ui/no_unit.rs:13:1
