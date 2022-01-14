@@ -12,14 +12,17 @@
 use crate::prelude::*;
 
 #[quantity]
-#[ref_unit(Kilogram, "kg", KILO)]
-#[unit(Milligram, "mg", MILLI, 0.000001)]
-#[unit(Carat, "ct", 0.0002)]
-#[unit(Gram, "g", NONE, 0.001)]
-#[unit(Ounce, "oz", 0.028349523125)]
-#[unit(Pound, "lb", 0.45359237)]
-#[unit(Tonne, "t", MEGA, 1000.)]
+#[ref_unit(Kilogram, "kg", KILO, "Reference unit of quantity `Mass`")]
+#[unit(Milligram, "mg", MILLI, 0.000001, "0.001·g")]
+#[unit(Carat, "ct", 0.0002, "0.2·g")]
+#[unit(Gram, "g", NONE, 0.001, "0.001·kg")]
+#[unit(Ounce, "oz", 0.028349523125, "0.0625·lb")]
+#[unit(Pound, "lb", 0.45359237, "0.45359237·kg")]
+#[unit(Stone, "st", 6.35029318, "14·lb")]
+#[unit(Tonne, "t", MEGA, 1000, "1000·kg")]
 /// The quantity of matter in a physical body.
+///
+/// Also used as measure of a physical body's resistance to acceleration.
 ///
 /// Reference unit: Kilogram ('kg')
 ///
