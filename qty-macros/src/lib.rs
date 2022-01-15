@@ -161,26 +161,26 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// The attribute `#[quantity]` can optionally be followed by an attribute
 /// `#[ref_unit]` and must be followed by at least one attribute `#[unit]`.
 ///
-/// To define a quantity with a reference unit, use
+/// To define a quantity with a reference unit, use one of the following forms
+/// of the ref_unit attribute
 ///
+/// `#[ref_unit(<ident>, "<symbol>", <si_prefix>, "<doc>")]`
 /// `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
-///
-/// or
-///
+/// `#[ref_unit(<ident>, "<symbol>", "<doc>")]`,
 /// `#[ref_unit(<ident>, "<symbol>")]`,
 ///
-/// followed by one ore more unit attributes in the form
+/// followed by one ore more unit attributes in one of the following forms
 ///
+/// `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>, "<doc>")]`
 /// `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
-///
-/// or
-///
+/// `#[unit(<ident>, "<symbol>", <scale>, "<doc>")]`.
 /// `#[unit(<ident>, "<symbol>", <scale>)]`.
 ///
 /// To define a quantity without a reference unit, use one ore more unit
-/// attributes in the form
+/// attributes in one of the following forms
 ///
-/// `#[unit(<ident>, "<symbol>"]`.
+/// `#[unit(<ident>, "<symbol>", "<doc>")]`
+/// `#[unit(<ident>, "<symbol>")]`.
 ///
 /// # Panics
 ///
@@ -200,12 +200,12 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// ```compile_fail
 /// use quantities::prelude::*; // This dependency can't be fulfilled here!
 /// #[quantity]
-/// #[ref_unit(Kilogram, "kg", KILO)]
-/// #[unit(Milligram, "mg", MILLI, 0.000001)]
-/// #[unit(Gram, "g", NONE, 0.001)]
-/// #[unit(Ounce, "oz", 0.028349523125)]
-/// #[unit(Pound, "lb", 0.45359237)]
-/// #[unit(Tonne, "t", MEGA, 1000.)]
+/// #[ref_unit(Kilogram, "kg", KILO, "Reference unit of quantity `Mass`")]
+/// #[unit(Milligram, "mg", MILLI, 0.000001, "0.001·g")]
+/// #[unit(Gram, "g", NONE, 0.001, "0.001·kg")]
+/// #[unit(Ounce, "oz", 0.028349523125, "0.0625·lb")]
+/// #[unit(Pound, "lb", 0.45359237, "0.45359237·kg")]
+/// #[unit(Tonne, "t", MEGA, 1000, "1000·kg")]
 /// /// The quantity of matter in a physical body.
 /// struct Mass {}
 /// ```
@@ -215,8 +215,16 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// ```compile_fail
 /// #[doc = " The quantity of matter in a physical body."]
 /// pub type Mass = Qty<MassUnit>;
+/// #[doc = "Unit of quantity `Mass`."]
 /// #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-/// pub enum MassUnit { Milligram, Gram, Ounce, Pound, Kilogram, Tonne }
+/// pub enum MassUnit {
+///     #[doc = "0.001·g"] Milligram,
+///     #[doc = "0.001·kg"] Gram,
+///     #[doc = "0.0625·lb"] Ounce,
+///     #[doc = "0.45359237·kg"] Pound,
+///     #[doc = "Reference unit of quantity `Mass`"] Kilogram,
+///     #[doc = "1000·kg"] Tonne
+/// }
 /// impl MassUnit {
 ///     const VARIANTS: [MassUnit; 6usize] = [
 ///         MassUnit::Milligram,
@@ -261,20 +269,26 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///     }
 ///     fn scale(&self) -> Option<AmountT> {
 ///         match self {
-///             MassUnit::Milligram => Some(Amnt!(0.000001 )),
-///             MassUnit::Gram => Some(Amnt!(0.001 )),
-///             MassUnit::Ounce => Some(Amnt!(0.028349523125 )),
-///             MassUnit::Pound => Some(Amnt!(0.45359237 )),
-///             MassUnit::Kilogram => Some(Amnt!(1.0 )),
-///             MassUnit::Tonne => Some(Amnt!(1000. )),
+///             MassUnit::Milligram => Some(Amnt!(0.000001)),
+///             MassUnit::Gram => Some(Amnt!(0.001)),
+///             MassUnit::Ounce => Some(Amnt!(0.028349523125)),
+///             MassUnit::Pound => Some(Amnt!(0.45359237)),
+///             MassUnit::Kilogram => Some(Amnt!(1.0)),
+///             MassUnit::Tonne => Some(Amnt!(1000)),
 ///         }
 ///     }
 /// }
+/// #[doc = "0.001·g"]
 /// pub const MILLIGRAM: MassUnit = MassUnit::Milligram;
+/// #[doc = "0.001·kg"]
 /// pub const GRAM: MassUnit = MassUnit::Gram;
+/// #[doc = "0.0625·lb"]
 /// pub const OUNCE: MassUnit = MassUnit::Ounce;
+/// #[doc = "0.45359237·kg"]
 /// pub const POUND: MassUnit = MassUnit::Pound;
+/// #[doc = "Reference unit of quantity `Mass`"]
 /// pub const KILOGRAM: MassUnit = MassUnit::Kilogram;
+/// #[doc = "1000·kg"]
 /// pub const TONNE: MassUnit = MassUnit::Tonne;
 /// impl Mul<MassUnit> for AmountT {
 ///     type Output = Mass;
