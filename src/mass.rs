@@ -45,7 +45,11 @@ mod tests {
 
     #[test]
     fn test_mass() {
-        let m = Amnt!(29.35) * KILOGRAM;
+        let amnt: AmountT = Amnt!(29.35);
+        let m = amnt * KILOGRAM;
+        assert_eq!(m.amount, amnt);
+        assert_eq!(m.unit, KILOGRAM);
+        #[cfg(feature = "std")]
         assert_eq!(m.to_string(), "29.35 kg");
     }
 }
