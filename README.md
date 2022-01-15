@@ -219,3 +219,4 @@ With the following features additional modules can be enabled, each providing
 a predefined quantity.
 
 * **mass** - module [mass] - quantity [Mass](mass::Mass)
+* **length** - module [length] - quantity [Length](length::Length)

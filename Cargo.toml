@@ -23,6 +23,7 @@ trybuild = "1"
 default = ["std"]
 std = []
 mass = []
+length = []
 
 [workspace]
 members = [".", "qty-macros"]
