@@ -220,3 +220,4 @@ a predefined quantity.
 
 * **mass** - module [mass] - quantity [Mass](mass::Mass)
 * **length** - module [length] - quantity [Length](length::Length)
+* **duration** - module [duration] - quantity [Duration](duration::Duration)

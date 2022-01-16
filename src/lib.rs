@@ -23,6 +23,8 @@ pub mod prelude;
 mod si_prefixes;
 mod unitless;
 
+#[cfg(feature = "duration")]
+pub mod duration;
 #[cfg(feature = "length")]
 pub mod length;
 #[cfg(feature = "mass")]
