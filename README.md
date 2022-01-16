@@ -96,12 +96,11 @@ quantity based on more basic types of quantities.
 
 # Type of the numerical part
 
-The package allows to use either `float` of `fixed-point decimal` values for
+The package allows to use either `float` or `fixed-point decimal` values for
 the numerical part of a `Quantity` value.
 
 Internally the type alias `AmountT` is used. This alias can be controlled by
-the optional feature `fpdec` (see 
-[features](#crate-features).
+the optional feature `fpdec` (see [features](#crate-features)).
 
 When feature `fpdec` is off (= default), `AmountT` is defined as `f64` on a
 64-bit system or as `f32` on a 32-bit system.
