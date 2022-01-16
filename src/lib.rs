@@ -72,7 +72,7 @@ pub type AmountT = f32;
 #[cfg(feature = "fpdec")]
 #[allow(non_snake_case)]
 #[macro_export]
-/// Converts a numerical literal to an `AmountT`.
+/// Converts a numeric literal to an `AmountT`.
 macro_rules! Amnt {
     ($lit:literal) => {
         Dec!($lit)
@@ -81,7 +81,7 @@ macro_rules! Amnt {
 #[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
 #[allow(non_snake_case)]
 #[macro_export]
-/// Converts a numerical literal to an `AmountT`.
+/// Converts a numeric literal to an `AmountT`.
 macro_rules! Amnt {
     ($lit:literal) => {
         $lit as f64
@@ -90,7 +90,7 @@ macro_rules! Amnt {
 #[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
 #[allow(non_snake_case)]
 #[macro_export]
-/// Converts a numerical literal to an `AmountT`.
+/// Converts a numeric literal to an `AmountT`.
 macro_rules! Amnt {
     ($lit:literal) => {
         $lit as f32

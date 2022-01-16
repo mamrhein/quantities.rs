@@ -26,6 +26,11 @@ mass = []
 length = []
 duration = []
 datavolume = []
+# used for rustdoc only
+doc = ["mass", "length", "duration", "datavolume"]
 
 [workspace]
 members = [".", "qty-macros"]
+
+[package.metadata.docs.rs]
+features = ["doc"]
