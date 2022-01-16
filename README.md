@@ -210,8 +210,8 @@ By default, only the feature `std` is enabled.
 
 ## Optional dependencies
 
-* **fpdec** - When enabled, instead of `f64` or `f32` `fpdec::Decimal` is used as 
-  `AmountT` (see [above](#type-of-the-numerical-part)).
+* **fpdec** - When enabled, instead of `f64` or `f32` `fpdec::Decimal` is used
+  as `AmountT` (see [above](#type-of-the-numerical-part)).
 
 ## Predefined quantities
 
@@ -221,3 +221,5 @@ a predefined quantity.
 * **mass** - module [mass] - quantity [Mass](mass::Mass)
 * **length** - module [length] - quantity [Length](length::Length)
 * **duration** - module [duration] - quantity [Duration](duration::Duration)
+* **datavolume** - module [datavolume] - quantity
+  [DataVolume](datavolume::DataVolume)

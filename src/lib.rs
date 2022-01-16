@@ -23,6 +23,8 @@ pub mod prelude;
 mod si_prefixes;
 mod unitless;
 
+#[cfg(feature = "datavolume")]
+pub mod datavolume;
 #[cfg(feature = "duration")]
 pub mod duration;
 #[cfg(feature = "length")]
