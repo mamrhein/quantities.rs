@@ -54,10 +54,10 @@ mod tests {
     #[test]
     fn test_length() {
         let amnt: AmountT = Amnt!(29.35);
-        let m = amnt * CENTIMETER;
-        assert_eq!(m.amount, amnt);
-        assert_eq!(m.unit, CENTIMETER);
+        let l = amnt * CENTIMETER;
+        assert_eq!(l.amount, amnt);
+        assert_eq!(l.unit, CENTIMETER);
         #[cfg(feature = "std")]
-        assert_eq!(m.to_string(), "29.35 cm");
+        assert_eq!(l.to_string(), "29.35 cm");
     }
 }
