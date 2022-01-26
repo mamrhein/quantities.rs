@@ -151,7 +151,7 @@ impl SIPrefix {
 
     /// Returns the SI prefix with the exponent `exp`, or `None` if there is no
     /// such SI prefix.
-    pub fn from_exp(exp: i8) -> Option<Self> {
+    pub const fn from_exp(exp: i8) -> Option<Self> {
         match exp {
             -24 => Some(SIPrefix::YOCTO),
             -21 => Some(SIPrefix::ZEPTO),
