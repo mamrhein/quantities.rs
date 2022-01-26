@@ -1,6 +1,6 @@
 error: Attribute `quantity` takes no arguments.
 
-  = help: Use `#[quantity]`.
+         = help: Use `#[quantity]`.
 
   --> tests/ui/invalid_args.rs:13:1
    |

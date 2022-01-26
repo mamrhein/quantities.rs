@@ -1,8 +1,8 @@
 error: expected `struct`
 
-  = help: Use `#[quantity]
-  ...
-struct <ident> {}`.
+         = help: Use `#[quantity]
+         ...
+       struct <ident> {}`.
 
   --> tests/ui/item_not_struct.rs:12:1
    |
