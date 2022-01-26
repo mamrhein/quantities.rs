@@ -105,6 +105,28 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
     /// Returns an iterator over the variants of `Self`.
     fn iter<'a>() -> core::slice::Iter<'a, Self>;
 
+    /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
+    /// there is no such unit.
+    fn from_symbol(symbol: &str) -> Option<Self> {
+        for unit in Self::iter() {
+            if unit.symbol() == symbol {
+                return Some(*unit);
+            }
+        }
+        None
+    }
+
+    /// Returns `Some(unit)` where `unit.scale()` == `Some(amnt)`, or `None` if
+    /// there is no such unit.
+    fn from_scale(amnt: AmountT) -> Option<Self> {
+        for unit in Self::iter() {
+            if unit.scale() == Some(amnt) {
+                return Some(*unit);
+            }
+        }
+        None
+    }
+
     /// Returns the name of `self`.
     fn name(&self) -> &'static str;
 

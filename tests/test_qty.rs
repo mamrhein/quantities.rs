@@ -45,6 +45,22 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_unit_from_symbol() {
+        assert_eq!(FooUnit::from_symbol("a"), Some(A));
+        assert_eq!(FooUnit::from_symbol("b"), Some(B));
+        assert_eq!(FooUnit::from_symbol("c"), Some(C));
+        assert_eq!(FooUnit::from_symbol("x"), None);
+    }
+
+    #[test]
+    fn test_unit_from_scale() {
+        assert_eq!(FooUnit::from_scale(Amnt!(1)), Some(A));
+        assert_eq!(FooUnit::from_scale(Amnt!(0.4)), Some(B));
+        assert_eq!(FooUnit::from_scale(Amnt!(0.01)), Some(C));
+        assert_eq!(FooUnit::from_scale(Amnt!(10)), None);
+    }
+
+    #[test]
     fn test_qty_iter_units() {
         let mut iter_units = Foo::iter_units();
         assert_eq!(iter_units.next(), Some(&C));
