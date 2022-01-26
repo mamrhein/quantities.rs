@@ -165,6 +165,28 @@ pub trait Quantity<U: Unit>:
         U::iter()
     }
 
+    /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
+    /// there is no such unit.
+    fn unit_from_symbol(symbol: &str) -> Option<U> {
+        for unit in Self::iter_units() {
+            if unit.symbol() == symbol {
+                return Some(*unit);
+            }
+        }
+        None
+    }
+
+    /// Returns `Some(unit)` where `unit.scale()` == `Some(amnt)`, or `None` if
+    /// there is no such unit.
+    fn unit_from_scale(amnt: AmountT) -> Option<U> {
+        for unit in Self::iter_units() {
+            if unit.scale() == Some(amnt) {
+                return Some(*unit);
+            }
+        }
+        None
+    }
+
     /// Returns a new instance of `Quantity<U>`.
     fn new(amount: AmountT, unit: U) -> Self;
 

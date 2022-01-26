@@ -70,6 +70,22 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_qty_unit_from_symbol() {
+        assert_eq!(Foo::unit_from_symbol("a"), Some(A));
+        assert_eq!(Foo::unit_from_symbol("b"), Some(B));
+        assert_eq!(Foo::unit_from_symbol("c"), Some(C));
+        assert_eq!(Foo::unit_from_symbol("x"), None);
+    }
+
+    #[test]
+    fn test_qty_unit_from_scale() {
+        assert_eq!(Foo::unit_from_scale(Amnt!(1)), Some(A));
+        assert_eq!(Foo::unit_from_scale(Amnt!(0.4)), Some(B));
+        assert_eq!(Foo::unit_from_scale(Amnt!(0.01)), Some(C));
+        assert_eq!(Foo::unit_from_scale(Amnt!(10)), None);
+    }
+
+    #[test]
     fn test_qty() {
         let amnt = Amnt!(17.4);
         let unit = FooUnit::B;
