@@ -359,7 +359,6 @@ fn codegen_qty_single_unit(
 ) -> TokenStream {
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     quote!(
-        pub type #qty_ident = Qty<#unit_enum_ident>;
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
@@ -369,6 +368,7 @@ fn codegen_qty_single_unit(
             const VARIANTS: [Self; 1] = [#unit_enum_ident::#unit_ident];
         }
         impl Unit for #unit_enum_ident {
+            type QuantityType = #qty_ident;
             const REF_UNIT: Option<Self> = None;
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
                 Self::VARIANTS.iter()
@@ -377,6 +377,28 @@ fn codegen_qty_single_unit(
             fn symbol(&self) -> &'static str { #unit_symbol }
             fn si_prefix(&self) -> Option<SIPrefix> { None }
             fn scale(&self) -> Option<AmountT> { None }
+        }
+        #[derive(Copy, Clone, Debug)]
+        pub struct #qty_ident {
+            amount: AmountT
+        }
+        impl Quantity for #qty_ident {
+            type UnitType = #unit_enum_ident;
+
+            #[inline(always)]
+            fn new(amount: AmountT, _unit: Self::UnitType) -> Self {
+                Self { amount }
+            }
+
+            #[inline(always)]
+            fn amount(&self) -> AmountT {
+                self.amount
+            }
+
+            #[inline(always)]
+            fn unit(&self) -> Self::UnitType {
+                #unit_enum_ident::#unit_ident
+            }
         }
     )
 }
@@ -470,6 +492,34 @@ fn codegen_fn_symbol(
     )
 }
 
+fn codegen_impl_quantity(
+    qty_ident: &syn::Ident,
+    unit_enum_ident: &syn::Ident,
+) -> TokenStream {
+    quote!(
+        #[derive(Copy, Clone, Debug)]
+        pub struct #qty_ident {
+            amount: AmountT,
+            unit: #unit_enum_ident
+        }
+        impl Quantity for #qty_ident {
+            type UnitType = #unit_enum_ident;
+            #[inline(always)]
+            fn new(amount: AmountT, unit: Self::UnitType) -> Self {
+                Self { amount, unit }
+            }
+            #[inline(always)]
+            fn amount(&self) -> AmountT {
+                self.amount
+            }
+            #[inline(always)]
+            fn unit(&self) -> Self::UnitType {
+                self.unit
+            }
+        }
+    )
+}
+
 fn codegen_qty_without_ref_unit(
     qty_ident: &syn::Ident,
     unit_enum_ident: &syn::Ident,
@@ -481,13 +531,14 @@ fn codegen_qty_without_ref_unit(
     let code_fn_name = codegen_fn_name(unit_enum_ident, units);
     let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
+    let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
-        pub type #qty_ident = Qty<#unit_enum_ident>;
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident { #code_unit_variants }
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
+            type QuantityType = #qty_ident;
             const REF_UNIT: Option<Self> = None;
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
                 Self::VARIANTS.iter()
@@ -497,6 +548,7 @@ fn codegen_qty_without_ref_unit(
             fn si_prefix(&self) -> Option<SIPrefix> { None }
             fn scale(&self) -> Option<AmountT> { None }
         }
+        #code_impl_quantity
     )
 }
 
@@ -567,8 +619,8 @@ fn codegen_qty_with_ref_unit(
     let code_fn_si_prefix = codegen_fn_si_prefix(unit_enum_ident, units);
     let code_fn_scale = codegen_fn_scale(unit_enum_ident, units);
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
+    let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
-        pub type #qty_ident = Qty<#unit_enum_ident>;
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
@@ -576,6 +628,7 @@ fn codegen_qty_with_ref_unit(
         }
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
+            type QuantityType = #qty_ident;
             const REF_UNIT: Option<Self> =
                 Some(#unit_enum_ident::#ref_unit_ident);
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
@@ -585,6 +638,72 @@ fn codegen_qty_with_ref_unit(
             #code_fn_symbol
             #code_fn_si_prefix
             #code_fn_scale
+        }
+        #code_impl_quantity
+    )
+}
+
+fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
+    quote!(
+        impl fmt::Display for #qty_ident {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                <Self as Quantity>::fmt(self, f)
+            }
+        }
+        impl Eq for #qty_ident {}
+        impl PartialEq<Self> for #qty_ident {
+            #[inline(always)]
+            fn eq(&self, other: &Self) -> bool {
+                <Self as Quantity>::eq(self, other)
+            }
+        }
+        impl PartialOrd for #qty_ident {
+            #[inline(always)]
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                <Self as Quantity>::partial_cmp(self, other)
+            }
+        }
+        impl Add<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn add(self, rhs: Self) -> Self::Output {
+                <Self as Quantity>::add(self, rhs)
+            }
+        }
+        impl Sub<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn sub(self, rhs: Self) -> Self::Output {
+                <Self as Quantity>::sub(self, rhs)
+            }
+        }
+        impl Div<Self> for #qty_ident {
+            type Output = Unitless;
+            #[inline(always)]
+            fn div(self, rhs: Self) -> Self::Output {
+                <Self as Quantity>::div(self, rhs)
+            }
+        }
+        impl Mul<#qty_ident> for AmountT {
+            type Output = #qty_ident;
+            #[inline(always)]
+            fn mul(self, rhs: #qty_ident) -> Self::Output {
+                Self::Output::new(self * rhs.amount(), rhs.unit())
+            }
+        }
+        impl Mul<AmountT> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn mul(self, rhs: AmountT) -> Self::Output {
+                Self::Output::new(self.amount() * rhs, self.unit())
+            }
+        }
+        impl Div<AmountT> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn div(self, rhs: AmountT) -> Self::Output {
+                Self::Output::new(self.amount() / rhs, self.unit())
+            }
         }
     )
 }
@@ -628,11 +747,13 @@ pub(crate) fn codegen(
             &qty_def.units,
         )
     };
+    let code_impl_std_traits = codegen_impl_std_traits(&qty_ident);
     quote!(
         #code_attrs
         #code_qty
         #code_unit_consts
         #code_impl_mul
+        #code_impl_std_traits
     )
 }
 

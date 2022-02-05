@@ -99,6 +99,9 @@ macro_rules! Amnt {
 
 /// The abstract type of units used to define quantities.
 pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
+    /// Associated type of quantity
+    type QuantityType: Quantity<UnitType = Self>;
+
     /// Optional unit used as reference for scaling the units.
     const REF_UNIT: Option<Self>;
 
@@ -157,17 +160,20 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
 }
 
 /// The abstract type of quantities.
-pub trait Quantity<U: Unit>:
+pub trait Quantity:
     Copy + Sized + Add<Self> + Sub<Self> + Div<Self> + Mul<AmountT>
 {
-    /// Returns an iterator over the variants of `U`.
-    fn iter_units<'a>() -> core::slice::Iter<'a, U> {
-        U::iter()
+    /// Associated type of unit
+    type UnitType: Unit<QuantityType = Self>;
+
+    /// Returns an iterator over the variants of `Self::UnitType`.
+    fn iter_units<'a>() -> core::slice::Iter<'a, Self::UnitType> {
+        Self::UnitType::iter()
     }
 
     /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
     /// there is no such unit.
-    fn unit_from_symbol(symbol: &str) -> Option<U> {
+    fn unit_from_symbol(symbol: &str) -> Option<Self::UnitType> {
         for unit in Self::iter_units() {
             if unit.symbol() == symbol {
                 return Some(*unit);
@@ -178,7 +184,7 @@ pub trait Quantity<U: Unit>:
 
     /// Returns `Some(unit)` where `unit.scale()` == `Some(amnt)`, or `None` if
     /// there is no such unit.
-    fn unit_from_scale(amnt: AmountT) -> Option<U> {
+    fn unit_from_scale(amnt: AmountT) -> Option<Self::UnitType> {
         for unit in Self::iter_units() {
             if unit.scale() == Some(amnt) {
                 return Some(*unit);
@@ -188,17 +194,17 @@ pub trait Quantity<U: Unit>:
     }
 
     /// Returns a new instance of `Quantity<U>`.
-    fn new(amount: AmountT, unit: U) -> Self;
+    fn new(amount: AmountT, unit: Self::UnitType) -> Self;
 
     /// Returns the amount of `self`.
     fn amount(&self) -> AmountT;
 
     /// Returns the unit of `self`.
-    fn unit(&self) -> U;
+    fn unit(&self) -> Self::UnitType;
 
     /// Returns `Some(factor)` so that `factor` * `unit` == `self`, or `None` if
     /// such a factor can't be determined.
-    fn equiv_amount(&self, unit: U) -> Option<AmountT> {
+    fn equiv_amount(&self, unit: Self::UnitType) -> Option<AmountT> {
         if self.unit() == unit {
             Some(self.amount())
         } else {
@@ -209,128 +215,57 @@ pub trait Quantity<U: Unit>:
 
     /// Returns `Some(qty)` where `qty` == `self` and `qty.unit()` is `to_unit`,
     /// or `None` if the conversion can't be done.
-    fn convert(&self, to_unit: U) -> Option<Self> {
+    fn convert(&self, to_unit: Self::UnitType) -> Option<Self> {
         Some(Self::new(self.equiv_amount(to_unit)?, to_unit))
     }
-}
 
-#[derive(Copy, Clone, Debug)]
-/// Generic struct that implements trait `Quantity`.
-pub struct Qty<U: Unit> {
-    amount: AmountT,
-    unit: U,
-}
-
-impl<U: Unit> fmt::Display for Qty<U> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.unit.symbol() {
-            "" => write!(f, "{}", self.amount),
-            _ => write!(f, "{} {}", self.amount, self.unit.symbol()),
+        match self.unit().symbol() {
+            "" => write!(f, "{}", self.amount()),
+            _ => write!(f, "{} {}", self.amount(), self.unit().symbol()),
         }
     }
-}
 
-impl<U: Unit> Quantity<U> for Qty<U> {
-    #[inline(always)]
-    fn new(amount: AmountT, unit: U) -> Self {
-        Self { amount, unit }
-    }
-
-    #[inline(always)]
-    fn amount(&self) -> AmountT {
-        self.amount
-    }
-
-    #[inline(always)]
-    fn unit(&self) -> U {
-        self.unit
-    }
-}
-
-impl<U: Unit> PartialEq for Qty<U> {
     fn eq(&self, other: &Self) -> bool {
-        if self.unit == other.unit {
-            self.amount == other.amount
+        if self.unit() == other.unit() {
+            self.amount() == other.amount()
         } else {
-            match other.equiv_amount(self.unit) {
+            match other.equiv_amount(self.unit()) {
                 None => false,
-                Some(equiv_amount) => self.amount == equiv_amount,
+                Some(equiv_amount) => self.amount() == equiv_amount,
             }
         }
     }
-}
 
-impl<U: Unit> Eq for Qty<U> {}
-
-impl<U: Unit> PartialOrd for Qty<U> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.unit == other.unit {
+        if self.unit() == other.unit() {
             self.amount().partial_cmp(&other.amount())
         } else {
-            match self.equiv_amount(other.unit) {
+            match self.equiv_amount(other.unit()) {
                 None => None,
                 Some(equiv_amount) => equiv_amount.partial_cmp(&other.amount()),
             }
         }
     }
-}
 
-impl<U: Unit> Add<Self> for Qty<U> {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        match rhs.equiv_amount(self.unit) {
-            Some(equiv) => Self::Output::new(self.amount + equiv, self.unit),
+    fn add(self, rhs: Self) -> Self {
+        match rhs.equiv_amount(self.unit()) {
+            Some(equiv) => Self::new(self.amount() + equiv, self.unit()),
             None => panic!("Incompatible units!"),
         }
     }
-}
 
-impl<U: Unit> Sub<Self> for Qty<U> {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        match rhs.equiv_amount(self.unit) {
-            Some(equiv) => Self::Output::new(self.amount - equiv, self.unit),
+    fn sub(self, rhs: Self) -> Self {
+        match rhs.equiv_amount(self.unit()) {
+            Some(equiv) => Self::new(self.amount() - equiv, self.unit()),
             None => panic!("Incompatible units!"),
         }
     }
-}
 
-impl<U: Unit> Div<Self> for Qty<U> {
-    type Output = Unitless;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        match rhs.equiv_amount(self.unit) {
-            Some(equiv) => Self::Output::new(self.amount / equiv, ONE),
+    fn div(self, rhs: Self) -> Unitless {
+        match rhs.equiv_amount(self.unit()) {
+            Some(equiv) => Unitless::new(self.amount() / equiv, ONE),
             None => panic!("Incompatible units!"),
         }
-    }
-}
-
-impl<U: Unit> Mul<Qty<U>> for AmountT {
-    type Output = Qty<U>;
-
-    #[inline(always)]
-    fn mul(self, rhs: Qty<U>) -> Self::Output {
-        Self::Output::new(self * rhs.amount, rhs.unit)
-    }
-}
-
-impl<U: Unit> Mul<AmountT> for Qty<U> {
-    type Output = Self;
-
-    #[inline(always)]
-    fn mul(self, rhs: AmountT) -> Self::Output {
-        Self::Output::new(self.amount * rhs, self.unit)
-    }
-}
-
-impl<U: Unit> Div<AmountT> for Qty<U> {
-    type Output = Self;
-
-    #[inline(always)]
-    fn div(self, rhs: AmountT) -> Self::Output {
-        Self::Output::new(self.amount / rhs, self.unit)
     }
 }
