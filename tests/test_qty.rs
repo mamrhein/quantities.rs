@@ -10,7 +10,6 @@
 #[cfg(test)]
 mod quantity_with_ref_unit_tests {
     use quantities::prelude::*;
-    use quantities::ONE;
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -260,7 +259,6 @@ mod quantity_with_ref_unit_tests {
 #[cfg(test)]
 mod quantity_without_ref_unit_tests {
     use quantities::prelude::*;
-    use quantities::ONE;
 
     /// Foo, a completely useless quantity
     #[quantity]
