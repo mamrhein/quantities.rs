@@ -17,11 +17,9 @@ use core::ops::{Add, Div, Mul, Sub};
 #[cfg(feature = "fpdec")]
 pub use fpdec::{Dec, Decimal};
 pub use si_prefixes::SIPrefix;
-pub use unitless::{Unitless, ONE};
 
 pub mod prelude;
 mod si_prefixes;
-mod unitless;
 
 #[cfg(feature = "datavolume")]
 pub mod datavolume;
@@ -193,7 +191,7 @@ pub trait Quantity:
         None
     }
 
-    /// Returns a new instance of `Quantity<U>`.
+    /// Returns a new instance of the type implementing `Quantity`.
     fn new(amount: AmountT, unit: Self::UnitType) -> Self;
 
     /// Returns the amount of `self`.
@@ -239,11 +237,13 @@ pub trait Quantity:
 
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.unit() == other.unit() {
-            self.amount().partial_cmp(&other.amount())
+            PartialOrd::partial_cmp(&self.amount(), &other.amount())
         } else {
             match self.equiv_amount(other.unit()) {
                 None => None,
-                Some(equiv_amount) => equiv_amount.partial_cmp(&other.amount()),
+                Some(equiv_amount) => {
+                    PartialOrd::partial_cmp(&equiv_amount, &other.amount())
+                }
             }
         }
     }
@@ -262,10 +262,78 @@ pub trait Quantity:
         }
     }
 
-    fn div(self, rhs: Self) -> Unitless {
+    fn div(self, rhs: Self) -> AmountT {
         match rhs.equiv_amount(self.unit()) {
-            Some(equiv) => Unitless::new(self.amount() / equiv, ONE),
+            Some(equiv) => self.amount() / equiv,
             None => panic!("Incompatible units!"),
         }
+    }
+}
+
+/// The "unit" of the "unitless" quantity.
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum One {
+    One,
+}
+
+impl One {
+    const VARIANTS: [Self; 1] = [ONE];
+}
+
+/// Special singleton used as "unit" for the "unitless" quantity.
+pub const ONE: One = One::One;
+
+impl Unit for One {
+    type QuantityType = AmountT;
+    const REF_UNIT: Option<Self> = None;
+    fn iter<'a>() -> core::slice::Iter<'a, Self> {
+        Self::VARIANTS.iter()
+    }
+    fn name(&self) -> &'static str {
+        "One"
+    }
+    fn symbol(&self) -> &'static str {
+        ""
+    }
+    fn si_prefix(&self) -> Option<SIPrefix> {
+        None
+    }
+    fn scale(&self) -> Option<AmountT> {
+        None
+    }
+}
+
+impl Mul<One> for AmountT {
+    type Output = AmountT;
+    #[inline(always)]
+    fn mul(self, _rhs: One) -> Self::Output {
+        self
+    }
+}
+
+impl Mul<AmountT> for One {
+    type Output = AmountT;
+    #[inline(always)]
+    fn mul(self, rhs: AmountT) -> Self::Output {
+        rhs
+    }
+}
+
+impl Quantity for AmountT {
+    type UnitType = One;
+
+    #[inline(always)]
+    fn new(amount: AmountT, _unit: Self::UnitType) -> Self {
+        amount
+    }
+
+    #[inline(always)]
+    fn amount(&self) -> AmountT {
+        *self
+    }
+
+    #[inline(always)]
+    fn unit(&self) -> Self::UnitType {
+        ONE
     }
 }

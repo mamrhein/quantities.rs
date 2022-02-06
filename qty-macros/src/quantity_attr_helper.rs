@@ -678,7 +678,7 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
             }
         }
         impl Div<Self> for #qty_ident {
-            type Output = Unitless;
+            type Output = AmountT;
             #[inline(always)]
             fn div(self, rhs: Self) -> Self::Output {
                 <Self as Quantity>::div(self, rhs)
