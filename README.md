@@ -55,15 +55,16 @@ units and provide mechanisms to convert between them.
 # The Basics: Quantity and Unit
 
 The essential functionality of the package is provided by the two traits 
-`Quantity` and `Unit` as well as the generic struct `Qty<U: Unit>`.
+`Quantity` and `Unit`.
 
 A **basic** type of quantity can easily be defined using the proc-macro
 attribute `quantity`, optionally followed by an attribute `refunit` and
 followed by at least one attribute `unit`.
 
 The macro generates an enum with the given units (incl. the refunit, if given)
-as variants, an implemention of trait `Unit` for this enum and a type alias of
-`Qty` with the enum as parameter and named after the given struct.
+as variants, an implemention of trait `Unit` for this enum, a type named after
+the given struct and an implementation of trait `Quantity` for this type as
+well as implementations of some std traits.
 
 In addition, it creates a constant for each enum variant, thus providing a
 constant for each unit. This implies that the identifiers of all units over
@@ -115,8 +116,8 @@ values of units by the proc-macro `quantity` described above.
 # Instantiating quantities
 
 An instance of a quantity type can be created by calling the function `new`,
-giving an amount and a unit. Alternatively, a unit can be multiplied by an
-amount.
+giving an amount and a unit. Alternatively, an amount and a unit can be
+multiplied.
 
 Example:
 
