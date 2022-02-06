@@ -150,9 +150,9 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
     /// Returns `Some(factor)` so that `factor` * `other` == 1 * `self`, or
     /// `None` if `Self::REF_UNIT` is `None`.
     fn ratio(&self, other: &Self) -> Option<AmountT> {
-        match (self.scale(), other.scale()) {
-            (Some(from), Some(into)) => Some(from / into),
-            _ => None,
+        match Self::REF_UNIT {
+            Some(_) => Some(self.scale().unwrap() / other.scale().unwrap()),
+            None => None,
         }
     }
 }
