@@ -1,5 +1,13 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.4.0     Added fn Unit::from_symbol and fn Unit::from_scale.
+          Added fn Quantity::unit_from_symbol and
+          fn Quantity::unit_from_scale.
+          Removed struct Qty<U> and its generic impls of some std traits.
+          Removed type Unitless by implementing trait Quantity directly for
+          AmountT.
+          Added trait HasRefUnit.
+
 0.3.0     Proc-macro 'quantity' – attribute 'unit':
            * Allow int literal as 'scale' param.
            * Added optional 'doc' param.
