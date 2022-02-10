@@ -9,7 +9,7 @@
 
 //! This module reexports all macros and types needed to define a quantity.
 
-pub use crate::{Amnt, AmountT, Quantity, SIPrefix, Unit, ONE};
+pub use crate::{Amnt, AmountT, HasRefUnit, Quantity, SIPrefix, Unit, ONE};
 #[cfg(feature = "fpdec")]
 pub use crate::{Dec, Decimal};
 pub use core::cmp::Ordering;

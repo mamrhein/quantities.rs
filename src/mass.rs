@@ -45,6 +45,8 @@ mod tests {
 
     #[test]
     fn test_mass() {
+        assert_eq!(<Mass as HasRefUnit>::REF_UNIT, MassUnit::REF_UNIT.unwrap());
+        assert!(KILOGRAM.is_ref_unit());
         let amnt: AmountT = Amnt!(29.35);
         let m = amnt * KILOGRAM;
         assert_eq!(m.amount, amnt);

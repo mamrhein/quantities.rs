@@ -640,6 +640,10 @@ fn codegen_qty_with_ref_unit(
             #code_fn_scale
         }
         #code_impl_quantity
+        impl HasRefUnit for #qty_ident {
+            const REF_UNIT: #unit_enum_ident =
+                #unit_enum_ident::#ref_unit_ident;
+        }
     )
 }
 

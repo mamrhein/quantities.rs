@@ -270,6 +270,12 @@ pub trait Quantity:
     }
 }
 
+/// Trait for quantities having a reference unit
+pub trait HasRefUnit: Quantity {
+    /// Unit used as reference for scaling the units of `Self::UnitType`.
+    const REF_UNIT: <Self as Quantity>::UnitType;
+}
+
 /// The "unit" of the "unitless" quantity.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum One {
