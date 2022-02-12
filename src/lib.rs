@@ -274,6 +274,27 @@ pub trait Quantity:
 pub trait HasRefUnit: Quantity {
     /// Unit used as reference for scaling the units of `Self::UnitType`.
     const REF_UNIT: <Self as Quantity>::UnitType;
+
+    #[doc(hidden)]
+    /// Returns a new instance of the type implementing `HasRefUnit`, equivalent
+    /// to `amount * Self::REF_UNIT`, converted to the unit with the greatest
+    /// scale less than or equal to `amount` or - if there is no such unit - to
+    /// the unit with the smallest scale greater than `amount`, in any case
+    /// taking only SI units into account if Self::REF_UNIT is a SI unit.
+    fn _fit(amount: AmountT) -> Self {
+        let take_all = Self::REF_UNIT.si_prefix().is_none();
+        let mut it =
+            Self::iter_units().filter(|u| take_all || u.si_prefix().is_some());
+        // `it` returns atleast the reference unit, so its safe to unwrap here
+        let first = it.next().unwrap();
+        let last = it
+            .filter(|u| u.scale().is_some() && u.scale().unwrap() <= amount)
+            .last();
+        match last {
+            Some(unit) => Self::new(amount / unit.scale().unwrap(), *unit),
+            None => Self::new(amount / first.scale().unwrap(), *first),
+        }
+    }
 }
 
 /// The "unit" of the "unitless" quantity.

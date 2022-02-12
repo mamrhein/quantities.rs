@@ -15,7 +15,7 @@ mod quantity_with_ref_unit_tests {
     #[quantity]
     #[ref_unit(A, "a", MEGA)]
     #[unit(B, "b", 0.4)]
-    #[unit(C, "c", 0.01)]
+    #[unit(C, "c", CENTI, 0.01)]
     struct Foo {}
 
     #[test]
@@ -66,6 +66,26 @@ mod quantity_with_ref_unit_tests {
         assert_eq!(iter_units.next(), Some(&B));
         assert_eq!(iter_units.next(), Some(&A));
         assert_eq!(iter_units.next(), None);
+    }
+
+    #[test]
+    fn test_fit() {
+        let amnt = Amnt!(0.007);
+        let foo = Foo::_fit(amnt);
+        assert_eq!(foo.amount, amnt / Amnt!(0.01));
+        assert_eq!(foo.unit, C);
+        let amnt = Amnt!(0.07);
+        let foo = Foo::_fit(amnt);
+        assert_eq!(foo.amount, amnt / Amnt!(0.01));
+        assert_eq!(foo.unit, C);
+        let amnt = Amnt!(0.7);
+        let foo = Foo::_fit(amnt);
+        assert_eq!(foo.amount, amnt / Amnt!(0.01));
+        assert_eq!(foo.unit, C);
+        let amnt = Amnt!(7.);
+        let foo = Foo::_fit(amnt);
+        assert_eq!(foo.amount, amnt);
+        assert_eq!(foo.unit, A);
     }
 
     #[test]
