@@ -1,6 +1,8 @@
-error: Attribute `quantity` takes no arguments.
+error: Unknown argument(s) given to attribute `quantity`.
 
-         = help: Use `#[quantity]`.
+         = help: Use `#[quantity]`
+       or  `#[quantity(<lhs_ident> * <rhs_ident>]`
+       or  `#[quantity(<lhs_ident> / <rhs_ident>]`.
 
   --> tests/ui/invalid_args.rs:13:1
    |

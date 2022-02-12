@@ -457,3 +457,67 @@ mod quantity_single_unit_tests {
         assert_eq!(qty.unit(), POP);
     }
 }
+
+#[cfg(test)]
+mod derived_quantity_tests {
+    use quantities::prelude::*;
+
+    #[quantity]
+    #[ref_unit(Flop, "f")]
+    #[unit(Kiloflop, "kf", 1000., "1000·f")]
+    #[unit(Centiflop, "cf", 0.01, "0.01·f")]
+    struct Foo {}
+
+    #[quantity]
+    #[ref_unit(Emil, "e")]
+    #[unit(Milliemil, "me", 0.001, "0.001·e")]
+    #[unit(Microemil, "µe", 0.000001, "0.000001·e")]
+    struct Bar {}
+
+    #[quantity(Foo * Bar)]
+    #[ref_unit(Bazoo, "b", "1·f·e")]
+    #[unit(Millibazoo, "mb", 0.001, "0.001·b")]
+    #[unit(Microbazoo, "µb", 0.000001, "0.000001·b")]
+    #[unit(Kilobazoo, "kb", 1000., "1000·b")]
+    struct Baz {}
+
+    #[test]
+    fn test_qty() {
+        let amnt = Amnt!(17.4);
+        let unit = BazUnit::Microbazoo;
+        let qty = Baz::new(amnt, unit);
+        assert_eq!(qty.amount(), amnt);
+        assert_eq!(qty.unit(), unit);
+        let qty = amnt * unit;
+        assert_eq!(qty.amount(), amnt);
+        assert_eq!(qty.unit(), unit);
+    }
+
+    fn check_qty_mul_qty(x: Foo, y: Bar, r: Baz) {
+        let z = x * y;
+        assert_eq!(z.amount(), r.amount());
+        assert_eq!(z.unit(), r.unit());
+        let z = y * x;
+        assert_eq!(z.amount(), r.amount());
+        assert_eq!(z.unit(), r.unit());
+    }
+
+    #[test]
+    fn test_qty_mul_qty() {
+        check_qty_mul_qty(
+            Amnt!(17.4) * FLOP,
+            Amnt!(3.) * EMIL,
+            Amnt!(17.4) * Amnt!(3.) * BAZOO,
+        );
+        check_qty_mul_qty(
+            Amnt!(14.52) * KILOFLOP,
+            Amnt!(0.47) * MICROEMIL,
+            Amnt!(14.52) * Amnt!(0.47) * MILLIBAZOO,
+        );
+        check_qty_mul_qty(
+            Amnt!(14.52) * CENTIFLOP,
+            Amnt!(0.47) * MICROEMIL,
+            Amnt!(14.52) * Amnt!(0.47) * Amnt!(0.01) * MICROBAZOO,
+        );
+    }
+}

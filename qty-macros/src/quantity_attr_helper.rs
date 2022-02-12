@@ -13,6 +13,12 @@ use proc_macro_error::{abort, abort_call_site};
 use quote::quote;
 use syn;
 
+pub(crate) struct DerivedAs {
+    lhs_ident: syn::Ident,
+    op: syn::BinOp,
+    rhs_ident: syn::Ident,
+}
+
 pub(crate) struct UnitDef {
     unit_ident: syn::Ident,
     name: syn::LitStr,
@@ -23,42 +29,80 @@ pub(crate) struct UnitDef {
 }
 
 pub(crate) struct QtyDef {
-    qty_ident: syn::Ident,
-    ref_unit_ident: Option<syn::Ident>,
-    units: Vec<UnitDef>,
+    pub(crate) qty_ident: syn::Ident,
+    pub(crate) derived_as: Option<DerivedAs>,
+    pub(crate) ref_unit_ident: Option<syn::Ident>,
+    pub(crate) units: Vec<UnitDef>,
 }
 
 impl QtyDef {
     fn new(qty_id: syn::Ident) -> Self {
         Self {
             qty_ident: qty_id,
+            derived_as: None,
             ref_unit_ident: None,
             units: vec![],
         }
     }
 }
 
-pub(crate) type Ast = syn::ItemStruct;
+pub(crate) type Item = syn::ItemStruct;
 
-pub(crate) fn parse(args: TokenStream, item: TokenStream) -> Ast {
-    const ARGS_ERROR: &str = "Attribute `quantity` takes no arguments.";
-    const ARGS_HELP: &str = "Use `#[quantity]`.";
-    const ITEM_HELP: &str = "Use `#[quantity]\n  ...\nstruct <ident> {}`.";
+#[inline]
+fn get_ident(expr: &syn::Expr) -> Option<&syn::Ident> {
+    match expr {
+        syn::Expr::Path(expr) => expr.path.get_ident(),
+        _ => None,
+    }
+}
 
-    if !args.is_empty() {
+pub(crate) fn parse_args(args: TokenStream) -> Option<DerivedAs> {
+    const ARGS_ERROR: &str =
+        "Unknown argument(s) given to attribute `quantity`.";
+    const OPERATOR_ERROR: &str = "Binary expression with '*' or '/' expected.";
+    const OPERAND_ERROR: &str = "Identifier expected.";
+    const ARGS_HELP: &str = "Use `#[quantity]`\n\
+         or  `#[quantity(<lhs_ident> * <rhs_ident>]`\n\
+         or  `#[quantity(<lhs_ident> / <rhs_ident>]`.";
+
+    if args.is_empty() {
+        return None;
+    } else {
         if let Ok(expr) = syn::parse2::<syn::Expr>(args) {
-            abort!(expr, ARGS_ERROR; help = ARGS_HELP)
+            match expr {
+                syn::Expr::Binary(args) => match args.op {
+                    syn::BinOp::Mul(_) | syn::BinOp::Div(_) => {
+                        let lhs = get_ident(args.left.as_ref());
+                        let rhs = get_ident(args.right.as_ref());
+                        if lhs.is_none() || rhs.is_none() {
+                            abort!(args, OPERAND_ERROR; help = ARGS_HELP)
+                        }
+                        return Some(DerivedAs {
+                            lhs_ident: lhs.unwrap().clone(),
+                            op: args.op,
+                            rhs_ident: rhs.unwrap().clone(),
+                        });
+                    }
+                    _ => abort!(args, OPERATOR_ERROR; help = ARGS_HELP),
+                },
+                _ => abort!(expr, ARGS_ERROR; help = ARGS_HELP),
+            }
         } else {
             abort_call_site!(ARGS_ERROR; help = ARGS_HELP)
         }
     }
-    match syn::parse2::<Ast>(item.clone()) {
+}
+
+pub(crate) fn parse_item(item: TokenStream) -> Item {
+    const ITEM_HELP: &str = "Use `#[quantity]\n  ...\nstruct <ident> {}`.";
+
+    match syn::parse2::<Item>(item.clone()) {
         Ok(item) => item,
         Err(error) => abort!(item, error; help = ITEM_HELP),
     }
 }
 
-fn check_struct(ast: &Ast) {
+fn check_struct(ast: &Item) {
     const GENERICS_ERROR: &str =
         "Given struct must not have generic parameters.";
     const FIELDS_ERROR: &str = "Given struct must not have fields.";
@@ -259,12 +303,12 @@ pub(crate) fn opt_lit_to_f64(lit: &Option<syn::Lit>) -> f64 {
     }
 }
 
-pub(crate) fn analyze(ast: &mut Ast) -> QtyDef {
-    check_struct(ast);
-    let attrs = &mut ast.attrs;
+pub(crate) fn analyze(item_ast: &mut Item) -> QtyDef {
+    check_struct(item_ast);
+    let attrs = &mut item_ast.attrs;
     let (unit_attrs, opt_ref_unit_attr) = get_unit_attrs(attrs);
     attrs.retain(|attr| !(is_unit_attr(attr) || is_ref_unit_attr(attr)));
-    let mut qty_def = QtyDef::new(ast.ident.clone());
+    let mut qty_def = QtyDef::new(item_ast.ident.clone());
     if let Some(ref_unit_attr) = opt_ref_unit_attr {
         let ref_unit_def = ref_unit_def_from_attr(&ref_unit_attr);
         qty_def.ref_unit_ident = Some(ref_unit_def.unit_ident.clone());
@@ -712,6 +756,112 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
     )
 }
 
+fn codegen_impl_mul_qty_by_qty(
+    res_qty_ident: &syn::Ident,
+    lhs_qty_ident: &syn::Ident,
+    rhs_qty_ident: &syn::Ident,
+) -> TokenStream {
+    quote!(
+        impl Mul<#rhs_qty_ident> for #lhs_qty_ident
+        where
+            #lhs_qty_ident: HasRefUnit,
+            #rhs_qty_ident: HasRefUnit,
+        {
+            type Output = #res_qty_ident;
+            fn mul(self, rhs: #rhs_qty_ident) -> Self::Output {
+                let scale =
+                    self.unit().scale().unwrap() * rhs.unit().scale().unwrap();
+                match Self::Output::unit_from_scale(scale) {
+                    Some(unit) =>
+                        Self::Output::new(self.amount() * rhs.amount(), unit),
+                    None =>
+                        <Self::Output as HasRefUnit>::_fit(
+                            self.amount() * rhs.amount() * scale
+                        )
+                }
+            }
+        }
+        impl<'a> Mul<#rhs_qty_ident> for &'a #lhs_qty_ident
+        where
+            #lhs_qty_ident: Mul<#rhs_qty_ident>,
+        {
+            type Output = <#lhs_qty_ident as Mul<#rhs_qty_ident>>::Output;
+            #[inline(always)]
+            fn mul(self, rhs: #rhs_qty_ident) -> Self::Output {
+                Mul::mul(*self, rhs)
+            }
+        }
+        impl Mul<&#rhs_qty_ident> for #lhs_qty_ident
+        where
+            #lhs_qty_ident: Mul<#rhs_qty_ident>,
+        {
+            type Output = <#lhs_qty_ident as Mul<#rhs_qty_ident>>::Output;
+            #[inline(always)]
+            fn mul(self, rhs: &#rhs_qty_ident) -> Self::Output {
+                Mul::mul(self, *rhs)
+            }
+        }
+        impl Mul<&#rhs_qty_ident> for &#lhs_qty_ident
+        where
+            #lhs_qty_ident: Mul<#rhs_qty_ident>,
+        {
+            type Output = <#lhs_qty_ident as Mul<#rhs_qty_ident>>::Output;
+            #[inline(always)]
+            fn mul(self, rhs: &#rhs_qty_ident) -> Self::Output {
+                Mul::mul(*self, *rhs)
+            }
+        }
+    )
+}
+
+fn codegen_impl_mul_base_qties(
+    res_qty_ident: &syn::Ident,
+    lhs_qty_ident: &syn::Ident,
+    rhs_qty_ident: &syn::Ident,
+) -> TokenStream {
+    let code_lr = codegen_impl_mul_qty_by_qty(
+        res_qty_ident,
+        lhs_qty_ident,
+        rhs_qty_ident,
+    );
+    let code_rl = if lhs_qty_ident == rhs_qty_ident {
+        TokenStream::new()
+    } else {
+        codegen_impl_mul_qty_by_qty(res_qty_ident, rhs_qty_ident, lhs_qty_ident)
+    };
+    quote!(
+        #code_lr
+        #code_rl
+    )
+}
+
+fn codegen_impl_mul_div_base_qties(
+    qty_ident: &syn::Ident,
+    derived_as: &Option<DerivedAs>,
+) -> TokenStream {
+    match derived_as {
+        None => TokenStream::new(),
+        Some(derived_as) => {
+            match derived_as.op {
+                syn::BinOp::Mul(_) => codegen_impl_mul_base_qties(
+                    qty_ident,
+                    &derived_as.lhs_ident,
+                    &derived_as.rhs_ident,
+                ),
+                // syn::BinOp::Div(_) => codegen_impl_div_derived(
+                //     qty_ident,
+                //     derived_as.lhs_ident,
+                //     derived_as.rhs_ident,
+                // ),
+                _ => {
+                    // should not happen!
+                    abort_call_site!("Internal error: wrong op detected!")
+                }
+            }
+        }
+    }
+}
+
 pub(crate) fn codegen(
     qty_def: &QtyDef,
     attrs: &Vec<syn::Attribute>,
@@ -720,10 +870,6 @@ pub(crate) fn codegen(
     let unit_enum_ident =
         syn::Ident::new(&*format!("{}Unit", qty_ident), Span::call_site());
     let code_attrs = codegen_attrs(attrs);
-    let code_unit_consts =
-        codegen_unit_constants(&unit_enum_ident, &qty_def.units);
-    let code_impl_mul =
-        codegen_impl_mul_amnt_unit(&qty_ident, &unit_enum_ident);
     let code_qty = if qty_def.units.len() == 1 {
         let unit_ident = qty_def.units[0].unit_ident.clone();
         let unit_name = qty_def.units[0].name.clone();
@@ -751,13 +897,20 @@ pub(crate) fn codegen(
             &qty_def.units,
         )
     };
+    let code_unit_consts =
+        codegen_unit_constants(&unit_enum_ident, &qty_def.units);
+    let code_impl_mul =
+        codegen_impl_mul_amnt_unit(&qty_ident, &unit_enum_ident);
     let code_impl_std_traits = codegen_impl_std_traits(&qty_ident);
+    let code_mul_div_base_qties =
+        codegen_impl_mul_div_base_qties(&qty_ident, &qty_def.derived_as);
     quote!(
         #code_attrs
         #code_qty
         #code_unit_consts
         #code_impl_mul
         #code_impl_std_traits
+        #code_mul_div_base_qties
     )
 }
 
@@ -765,8 +918,7 @@ pub(crate) fn codegen(
 mod internal_fn_tests {
     use super::*;
 
-    fn get_ast() -> Ast {
-        let args = quote!();
+    fn get_ast_basic_qty() -> Item {
         let item = quote!(
             #[ref_unit(Megapop, "Mp", MEGA, "1000000·p\nFoo's reference unit")]
             #[unit(Gigapop, "Gp", GIGA, 1000, "1000000000·p")]
@@ -774,16 +926,16 @@ mod internal_fn_tests {
             /// Quantity Foo
             struct Foo {}
         );
-        parse(args, item)
+        parse_item(item)
     }
 
     #[test]
-    fn test_parse() {
-        let ast = get_ast();
-        assert_eq!(ast.ident.to_string(), "Foo");
-        assert!(ast.fields.is_empty());
-        assert_eq!(ast.attrs.len(), 4);
-        let attr_names: Vec<String> = ast
+    fn test_parse_basic_qty() {
+        let item = get_ast_basic_qty();
+        assert_eq!(item.ident.to_string(), "Foo");
+        assert!(item.fields.is_empty());
+        assert_eq!(item.attrs.len(), 4);
+        let attr_names: Vec<String> = item
             .attrs
             .iter()
             .map(|attr| attr.path.segments.first().unwrap().ident.to_string())
@@ -792,12 +944,12 @@ mod internal_fn_tests {
     }
 
     #[test]
-    fn test_analyze() {
-        let mut ast = get_ast();
-        let qty_def = analyze(&mut ast);
-        assert_eq!(ast.attrs.len(), 1);
+    fn test_analyze_basic_qty() {
+        let mut item = get_ast_basic_qty();
+        let qty_def = analyze(&mut item);
+        assert_eq!(item.attrs.len(), 1);
         assert_eq!(
-            ast.attrs
+            item.attrs
                 .first()
                 .unwrap()
                 .path
@@ -839,9 +991,9 @@ mod internal_fn_tests {
 
     #[test]
     fn test_codegen_remaining_attrs() {
-        let mut ast = get_ast();
-        let _qty_def = analyze(&mut ast);
-        let code_attrs = codegen_attrs(&ast.attrs);
+        let mut item = get_ast_basic_qty();
+        let _qty_def = analyze(&mut item);
+        let code_attrs = codegen_attrs(&item.attrs);
         assert!(!code_attrs.is_empty());
         let doc = code_attrs.to_string();
         assert_eq!(doc, "# [doc = r\" Quantity Foo\"]");
@@ -849,8 +1001,8 @@ mod internal_fn_tests {
 
     #[test]
     fn test_codegen_unit_variants() {
-        let mut ast = get_ast();
-        let qty_def = analyze(&mut ast);
+        let mut item = get_ast_basic_qty();
+        let qty_def = analyze(&mut item);
         let code_unit_variants = codegen_unit_variants(&qty_def.units);
         assert_eq!(
             code_unit_variants.to_string(),
@@ -858,5 +1010,38 @@ mod internal_fn_tests {
              # [doc = \"1000000·p\\nFoo's reference unit\"] Megapop , \
              # [doc = \"1000000000·p\"] Gigapop ,"
         );
+    }
+
+    fn get_ast_derived_qty() -> (Option<DerivedAs>, Item) {
+        let args = quote!(Foo * Foo);
+        let item = quote!(
+            #[ref_unit(
+                Megapop2,
+                "Mp²",
+                MEGA,
+                "1000000·p²\nFooSquards's reference unit"
+            )]
+            #[unit(Gigapop2, "Gp²", GIGA, 1000, "1000000000·p")]
+            #[unit(Pop2, "p²", 0.000001)]
+            /// Quantity FooSquared
+            struct FooSquared {}
+        );
+        (parse_args(args), parse_item(item))
+    }
+
+    #[test]
+    fn test_parse_derived_qty() {
+        let (opt_derived_as, item) = get_ast_derived_qty();
+        assert!(opt_derived_as.is_some());
+        let derived_as = opt_derived_as.unwrap();
+        assert!(match derived_as.op {
+            syn::BinOp::Mul(_) => true,
+            _ => false,
+        });
+        assert_eq!(derived_as.lhs_ident.to_string(), "Foo");
+        assert_eq!(derived_as.rhs_ident.to_string(), "Foo");
+        assert_eq!(item.ident.to_string(), "FooSquared");
+        assert!(item.fields.is_empty());
+        assert_eq!(item.attrs.len(), 4);
     }
 }

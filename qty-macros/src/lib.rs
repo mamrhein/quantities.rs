@@ -11,7 +11,7 @@
 
 mod quantity_attr_helper;
 
-use crate::quantity_attr_helper::{analyze, codegen, parse};
+use crate::quantity_attr_helper::{analyze, codegen, parse_args, parse_item};
 use ::convert_case::{Case, Casing};
 use ::proc_macro::TokenStream;
 use ::proc_macro2::{Span, TokenStream as TokenStream2};
@@ -304,8 +304,9 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 #[proc_macro_error]
 pub fn quantity(args: TokenStream, item: TokenStream) -> TokenStream {
-    let mut ast = parse(args.into(), item.into());
-    let qty_def = analyze(&mut ast);
-    let code = codegen(&qty_def, &ast.attrs);
+    let mut item_ast = parse_item(item.into());
+    let mut qty_def = analyze(&mut item_ast);
+    qty_def.derived_as = parse_args(args.into());
+    let code = codegen(&qty_def, &item_ast.attrs);
     code.into()
 }

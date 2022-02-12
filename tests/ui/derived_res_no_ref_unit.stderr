@@ -1,0 +1,7 @@
+error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
+   |
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)

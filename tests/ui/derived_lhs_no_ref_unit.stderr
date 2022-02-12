@@ -1,0 +1,28 @@
+error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
+   |
+   = help: see issue #48214
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
+   |
+   = note: required because of the requirements on the impl of `std::ops::Mul<Bar>` for `Foo`
+   = help: see issue #48214
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
+   |
+   = note: required because of the requirements on the impl of `std::ops::Mul<Foo>` for `Bar`
+   = help: see issue #48214
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
