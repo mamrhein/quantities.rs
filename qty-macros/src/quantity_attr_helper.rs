@@ -835,6 +835,64 @@ fn codegen_impl_mul_base_qties(
     )
 }
 
+fn codegen_impl_div_base_qties(
+    res_qty_ident: &syn::Ident,
+    lhs_qty_ident: &syn::Ident,
+    rhs_qty_ident: &syn::Ident,
+) -> TokenStream {
+    quote!(
+        impl Div<#rhs_qty_ident> for #lhs_qty_ident
+        where
+            #lhs_qty_ident: HasRefUnit,
+            #rhs_qty_ident: HasRefUnit,
+        {
+            type Output = #res_qty_ident;
+            fn div(self, rhs: #rhs_qty_ident) -> Self::Output {
+                let scale =
+                    self.unit().scale().unwrap() / rhs.unit().scale().unwrap();
+                match Self::Output::unit_from_scale(scale) {
+                    Some(unit) =>
+                        Self::Output::new(self.amount() / rhs.amount(), unit),
+                    None =>
+                        <Self::Output as HasRefUnit>::_fit(
+                            (self.amount() / rhs.amount()) * scale
+                        )
+                }
+            }
+        }
+        impl<'a> Div<#rhs_qty_ident> for &'a #lhs_qty_ident
+        where
+            #lhs_qty_ident: Div<#rhs_qty_ident>,
+        {
+            type Output = <#lhs_qty_ident as Div<#rhs_qty_ident>>::Output;
+            #[inline(always)]
+            fn div(self, rhs: #rhs_qty_ident) -> Self::Output {
+                Div::div(*self, rhs)
+            }
+        }
+        impl Div<&#rhs_qty_ident> for #lhs_qty_ident
+        where
+            #lhs_qty_ident: Div<#rhs_qty_ident>,
+        {
+            type Output = <#lhs_qty_ident as Div<#rhs_qty_ident>>::Output;
+            #[inline(always)]
+            fn div(self, rhs: &#rhs_qty_ident) -> Self::Output {
+                Div::div(self, *rhs)
+            }
+        }
+        impl Div<&#rhs_qty_ident> for &#lhs_qty_ident
+        where
+            #lhs_qty_ident: Div<#rhs_qty_ident>,
+        {
+            type Output = <#lhs_qty_ident as Div<#rhs_qty_ident>>::Output;
+            #[inline(always)]
+            fn div(self, rhs: &#rhs_qty_ident) -> Self::Output {
+                Div::div(*self, *rhs)
+            }
+        }
+    )
+}
+
 fn codegen_impl_mul_div_base_qties(
     qty_ident: &syn::Ident,
     derived_as: &Option<DerivedAs>,
@@ -848,11 +906,11 @@ fn codegen_impl_mul_div_base_qties(
                     &derived_as.lhs_ident,
                     &derived_as.rhs_ident,
                 ),
-                // syn::BinOp::Div(_) => codegen_impl_div_derived(
-                //     qty_ident,
-                //     derived_as.lhs_ident,
-                //     derived_as.rhs_ident,
-                // ),
+                syn::BinOp::Div(_) => codegen_impl_div_base_qties(
+                    qty_ident,
+                    &derived_as.lhs_ident,
+                    &derived_as.rhs_ident,
+                ),
                 _ => {
                     // should not happen!
                     abort_call_site!("Internal error: wrong op detected!")

@@ -472,6 +472,7 @@ mod derived_quantity_tests {
     #[ref_unit(Emil, "e")]
     #[unit(Milliemil, "me", 0.001, "0.001·e")]
     #[unit(Microemil, "µe", 0.000001, "0.000001·e")]
+    #[unit(Kiloemil, "ke", 1000., "1000·e")]
     struct Bar {}
 
     #[quantity(Foo * Bar)]
@@ -480,6 +481,13 @@ mod derived_quantity_tests {
     #[unit(Microbazoo, "µb", 0.000001, "0.000001·b")]
     #[unit(Kilobazoo, "kb", 1000., "1000·b")]
     struct Baz {}
+
+    #[quantity(Foo / Bar)]
+    #[ref_unit(Qoox, "Q", "1·f/e")]
+    #[unit(Milliqoox, "mQ", 0.001, "0.001·Q")]
+    #[unit(Microqoox, "µQ", 0.000001, "0.000001·Q")]
+    #[unit(Kiloqoox, "kQ", 1000., "1000·Q")]
+    struct Qoo {}
 
     #[test]
     fn test_qty() {
@@ -518,6 +526,36 @@ mod derived_quantity_tests {
             Amnt!(14.52) * CENTIFLOP,
             Amnt!(0.47) * MICROEMIL,
             Amnt!(14.52) * Amnt!(0.47) * Amnt!(0.01) * MICROBAZOO,
+        );
+    }
+
+    fn check_qty_div_qty(x: Foo, y: Bar, r: Qoo) {
+        let z = x / y;
+        assert_eq!(z.amount(), r.amount());
+        assert_eq!(z.unit(), r.unit());
+    }
+
+    #[test]
+    fn test_qty_div_qty() {
+        check_qty_div_qty(
+            Amnt!(17.4) * FLOP,
+            Amnt!(3.) * EMIL,
+            Amnt!(17.4) / Amnt!(3.) * QOOX,
+        );
+        check_qty_div_qty(
+            Amnt!(14.52) * KILOFLOP,
+            Amnt!(3.3) * MILLIEMIL,
+            (Amnt!(14.52) / Amnt!(3.3)) * Amnt!(1000.) * KILOQOOX,
+        );
+        check_qty_div_qty(
+            Amnt!(14.52) * CENTIFLOP,
+            Amnt!(3.3) * KILOEMIL,
+            // need to follow exactly the way of internal calculation here,
+            // because - for floats - internal rounding would otherwise give
+            // a different result
+            (Amnt!(14.52) / Amnt!(3.3)) * (Amnt!(0.01) / Amnt!(1000.))
+                / Amnt!(0.000001)
+                * MICROQOOX,
         );
     }
 }
