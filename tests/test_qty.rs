@@ -462,6 +462,19 @@ mod quantity_single_unit_tests {
 mod derived_quantity_tests {
     use quantities::prelude::*;
 
+    #[cfg(feature = "fpdec")]
+    macro_rules! amnt_eq {
+        ($x:expr, $y:expr) => {
+            $x == $y
+        };
+    }
+    #[cfg(not(feature = "fpdec"))]
+    macro_rules! amnt_eq {
+        ($x:expr, $y:expr) => {
+            ($x - $y).abs() < 0.000000001
+        };
+    }
+
     #[quantity]
     #[ref_unit(Flop, "f")]
     #[unit(Kiloflop, "kf", 1000., "1000·f")]
@@ -503,11 +516,18 @@ mod derived_quantity_tests {
 
     fn check_qty_mul_qty(x: Foo, y: Bar, r: Baz) {
         let z = x * y;
-        assert_eq!(z.amount(), r.amount());
+        assert!(amnt_eq!(z.amount(), r.amount()));
         assert_eq!(z.unit(), r.unit());
         let z = y * x;
-        assert_eq!(z.amount(), r.amount());
+        assert!(amnt_eq!(z.amount(), r.amount()));
         assert_eq!(z.unit(), r.unit());
+        // revers divs
+        let z = (r / x).convert(y.unit()).unwrap();
+        assert!(amnt_eq!(z.amount(), y.amount()));
+        assert_eq!(z.unit(), y.unit());
+        let z = (r / y).convert(x.unit()).unwrap();
+        assert!(amnt_eq!(z.amount(), x.amount()));
+        assert_eq!(z.unit(), x.unit());
     }
 
     #[test]
@@ -531,8 +551,12 @@ mod derived_quantity_tests {
 
     fn check_qty_div_qty(x: Foo, y: Bar, r: Qoo) {
         let z = x / y;
-        assert_eq!(z.amount(), r.amount());
+        assert!(amnt_eq!(z.amount(), r.amount()));
         assert_eq!(z.unit(), r.unit());
+        // revers mul
+        let z = (r * y).convert(x.unit()).unwrap();
+        assert!(amnt_eq!(z.amount(), x.amount()));
+        assert_eq!(z.unit(), x.unit());
     }
 
     #[test]

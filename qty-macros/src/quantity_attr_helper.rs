@@ -756,7 +756,7 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
     )
 }
 
-fn codegen_impl_mul_qty_by_qty(
+fn codegen_impl_qty_mul_qty(
     res_qty_ident: &syn::Ident,
     lhs_qty_ident: &syn::Ident,
     rhs_qty_ident: &syn::Ident,
@@ -814,20 +814,17 @@ fn codegen_impl_mul_qty_by_qty(
     )
 }
 
-fn codegen_impl_mul_base_qties(
+fn codegen_impl_mul_qties(
     res_qty_ident: &syn::Ident,
     lhs_qty_ident: &syn::Ident,
     rhs_qty_ident: &syn::Ident,
 ) -> TokenStream {
-    let code_lr = codegen_impl_mul_qty_by_qty(
-        res_qty_ident,
-        lhs_qty_ident,
-        rhs_qty_ident,
-    );
+    let code_lr =
+        codegen_impl_qty_mul_qty(res_qty_ident, lhs_qty_ident, rhs_qty_ident);
     let code_rl = if lhs_qty_ident == rhs_qty_ident {
         TokenStream::new()
     } else {
-        codegen_impl_mul_qty_by_qty(res_qty_ident, rhs_qty_ident, lhs_qty_ident)
+        codegen_impl_qty_mul_qty(res_qty_ident, rhs_qty_ident, lhs_qty_ident)
     };
     quote!(
         #code_lr
@@ -835,7 +832,7 @@ fn codegen_impl_mul_base_qties(
     )
 }
 
-fn codegen_impl_div_base_qties(
+fn codegen_impl_div_qties(
     res_qty_ident: &syn::Ident,
     lhs_qty_ident: &syn::Ident,
     rhs_qty_ident: &syn::Ident,
@@ -893,24 +890,59 @@ fn codegen_impl_div_base_qties(
     )
 }
 
-fn codegen_impl_mul_div_base_qties(
+fn codegen_impl_mul_div_qties(
     qty_ident: &syn::Ident,
     derived_as: &Option<DerivedAs>,
 ) -> TokenStream {
     match derived_as {
         None => TokenStream::new(),
         Some(derived_as) => {
+            let lhs_qty_ident = &derived_as.lhs_ident;
+            let rhs_qty_ident = &derived_as.rhs_ident;
             match derived_as.op {
-                syn::BinOp::Mul(_) => codegen_impl_mul_base_qties(
-                    qty_ident,
-                    &derived_as.lhs_ident,
-                    &derived_as.rhs_ident,
-                ),
-                syn::BinOp::Div(_) => codegen_impl_div_base_qties(
-                    qty_ident,
-                    &derived_as.lhs_ident,
-                    &derived_as.rhs_ident,
-                ),
+                syn::BinOp::Mul(_) => {
+                    let code_impl_mul = codegen_impl_mul_qties(
+                        qty_ident,
+                        lhs_qty_ident,
+                        rhs_qty_ident,
+                    );
+                    let code_impl_res_div_rhs = codegen_impl_div_qties(
+                        lhs_qty_ident,
+                        qty_ident,
+                        rhs_qty_ident,
+                    );
+                    let code_impl_res_div_lhs =
+                        if lhs_qty_ident == rhs_qty_ident {
+                            TokenStream::new()
+                        } else {
+                            codegen_impl_div_qties(
+                                rhs_qty_ident,
+                                qty_ident,
+                                lhs_qty_ident,
+                            )
+                        };
+                    quote!(
+                        #code_impl_mul
+                        #code_impl_res_div_rhs
+                        #code_impl_res_div_lhs
+                    )
+                }
+                syn::BinOp::Div(_) => {
+                    let code_impl_div = codegen_impl_div_qties(
+                        qty_ident,
+                        lhs_qty_ident,
+                        rhs_qty_ident,
+                    );
+                    let code_impl_mul_res = codegen_impl_mul_qties(
+                        lhs_qty_ident,
+                        qty_ident,
+                        rhs_qty_ident,
+                    );
+                    quote!(
+                        #code_impl_div
+                        #code_impl_mul_res
+                    )
+                }
                 _ => {
                     // should not happen!
                     abort_call_site!("Internal error: wrong op detected!")
@@ -961,7 +993,7 @@ pub(crate) fn codegen(
         codegen_impl_mul_amnt_unit(&qty_ident, &unit_enum_ident);
     let code_impl_std_traits = codegen_impl_std_traits(&qty_ident);
     let code_mul_div_base_qties =
-        codegen_impl_mul_div_base_qties(&qty_ident, &qty_def.derived_as);
+        codegen_impl_mul_div_qties(&qty_ident, &qty_def.derived_as);
     quote!(
         #code_attrs
         #code_qty
