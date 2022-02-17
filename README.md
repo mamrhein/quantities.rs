@@ -92,8 +92,59 @@ assert_eq!(TONNE.si_prefix(), Some(SIPrefix::MEGA));
 assert_eq!(CARAT.scale(), Some(Amnt!(0.0002)));
 ```
 
-In a future version, the macro will also allow to create a **derived** type of
-quantity based on more basic types of quantities.
+In order to create a **derived** type of quantity based on more basic types of
+quantities, an expression can be given as argument to the proc-macro attribute
+`quantity`, specifying the quantity as product or as quotient of two base
+quantities.
+
+Instances of a derived quantity can then be build by multiplying or dividing
+instances of the base quantities. Instances of a quantity which is defined
+as a product can be divided by an instance of one of the base quantities,
+giving an instance of the other base quantity as result. Instances of a
+quantity which is defined as a quotient can be multiplied by an instance of
+the divisor quantity, resulting in an instance of the divident quantity.
+
+Example:
+
+```rust
+# use quantities::prelude::*;
+#[quantity]
+#[ref_unit(Meter, "m", NONE, "Reference unit of quantity `Length`")]
+#[unit(Centimeter, "cm", CENTI, 0.01, "0.01·m")]
+#[unit(Kilometer, "km", KILO, 1000, "1000·m")]
+pub struct Length {}
+
+#[quantity]
+#[ref_unit(Second, "s", NONE, "Reference unit of quantity `Duration`")]
+#[unit(Minute, "min", 60, "60·s")]
+#[unit(Hour, "h", 3600, "60·min")]
+pub struct Duration {}
+
+#[quantity(Length * Length)]
+#[ref_unit(Square_Meter, "m²", NONE, "Reference unit of quantity `Area`")]
+#[unit(Square_Centimeter, "cm²", 0.00001, "cm²")]
+#[unit(Square_Kilometer, "km²", MEGA, 1000000., "km²")]
+pub struct Area {}
+
+let a = Amnt!(3.) * METER;
+let b = Amnt!(0.5) * KILOMETER;
+let ab = a * b;
+assert_eq!(ab, Amnt!(1500.) * SQUARE_METER);
+let c = ab / (Amnt!(2.) * KILOMETER);
+assert_eq!(c, Amnt!(0.75) * METER);
+
+#[quantity(Length / Duration)]
+#[ref_unit(Meter_per_Second, "m/s", NONE, "Reference unit of quantity `Velocity`")]
+#[unit(Kilometer_per_Hour, "km/h", 0.2777777777777778, "km/h")]
+pub struct Velocity {}
+
+let l = Amnt!(150.) * KILOMETER;
+let t = Amnt!(1.2) * HOUR;
+let v = l / t;
+assert_eq!(v, Amnt!(125.) * KILOMETER_PER_HOUR);
+let d = v * Duration::new(Amnt!(3.), HOUR);
+assert_eq!(d, Amnt!(375.) * KILOMETER);
+```
 
 # Type of the numerical part
 

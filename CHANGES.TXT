@@ -7,6 +7,8 @@ Version   Changes
           Removed type Unitless by implementing trait Quantity directly for
           AmountT.
           Added trait HasRefUnit.
+          Enhanced attribute macro 'quantity' to derive a quantity as product
+          or quotient of quantities.
 
 0.3.0     Proc-macro 'quantity' – attribute 'unit':
            * Allow int literal as 'scale' param.
