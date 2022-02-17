@@ -521,7 +521,7 @@ mod derived_quantity_tests {
         let z = y * x;
         assert!(amnt_eq!(z.amount(), r.amount()));
         assert_eq!(z.unit(), r.unit());
-        // revers divs
+        // reverse divs
         let z = (r / x).convert(y.unit()).unwrap();
         assert!(amnt_eq!(z.amount(), y.amount()));
         assert_eq!(z.unit(), y.unit());
@@ -553,7 +553,7 @@ mod derived_quantity_tests {
         let z = x / y;
         assert!(amnt_eq!(z.amount(), r.amount()));
         assert_eq!(z.unit(), r.unit());
-        // revers mul
+        // reverse mul
         let z = (r * y).convert(x.unit()).unwrap();
         assert!(amnt_eq!(z.amount(), x.amount()));
         assert_eq!(z.unit(), x.unit());
@@ -574,12 +574,7 @@ mod derived_quantity_tests {
         check_qty_div_qty(
             Amnt!(14.52) * CENTIFLOP,
             Amnt!(3.3) * KILOEMIL,
-            // need to follow exactly the way of internal calculation here,
-            // because - for floats - internal rounding would otherwise give
-            // a different result
-            (Amnt!(14.52) / Amnt!(3.3)) * (Amnt!(0.01) / Amnt!(1000.))
-                / Amnt!(0.000001)
-                * MICROQOOX,
+            Amnt!(14.52) / Amnt!(3.3) * Amnt!(10.) * MICROQOOX,
         );
     }
 }
