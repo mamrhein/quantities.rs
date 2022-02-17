@@ -497,6 +497,7 @@ mod derived_quantity_tests {
 
     #[quantity(Foo / Bar)]
     #[ref_unit(Qoox, "Q", "1·f/e")]
+    #[unit(Flop_per_Emil, "f/e", 1., "1·f/e")]
     #[unit(Milliqoox, "mQ", 0.001, "0.001·Q")]
     #[unit(Microqoox, "µQ", 0.000001, "0.000001·Q")]
     #[unit(Kiloqoox, "kQ", 1000., "1000·Q")]

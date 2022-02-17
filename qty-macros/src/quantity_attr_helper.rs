@@ -167,7 +167,7 @@ fn get_unit_attrs(
 
 impl syn::parse::Parse for UnitDef {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let unit_ident: syn::Ident = input.parse()?;
+        let mut unit_ident: syn::Ident = input.parse()?;
         let _: syn::Token![,] = input.parse()?;
         let symbol: syn::LitStr = input.parse()?;
         let opt_comma: Option<syn::Token![,]> = input.parse()?;
@@ -199,7 +199,11 @@ impl syn::parse::Parse for UnitDef {
             return Err(syn::Error::new(input.span(), ARGS_LIST_ERROR));
         };
         let name = syn::LitStr::new(
-            unit_ident.to_string().as_str(),
+            unit_ident.to_string().replace('_', " ").as_str(),
+            Span::call_site(),
+        );
+        unit_ident = syn::Ident::new(
+            unit_ident.to_string().to_case(Case::UpperCamel).as_str(),
             Span::call_site(),
         );
         Ok(UnitDef {
