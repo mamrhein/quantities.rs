@@ -1,5 +1,8 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.4.2     Changed order of generated code in macro 'quantity' (fixes broken
+          doc).
+
 0.4.0     Added fn Unit::from_symbol and fn Unit::from_scale.
           Added fn Quantity::unit_from_symbol and
           fn Quantity::unit_from_scale.
