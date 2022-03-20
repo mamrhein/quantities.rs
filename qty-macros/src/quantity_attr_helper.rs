@@ -581,6 +581,7 @@ fn codegen_qty_without_ref_unit(
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
+        #code_impl_quantity
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident { #code_unit_variants }
@@ -596,7 +597,6 @@ fn codegen_qty_without_ref_unit(
             fn si_prefix(&self) -> Option<SIPrefix> { None }
             fn scale(&self) -> Option<AmountT> { None }
         }
-        #code_impl_quantity
     )
 }
 
@@ -669,6 +669,7 @@ fn codegen_qty_with_ref_unit(
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
+        #code_impl_quantity
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
         pub enum #unit_enum_ident {
@@ -687,7 +688,6 @@ fn codegen_qty_with_ref_unit(
             #code_fn_si_prefix
             #code_fn_scale
         }
-        #code_impl_quantity
         impl HasRefUnit for #qty_ident {
             const REF_UNIT: #unit_enum_ident =
                 #unit_enum_ident::#ref_unit_ident;
