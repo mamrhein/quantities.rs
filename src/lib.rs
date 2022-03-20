@@ -21,6 +21,8 @@ pub use si_prefixes::SIPrefix;
 pub mod prelude;
 mod si_prefixes;
 
+#[cfg(feature = "area")]
+pub mod area;
 #[cfg(feature = "datavolume")]
 pub mod datavolume;
 #[cfg(feature = "duration")]

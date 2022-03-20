@@ -274,3 +274,4 @@ a predefined quantity.
 * **duration** - module [duration] - quantity [Duration](duration::Duration)
 * **datavolume** - module [datavolume] - quantity
   [DataVolume](datavolume::DataVolume)
+* **area** - module [area] - quantity [Area](area::Area)

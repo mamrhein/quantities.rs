@@ -26,8 +26,9 @@ mass = []
 length = []
 duration = []
 datavolume = []
+area = ["length"]
 # used for rustdoc only
-doc = ["mass", "length", "duration", "datavolume"]
+doc = ["mass", "length", "duration", "datavolume", "area"]
 
 [workspace]
 members = [".", "qty-macros"]
