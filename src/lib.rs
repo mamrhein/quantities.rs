@@ -14,12 +14,27 @@
 use core::cmp::Ordering;
 use core::fmt;
 use core::ops::{Add, Div, Mul, Sub};
-#[cfg(feature = "fpdec")]
-pub use fpdec::{Dec, Decimal};
 pub use si_prefixes::SIPrefix;
+
+#[cfg(feature = "fpdec")]
+pub use amnt_dec::{AmountT, Dec, Decimal};
+#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
+pub use amnt_f32::AmountT;
+#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
+pub use amnt_f64::AmountT;
 
 pub mod prelude;
 mod si_prefixes;
+
+#[cfg(feature = "fpdec")]
+#[doc(hidden)]
+pub mod amnt_dec;
+#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
+#[doc(hidden)]
+pub mod amnt_f32;
+#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
+#[doc(hidden)]
+pub mod amnt_f64;
 
 #[cfg(feature = "area")]
 pub mod area;
@@ -31,71 +46,6 @@ pub mod duration;
 pub mod length;
 #[cfg(feature = "mass")]
 pub mod mass;
-
-#[cfg(feature = "fpdec")]
-/// Type used for the numerical part of a Quantity.
-///
-/// When feature `fpdec` is off (= default), AmountT is defined as `f64` on a
-/// 64-bit system or as `f32` on a 32-bit system.
-///
-/// When feature fpdec is activated, AmountT is defined as `Decimal`
-/// (imported from crate `fpdec`).
-///
-/// The macro `Amnt!` can be used to convert float literals correctly to
-/// `AmountT` depending on the configuration.
-pub type AmountT = Decimal;
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
-/// Type used for the numerical part of a Quantity.
-///
-/// When feature `fpdec` is off (= default), AmountT is defined as `f64` on a
-/// 64-bit system or as `f32` on a 32-bit system.
-///
-/// When feature fpdec is activated, AmountT is defined as `Decimal`
-/// (imported from crate `fpdec`).
-///
-/// The macro `Amnt!` can be used to convert float literals correctly to
-/// `AmountT` depending on the configuration.
-pub type AmountT = f64;
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
-/// Type used for the numerical part of a Quantity.
-///
-/// When feature `fpdec` is off (= default), AmountT is defined as `f64` on a
-/// 64-bit system or as `f32` on a 32-bit system.
-///
-/// When feature fpdec is activated, AmountT is defined as `Decimal`
-/// (imported from crate `fpdec`).
-///
-/// The macro `Amnt!` can be used to convert float literals correctly to
-/// `AmountT` depending on the configuration.
-pub type AmountT = f32;
-
-#[cfg(feature = "fpdec")]
-#[allow(non_snake_case)]
-#[macro_export]
-/// Converts a numeric literal to an `AmountT`.
-macro_rules! Amnt {
-    ($lit:literal) => {
-        Dec!($lit)
-    };
-}
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
-#[allow(non_snake_case)]
-#[macro_export]
-/// Converts a numeric literal to an `AmountT`.
-macro_rules! Amnt {
-    ($lit:literal) => {
-        $lit as f64
-    };
-}
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
-#[allow(non_snake_case)]
-#[macro_export]
-/// Converts a numeric literal to an `AmountT`.
-macro_rules! Amnt {
-    ($lit:literal) => {
-        $lit as f32
-    };
-}
 
 /// The abstract type of units used to define quantities.
 pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
