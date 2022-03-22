@@ -12,7 +12,10 @@
 pub use crate::{Amnt, AmountT, HasRefUnit, Quantity, SIPrefix, Unit, ONE};
 #[cfg(feature = "fpdec")]
 pub use crate::{Dec, Decimal};
+#[doc(hidden)]
 pub use core::cmp::Ordering;
+#[doc(hidden)]
 pub use core::fmt;
+#[doc(hidden)]
 pub use core::ops::{Add, Div, Mul, Sub};
 pub use qty_macros::quantity;
