@@ -51,6 +51,7 @@ pub struct Area {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::assert_almost_eq;
     use crate::length::{CENTIMETER, KILOMETER, METER};
 
     #[test]
@@ -70,12 +71,12 @@ mod tests {
         let amnt: AmountT = Amnt!(29.3);
         let l = amnt * CENTIMETER;
         let a = l * l;
-        assert_eq!(a.amount(), amnt * amnt);
+        assert_almost_eq!(a.amount(), amnt * amnt);
         assert_eq!(a.unit(), SQUARE_CENTIMETER);
         let w = Amnt!(2.) * KILOMETER;
         let h = amnt * CENTIMETER;
         let a = w * h;
-        assert_eq!(a.amount(), Amnt!(0.2) * amnt);
+        assert_almost_eq!(a.amount(), Amnt!(0.2) * amnt);
         assert_eq!(a.unit(), ARE);
     }
 
@@ -85,7 +86,7 @@ mod tests {
         let a = amnt * HECTARE;
         let w = Amnt!(0.7) * KILOMETER;
         let h = a / w;
-        assert_eq!(h.amount(), Amnt!(420.));
+        assert_almost_eq!(h.amount(), Amnt!(420.));
         assert_eq!(h.unit(), METER);
     }
 }
