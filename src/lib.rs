@@ -46,6 +46,8 @@ pub mod duration;
 pub mod length;
 #[cfg(feature = "mass")]
 pub mod mass;
+#[cfg(feature = "speed")]
+pub mod speed;
 #[cfg(feature = "volume")]
 pub mod volume;
 

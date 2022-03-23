@@ -18,7 +18,7 @@ Examples:
 
 * Volume = Length ³
 
-* Velocity = Length ¹ · Duration ⁻¹
+* Speed = Length ¹ · Duration ⁻¹
 
 * Acceleration = Length ¹ · Duration ⁻²
 
@@ -35,7 +35,7 @@ that follows the formula defining the type of quantity.
 
 Examples:
 
-* Velocity -> Meter per Second = Meter ¹ · Second ⁻¹
+* Speed -> Meter per Second = Meter ¹ · Second ⁻¹
 
 * Acceleration -> Meter per Second squared = Meter ¹ · Second ⁻²
 
@@ -134,9 +134,9 @@ let c = ab / (Amnt!(2.) * KILOMETER);
 assert_eq!(c, Amnt!(0.75) * METER);
 
 #[quantity(Length / Duration)]
-#[ref_unit(Meter_per_Second, "m/s", NONE, "Reference unit of quantity `Velocity`")]
+#[ref_unit(Meter_per_Second, "m/s", NONE, "Reference unit of quantity `Speed`")]
 #[unit(Kilometer_per_Hour, "km/h", 0.2777777777777778, "km/h")]
-pub struct Velocity {}
+pub struct Speed {}
 
 let l = Amnt!(150.) * KILOMETER;
 let t = Amnt!(1.2) * HOUR;
@@ -276,3 +276,4 @@ a predefined quantity.
   [DataVolume](datavolume::DataVolume)
 * **area** - module [area] - quantity [Area](area::Area)
 * **volume** - module [volume] - quantity [Volume](volume::Volume)
+* **speed** - module [speed] - quantity [Speed](speed::Speed)
