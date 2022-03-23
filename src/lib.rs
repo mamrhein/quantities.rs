@@ -46,6 +46,8 @@ pub mod duration;
 pub mod length;
 #[cfg(feature = "mass")]
 pub mod mass;
+#[cfg(feature = "volume")]
+pub mod volume;
 
 /// The abstract type of units used to define quantities.
 pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {

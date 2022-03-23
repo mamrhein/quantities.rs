@@ -275,3 +275,4 @@ a predefined quantity.
 * **datavolume** - module [datavolume] - quantity
   [DataVolume](datavolume::DataVolume)
 * **area** - module [area] - quantity [Area](area::Area)
+* **volume** - module [volume] - quantity [Volume](volume::Volume)

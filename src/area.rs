@@ -25,7 +25,7 @@ use crate::prelude::*;
 #[unit(Hectare, "ha", 10000, "100·a")]
 #[unit(Square_Kilometer, "km²", MEGA, 1000000, "km²")]
 #[unit(Square_Mile, "mi²", 2589988.110336, "mi²")]
-/// The quantity expressing the extent of a two-dimensional region
+/// The quantity expressing the extent of a two-dimensional region.
 ///
 /// Definition: Length²
 ///
