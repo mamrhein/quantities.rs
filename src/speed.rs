@@ -16,7 +16,6 @@ use crate::prelude::*;
 #[quantity(Length / Duration)]
 #[ref_unit(Meter_per_Second, "m/s", NONE, "Reference unit of quantity `Speed`")]
 #[unit(Kilometer_per_Hour, "km/h", 0.2777777777777778, "km/h")]
-#[unit(Feet_per_Second, "ft/s", 0.3048, "ft/s")]
 #[unit(Miles_per_Hour, "mph", 0.44704, "mi/h")]
 /// Magnitude of the change of an objects position per unit of time
 ///
@@ -29,7 +28,6 @@ use crate::prelude::*;
 /// | Symbol | Name                    | Definition        | Equivalent in 'm/s' |
 /// |--------|-------------------------|-------------------|---------------------|
 /// | km/h   | Kilometer per Hour      | km/h              | 5/18                |
-/// | ft/s   | Feet per Second         | ft/s              | 0.3048              |
 /// | mph    | Miles per Hour          | mi/h              | 0.44704             |
 pub struct Speed {}
 
