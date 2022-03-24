@@ -277,3 +277,5 @@ a predefined quantity.
 * **area** - module [area] - quantity [Area](area::Area)
 * **volume** - module [volume] - quantity [Volume](volume::Volume)
 * **speed** - module [speed] - quantity [Speed](speed::Speed)
+* **acceleration** - module [acceleration] - quantity 
+  [Acceleration](acceleration::Acceleration)

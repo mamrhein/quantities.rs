@@ -36,6 +36,8 @@ pub mod amnt_f32;
 #[doc(hidden)]
 pub mod amnt_f64;
 
+#[cfg(feature = "acceleration")]
+pub mod acceleration;
 #[cfg(feature = "area")]
 pub mod area;
 #[cfg(feature = "datavolume")]
