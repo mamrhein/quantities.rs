@@ -44,6 +44,8 @@ pub mod area;
 pub mod datavolume;
 #[cfg(feature = "duration")]
 pub mod duration;
+#[cfg(feature = "force")]
+pub mod force;
 #[cfg(feature = "length")]
 pub mod length;
 #[cfg(feature = "mass")]
