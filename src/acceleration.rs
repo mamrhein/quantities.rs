@@ -33,3 +33,22 @@ use crate::speed::Speed;
 /// |--------|--------------------------|---------------|----------------------|
 /// | yd/s²  | Yards per Second squared | yd/s²         | 0.9144               |
 pub struct Acceleration {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::assert_almost_eq;
+    use crate::duration::MINUTE;
+    use crate::speed::METER_PER_SECOND;
+
+    #[test]
+    fn test_speed_div_duration() {
+        let av: AmountT = Amnt!(2.94);
+        let v = av * METER_PER_SECOND;
+        let at = Amnt!(0.7);
+        let t = at * MINUTE;
+        let a = v / t;
+        assert_almost_eq!(a.amount(), av / (at * Amnt!(60.)));
+        assert_eq!(a.unit(), METER_PER_SECOND_SQUARED);
+    }
+}
