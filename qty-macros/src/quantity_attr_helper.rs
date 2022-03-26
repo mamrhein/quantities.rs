@@ -317,7 +317,7 @@ pub(crate) fn analyze(item_ast: &mut Item) -> QtyDef {
         let ref_unit_def = ref_unit_def_from_attr(&ref_unit_attr);
         qty_def.ref_unit_ident = Some(ref_unit_def.unit_ident.clone());
         qty_def.units = unit_defs_with_scale_from_attrs(&unit_attrs);
-        qty_def.units.push(ref_unit_def);
+        qty_def.units.insert(0, ref_unit_def);
         qty_def.units.sort_by(|a, b| {
             let x = opt_lit_to_f64(&a.scale);
             let y = opt_lit_to_f64(&b.scale);
