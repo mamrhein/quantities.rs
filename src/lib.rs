@@ -44,6 +44,8 @@ pub mod area;
 pub mod datavolume;
 #[cfg(feature = "duration")]
 pub mod duration;
+#[cfg(feature = "energy")]
+pub mod energy;
 #[cfg(feature = "force")]
 pub mod force;
 #[cfg(feature = "length")]
@@ -248,7 +250,11 @@ pub trait HasRefUnit: Quantity {
         // `it` returns atleast the reference unit, so its safe to unwrap here
         let first = it.next().unwrap();
         let last = it
-            .filter(|u| u.scale().is_some() && u.scale().unwrap() <= amount)
+            .filter(|u| {
+                u.scale().is_some()
+                    && u.scale().unwrap() > first.scale().unwrap()
+                    && u.scale().unwrap() <= amount
+            })
             .last();
         match last {
             Some(unit) => Self::new(amount / unit.scale().unwrap(), *unit),
