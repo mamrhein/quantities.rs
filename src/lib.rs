@@ -52,6 +52,8 @@ pub mod force;
 pub mod length;
 #[cfg(feature = "mass")]
 pub mod mass;
+#[cfg(feature = "power")]
+pub mod power;
 #[cfg(feature = "speed")]
 pub mod speed;
 #[cfg(feature = "volume")]

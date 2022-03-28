@@ -281,3 +281,4 @@ a predefined quantity.
   [Acceleration](acceleration::Acceleration)
 * **force** - module [force] - quantity [Force](force::Force)
 * **energy** - module [energy] - quantity [Energy](energy::Energy)
+* **power** - module [power] - quantity [Power](power::Power)

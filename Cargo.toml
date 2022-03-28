@@ -32,9 +32,10 @@ speed = ["length", "duration"]
 acceleration = ["speed", "duration"]
 force = ["mass", "acceleration"]
 energy = ["force", "length"]
+power = ["energy", "duration"]
 # used for rustdoc only
 doc = ["mass", "length", "duration", "datavolume", "area", "volume", "speed",
-    "acceleration", "force", "energy"]
+    "acceleration", "force", "energy", "power"]
 
 [workspace]
 members = [".", "qty-macros"]
