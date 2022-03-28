@@ -40,6 +40,8 @@ pub mod amnt_f64;
 pub mod acceleration;
 #[cfg(feature = "area")]
 pub mod area;
+#[cfg(feature = "datathroughput")]
+pub mod datathroughput;
 #[cfg(feature = "datavolume")]
 pub mod datavolume;
 #[cfg(feature = "duration")]

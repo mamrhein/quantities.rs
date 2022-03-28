@@ -273,8 +273,6 @@ a predefined quantity.
 * **mass** - module [mass] - quantity [Mass](mass::Mass)
 * **length** - module [length] - quantity [Length](length::Length)
 * **duration** - module [duration] - quantity [Duration](duration::Duration)
-* **datavolume** - module [datavolume] - quantity
-  [DataVolume](datavolume::DataVolume)
 * **area** - module [area] - quantity [Area](area::Area)
 * **volume** - module [volume] - quantity [Volume](volume::Volume)
 * **speed** - module [speed] - quantity [Speed](speed::Speed)
@@ -285,3 +283,7 @@ a predefined quantity.
 * **power** - module [power] - quantity [Power](power::Power)
 * **frequency** - module [frequency] - quantity 
   [Frequency](frequency::Frequency)
+* **datavolume** - module [datavolume] - quantity
+  [DataVolume](datavolume::DataVolume)
+* **datathroughput** - module [datathroughput] - quantity
+  [DataThroughput](datathroughput::DataThroughput)
