@@ -1,5 +1,16 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.5.0     Added pre-defined quantities (with corresponding features):
+          - Area
+          - Volume
+          - Speed
+          - Acceleration
+          - Force
+          - Energy
+          - Power
+          - Frequency
+          - Datathroughput
+
 0.4.2     Changed order of generated code in macro 'quantity' (fixes broken
           doc).
 
