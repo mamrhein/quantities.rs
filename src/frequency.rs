@@ -36,15 +36,15 @@ pub struct Frequency {}
 mod tests {
     use super::*;
     use crate::assert_almost_eq;
-    use crate::duration::MINUTE;
+    use crate::duration::MILLISECOND;
 
     #[test]
     fn test_amount_div_duration() {
-        let a: AmountT = Amnt!(9030000.);
+        let a: AmountT = Amnt!(9030.);
         let at: AmountT = Amnt!(2.5);
-        let t = at * MINUTE;
+        let t = at * MILLISECOND;
         let f = a / t;
-        assert_almost_eq!(f.amount(), a / at / Amnt!(60.) / Amnt!(1000.));
+        assert_almost_eq!(f.amount(), a / at);
         assert_eq!(f.unit(), KILOHERTZ);
     }
 }

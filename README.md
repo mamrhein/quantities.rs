@@ -112,6 +112,7 @@ Example:
 #[ref_unit(Meter, "m", NONE, "Reference unit of quantity `Length`")]
 #[unit(Centimeter, "cm", CENTI, 0.01, "0.01·m")]
 #[unit(Kilometer, "km", KILO, 1000, "1000·m")]
+#[unit(Mile, "mi", 1609.344, "8·fur")]
 pub struct Length {}
 
 #[quantity]
@@ -135,15 +136,15 @@ assert_eq!(c, Amnt!(0.75) * METER);
 
 #[quantity(Length / Duration)]
 #[ref_unit(Meter_per_Second, "m/s", NONE, "Reference unit of quantity `Speed`")]
-#[unit(Kilometer_per_Hour, "km/h", 0.2777777777777778, "km/h")]
+#[unit(Miles_per_Hour, "mph", 0.44704, "mi/h")]
 pub struct Speed {}
 
-let l = Amnt!(150.) * KILOMETER;
+let l = Amnt!(150.) * MILE;
 let t = Amnt!(1.2) * HOUR;
 let v = l / t;
-assert_eq!(v, Amnt!(125.) * KILOMETER_PER_HOUR);
+assert_eq!(v, Amnt!(125.) * MILES_PER_HOUR);
 let d = v * Duration::new(Amnt!(3.), HOUR);
-assert_eq!(d, Amnt!(375.) * KILOMETER);
+assert_eq!(d, Amnt!(375.) * MILE);
 ```
 
 # Type of the numerical part

@@ -19,7 +19,7 @@ use crate::prelude::*;
 #[unit(Kilowatt, "kW", KILO, 1000, "1000·W")]
 #[unit(Megawatt, "MW", MEGA, 1000000, "1000000·W")]
 #[unit(Gigawatt, "GW", GIGA, 1000000000, "1000000000·W")]
-#[unit(Terawatt, "TW", TERA, 1000000000000_i64, "1000000000000·W")]
+#[unit(Terawatt, "TW", TERA, 1000000000000., "1000000000000·W")]
 /// Energy transferred or converted per unit of time
 ///
 /// Definition: Energy/Duration

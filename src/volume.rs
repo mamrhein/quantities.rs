@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn test_volume_div_length() {
-        let amnt: AmountT = Amnt!(-0.4);
+        let amnt: AmountT = Amnt!(-0.42);
         let v = amnt * LITER;
         let a = Amnt!(0.7) * SQUARE_METER;
         let h = v / a;
