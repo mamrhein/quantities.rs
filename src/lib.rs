@@ -48,6 +48,8 @@ pub mod duration;
 pub mod energy;
 #[cfg(feature = "force")]
 pub mod force;
+#[cfg(feature = "frequency")]
+pub mod frequency;
 #[cfg(feature = "length")]
 pub mod length;
 #[cfg(feature = "mass")]
@@ -280,7 +282,7 @@ pub const ONE: One = One::One;
 
 impl Unit for One {
     type QuantityType = AmountT;
-    const REF_UNIT: Option<Self> = None;
+    const REF_UNIT: Option<Self> = Some(ONE);
     fn iter<'a>() -> core::slice::Iter<'a, Self> {
         Self::VARIANTS.iter()
     }
@@ -294,7 +296,7 @@ impl Unit for One {
         None
     }
     fn scale(&self) -> Option<AmountT> {
-        None
+        Some(Amnt!(1.))
     }
 }
 
@@ -330,5 +332,14 @@ impl Quantity for AmountT {
     #[inline(always)]
     fn unit(&self) -> Self::UnitType {
         ONE
+    }
+}
+
+impl HasRefUnit for AmountT {
+    const REF_UNIT: One = ONE;
+
+    #[inline(always)]
+    fn _fit(amount: AmountT) -> Self {
+        amount
     }
 }
