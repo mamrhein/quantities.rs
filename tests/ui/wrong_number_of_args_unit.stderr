@@ -1,11 +1,10 @@
 error: 3, 4 or 5 comma-separated args expected.
-
-         = help: Use `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>, "<doc>")]`
-                or  `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
-       or  `#[unit(<ident>, "<symbol>", <scale>, "<doc>")]`
-       or  `#[unit(<ident>, "<symbol>", <scale>)]`.
-
   --> tests/ui/wrong_number_of_args_unit.rs:15:1
    |
 15 | #[unit(B, "b", 0.4, NONE, "bla")]
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: Use `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>, "<doc>")]`
+                    or  `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
+           or  `#[unit(<ident>, "<symbol>", <scale>, "<doc>")]`
+           or  `#[unit(<ident>, "<symbol>", <scale>)]`.

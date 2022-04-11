@@ -1,9 +1,4 @@
 error: expected `struct`
-
-         = help: Use `#[quantity]
-         ...
-       struct <ident> {}`.
-
   --> tests/ui/item_not_struct.rs:12:1
    |
 12 | / /// Foo, a completely useless quantity
@@ -14,3 +9,7 @@ error: expected `struct`
 18 | |     baz,
 19 | | }
    | |_^
+   |
+   = help: Use `#[quantity]
+             ...
+           struct <ident> {}`.

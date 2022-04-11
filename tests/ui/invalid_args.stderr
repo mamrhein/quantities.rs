@@ -1,12 +1,10 @@
 error: Unknown argument(s) given to attribute `quantity`.
-
-         = help: Use `#[quantity]`
-       or  `#[quantity(<lhs_ident> * <rhs_ident>]`
-       or  `#[quantity(<lhs_ident> / <rhs_ident>]`.
-
   --> tests/ui/invalid_args.rs:13:1
    |
 13 | #[quantity(fn baz)]
    | ^^^^^^^^^^^^^^^^^^^
    |
+   = help: Use `#[quantity]`
+           or  `#[quantity(<lhs_ident> * <rhs_ident>]`
+           or  `#[quantity(<lhs_ident> / <rhs_ident>]`.
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)

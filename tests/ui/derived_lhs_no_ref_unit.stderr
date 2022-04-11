@@ -4,7 +4,12 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
    |
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Bar
+             Baz
+             f64
    = help: see issue #48214
+   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
@@ -13,8 +18,17 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
    |
-   = note: required because of the requirements on the impl of `std::ops::Mul<Bar>` for `Foo`
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Bar
+             Baz
+             f64
+note: required because of the requirements on the impl of `std::ops::Mul<Bar>` for `Foo`
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: see issue #48214
+   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
@@ -23,8 +37,17 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
    |
-   = note: required because of the requirements on the impl of `std::ops::Mul<Foo>` for `Bar`
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Bar
+             Baz
+             f64
+note: required because of the requirements on the impl of `std::ops::Mul<Foo>` for `Bar`
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: see issue #48214
+   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
@@ -33,6 +56,18 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
    |
-   = note: required because of the requirements on the impl of `std::ops::Div<Foo>` for `Baz`
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Bar
+             Baz
+             f64
+note: required because of the requirements on the impl of `std::ops::Div<Foo>` for `Baz`
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
+...
+24 | struct Baz {}
+   |        ^^^
    = help: see issue #48214
+   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)

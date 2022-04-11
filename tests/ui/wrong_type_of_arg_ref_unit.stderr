@@ -1,11 +1,10 @@
 error: No scale expected for ref_unit.
-
-         = help: Use `#[ref_unit(<ident>, "<symbol>", <si_prefix>, "<doc>")]`
-       or  `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
-       or  `#[ref_unit(<ident>, "<symbol>", "<doc>")]`
-       or  `#[ref_unit(<ident>, "<symbol>")]`.
-
   --> tests/ui/wrong_type_of_arg_ref_unit.rs:14:1
    |
 14 | #[ref_unit(A, "a", 1.0)]
    | ^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: Use `#[ref_unit(<ident>, "<symbol>", <si_prefix>, "<doc>")]`
+           or  `#[ref_unit(<ident>, "<symbol>", <si_prefix>)]`
+           or  `#[ref_unit(<ident>, "<symbol>", "<doc>")]`
+           or  `#[ref_unit(<ident>, "<symbol>")]`.
