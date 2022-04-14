@@ -1,5 +1,12 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.6.0     Updated dependency 'fpdec' to version '0.5', thus restricting the
+          precision of decimal amounts to 18 fractional digits.
+          Moved functions depending on a reference unit from trait 'Unit' to
+          the new trait 'LinearScaledUnit'.
+          Moved impls of Add, Sub and Mul from trait 'Quantity' to trait
+          'HasRefUnit'.
+
 0.5.0     Added pre-defined quantities (with corresponding features):
           - Area
           - Volume
