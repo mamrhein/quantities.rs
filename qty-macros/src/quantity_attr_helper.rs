@@ -417,14 +417,12 @@ fn codegen_qty_single_unit(
         }
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
-            const REF_UNIT: Option<Self> = None;
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
                 Self::VARIANTS.iter()
             }
             fn name(&self) -> &'static str { #unit_name }
             fn symbol(&self) -> &'static str { #unit_symbol }
             fn si_prefix(&self) -> Option<SIPrefix> { None }
-            fn scale(&self) -> Option<AmountT> { None }
         }
         #[derive(Copy, Clone, Debug)]
         pub struct #qty_ident {
@@ -588,14 +586,25 @@ fn codegen_qty_without_ref_unit(
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
-            const REF_UNIT: Option<Self> = None;
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
                 Self::VARIANTS.iter()
             }
             #code_fn_name
             #code_fn_symbol
             fn si_prefix(&self) -> Option<SIPrefix> { None }
-            fn scale(&self) -> Option<AmountT> { None }
+        }
+        impl Eq for #qty_ident {}
+        impl PartialEq<Self> for #qty_ident {
+            #[inline(always)]
+            fn eq(&self, other: &Self) -> bool {
+                <Self as Quantity>::eq(self, other)
+            }
+        }
+        impl PartialOrd for #qty_ident {
+            #[inline(always)]
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                <Self as Quantity>::partial_cmp(self, other)
+            }
         }
     )
 }
@@ -637,7 +646,7 @@ fn codegen_fn_scale(
             let unit_scale: &syn::Lit = unit.scale.as_ref().unwrap();
             code = quote!(
                 #code
-                #unit_enum_ident::#unit_ident => Some(Amnt!(#unit_scale)),
+                #unit_enum_ident::#unit_ident => Amnt!(#unit_scale),
             )
         } else {
             // should not happen!
@@ -645,7 +654,7 @@ fn codegen_fn_scale(
         }
     }
     quote!(
-        fn scale(&self) -> Option<AmountT> {
+        fn scale(&self) -> AmountT {
             match self {
                 #code
             }
@@ -678,19 +687,54 @@ fn codegen_qty_with_ref_unit(
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
-            const REF_UNIT: Option<Self> =
-                Some(#unit_enum_ident::#ref_unit_ident);
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
                 Self::VARIANTS.iter()
             }
             #code_fn_name
             #code_fn_symbol
             #code_fn_si_prefix
+        }
+        impl LinearScaledUnit for #unit_enum_ident {
+            const REF_UNIT: Self = #unit_enum_ident::#ref_unit_ident;
             #code_fn_scale
         }
         impl HasRefUnit for #qty_ident {
             const REF_UNIT: #unit_enum_ident =
                 #unit_enum_ident::#ref_unit_ident;
+        }
+        impl Eq for #qty_ident {}
+        impl PartialEq<Self> for #qty_ident {
+            #[inline(always)]
+            fn eq(&self, other: &Self) -> bool {
+                <Self as HasRefUnit>::eq(self, other)
+            }
+        }
+        impl PartialOrd for #qty_ident {
+            #[inline(always)]
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                <Self as HasRefUnit>::partial_cmp(self, other)
+            }
+        }
+        impl Add<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn add(self, rhs: Self) -> Self::Output {
+                <Self as HasRefUnit>::add(self, rhs)
+            }
+        }
+        impl Sub<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn sub(self, rhs: Self) -> Self::Output {
+                <Self as HasRefUnit>::sub(self, rhs)
+            }
+        }
+        impl Div<Self> for #qty_ident {
+            type Output = AmountT;
+            #[inline(always)]
+            fn div(self, rhs: Self) -> Self::Output {
+                <Self as HasRefUnit>::div(self, rhs)
+            }
         }
     )
 }
@@ -700,40 +744,6 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
         impl fmt::Display for #qty_ident {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                 <Self as Quantity>::fmt(self, f)
-            }
-        }
-        impl Eq for #qty_ident {}
-        impl PartialEq<Self> for #qty_ident {
-            #[inline(always)]
-            fn eq(&self, other: &Self) -> bool {
-                <Self as Quantity>::eq(self, other)
-            }
-        }
-        impl PartialOrd for #qty_ident {
-            #[inline(always)]
-            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-                <Self as Quantity>::partial_cmp(self, other)
-            }
-        }
-        impl Add<Self> for #qty_ident {
-            type Output = Self;
-            #[inline(always)]
-            fn add(self, rhs: Self) -> Self::Output {
-                <Self as Quantity>::add(self, rhs)
-            }
-        }
-        impl Sub<Self> for #qty_ident {
-            type Output = Self;
-            #[inline(always)]
-            fn sub(self, rhs: Self) -> Self::Output {
-                <Self as Quantity>::sub(self, rhs)
-            }
-        }
-        impl Div<Self> for #qty_ident {
-            type Output = AmountT;
-            #[inline(always)]
-            fn div(self, rhs: Self) -> Self::Output {
-                <Self as Quantity>::div(self, rhs)
             }
         }
         impl Mul<#qty_ident> for AmountT {
@@ -774,7 +784,7 @@ fn codegen_impl_qty_mul_qty(
             type Output = #res_qty_ident;
             fn mul(self, rhs: #rhs_qty_ident) -> Self::Output {
                 let scale =
-                    self.unit().scale().unwrap() * rhs.unit().scale().unwrap();
+                    self.unit().scale() * rhs.unit().scale();
                 match Self::Output::unit_from_scale(scale) {
                     Some(unit) =>
                         Self::Output::new(self.amount() * rhs.amount(), unit),
@@ -850,7 +860,7 @@ fn codegen_impl_div_qties(
             type Output = #res_qty_ident;
             fn div(self, rhs: #rhs_qty_ident) -> Self::Output {
                 let scale =
-                    self.unit().scale().unwrap() / rhs.unit().scale().unwrap();
+                    self.unit().scale() / rhs.unit().scale();
                 match Self::Output::unit_from_scale(scale) {
                     Some(unit) =>
                         Self::Output::new(self.amount() / rhs.amount(), unit),

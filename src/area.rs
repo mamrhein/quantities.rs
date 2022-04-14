@@ -56,7 +56,7 @@ mod tests {
 
     #[test]
     fn test_area() {
-        assert_eq!(<Area as HasRefUnit>::REF_UNIT, AreaUnit::REF_UNIT.unwrap());
+        assert_eq!(<Area as HasRefUnit>::REF_UNIT, AreaUnit::REF_UNIT);
         assert!(SQUARE_METER.is_ref_unit());
         let amnt: AmountT = Amnt!(29.35);
         let l = amnt * SQUARE_CENTIMETER;

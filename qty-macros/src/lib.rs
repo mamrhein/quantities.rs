@@ -214,16 +214,41 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///
 /// ```compile_fail
 /// #[doc = " The quantity of matter in a physical body."]
-/// pub type Mass = Qty<MassUnit>;
+/// #[derive(Copy, Clone, Debug)]
+/// pub struct Mass {
+///     amount: AmountT,
+///     unit: MassUnit,
+/// }
+/// impl Quantity for Mass {
+///     type UnitType = MassUnit;
+///     #[inline(always)]
+///     fn new(amount: AmountT, unit: Self::UnitType) -> Self {
+///         Self { amount, unit }
+///     }
+///     #[inline(always)]
+///     fn amount(&self) -> AmountT {
+///         self.amount
+///     }
+///     #[inline(always)]
+///     fn unit(&self) -> Self::UnitType {
+///         self.unit
+///     }
+/// }
 /// #[doc = "Unit of quantity `Mass`."]
 /// #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 /// pub enum MassUnit {
-///     #[doc = "0.001·g"] Milligram,
-///     #[doc = "0.001·kg"] Gram,
-///     #[doc = "0.0625·lb"] Ounce,
-///     #[doc = "0.45359237·kg"] Pound,
-///     #[doc = "Reference unit of quantity `Mass`"] Kilogram,
-///     #[doc = "1000·kg"] Tonne
+///     #[doc = "0.001·g"]
+///     Milligram,
+///     #[doc = "0.001·kg"]
+///     Gram,
+///     #[doc = "0.0625·lb"]
+///     Ounce,
+///     #[doc = "0.45359237·kg"]
+///     Pound,
+///     #[doc = "Reference unit of quantity `Mass`"]
+///     Kilogram,
+///     #[doc = "1000·kg"]
+///     Tonne,
 /// }
 /// impl MassUnit {
 ///     const VARIANTS: [MassUnit; 6usize] = [
@@ -236,8 +261,10 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///     ];
 /// }
 /// impl Unit for MassUnit {
-///     const REF_UNIT: Option<Self> = Some(MassUnit::Kilogram);
-///     fn iter<'a>() -> core::slice::Iter<'a, Self> { Self::VARIANTS.iter() }
+///     type QuantityType = Mass;
+///     fn iter<'a>() -> core::slice::Iter<'a, Self> {
+///         Self::VARIANTS.iter()
+///     }
 ///     fn name(&self) -> &'static str {
 ///         match self {
 ///             MassUnit::Milligram => "Milligram",
@@ -267,15 +294,55 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///             _ => None,
 ///         }
 ///     }
-///     fn scale(&self) -> Option<AmountT> {
+/// }
+/// impl LinearScaledUnit for MassUnit {
+///     const REF_UNIT: Self = MassUnit::Kilogram;
+///     fn scale(&self) -> AmountT {
 ///         match self {
-///             MassUnit::Milligram => Some(Amnt!(0.000001)),
-///             MassUnit::Gram => Some(Amnt!(0.001)),
-///             MassUnit::Ounce => Some(Amnt!(0.028349523125)),
-///             MassUnit::Pound => Some(Amnt!(0.45359237)),
-///             MassUnit::Kilogram => Some(Amnt!(1.0)),
-///             MassUnit::Tonne => Some(Amnt!(1000)),
+///             MassUnit::Milligram => 0.000001 as f64,
+///             MassUnit::Gram => 0.001 as f64,
+///             MassUnit::Ounce => 0.028349523125 as f64,
+///             MassUnit::Pound => 0.45359237 as f64,
+///             MassUnit::Kilogram => 1.0 as f64,
+///             MassUnit::Tonne => 1000 as f64,
 ///         }
+///     }
+/// }
+/// impl HasRefUnit for Mass {
+///     const REF_UNIT: MassUnit = MassUnit::Kilogram;
+/// }
+/// impl Eq for Mass {}
+/// impl PartialEq<Self> for Mass {
+///     #[inline(always)]
+///     fn eq(&self, other: &Self) -> bool {
+///         <Self as HasRefUnit>::eq(self, other)
+///     }
+/// }
+/// impl PartialOrd for Mass {
+///     #[inline(always)]
+///     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+///         <Self as HasRefUnit>::partial_cmp(self, other)
+///     }
+/// }
+/// impl Add<Self> for Mass {
+///     type Output = Self;
+///     #[inline(always)]
+///     fn add(self, rhs: Self) -> Self::Output {
+///         <Self as HasRefUnit>::add(self, rhs)
+///     }
+/// }
+/// impl Sub<Self> for Mass {
+///     type Output = Self;
+///     #[inline(always)]
+///     fn sub(self, rhs: Self) -> Self::Output {
+///         <Self as HasRefUnit>::sub(self, rhs)
+///     }
+/// }
+/// impl Div<Self> for Mass {
+///     type Output = AmountT;
+///     #[inline(always)]
+///     fn div(self, rhs: Self) -> Self::Output {
+///         <Self as HasRefUnit>::div(self, rhs)
 ///     }
 /// }
 /// #[doc = "0.001·g"]
@@ -293,12 +360,42 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// impl Mul<MassUnit> for AmountT {
 ///     type Output = Mass;
 ///     #[inline(always)]
-///     fn mul(self, rhs: MassUnit) -> Self::Output { Mass::new(self, rhs) }
+///     fn mul(self, rhs: MassUnit) -> Self::Output {
+///         Mass::new(self, rhs)
+///     }
 /// }
 /// impl Mul<AmountT> for MassUnit {
 ///     type Output = Mass;
 ///     #[inline(always)]
-///     fn mul(self, rhs: AmountT) -> Self::Output { Mass::new(rhs, self) }
+///     fn mul(self, rhs: AmountT) -> Self::Output {
+///         Mass::new(rhs, self)
+///     }
+/// }
+/// impl fmt::Display for Mass {
+///     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+///         <Self as Quantity>::fmt(self, f)
+///     }
+/// }
+/// impl Mul<Mass> for AmountT {
+///     type Output = Mass;
+///     #[inline(always)]
+///     fn mul(self, rhs: Mass) -> Self::Output {
+///         Self::Output::new(self * rhs.amount(), rhs.unit())
+///     }
+/// }
+/// impl Mul<AmountT> for Mass {
+///     type Output = Self;
+///     #[inline(always)]
+///     fn mul(self, rhs: AmountT) -> Self::Output {
+///         Self::Output::new(self.amount() * rhs, self.unit())
+///     }
+/// }
+/// impl Div<AmountT> for Mass {
+///     type Output = Self;
+///     #[inline(always)]
+///     fn div(self, rhs: AmountT) -> Self::Output {
+///         Self::Output::new(self.amount() / rhs, self.unit())
+///     }
 /// }
 /// ```
 #[proc_macro_attribute]

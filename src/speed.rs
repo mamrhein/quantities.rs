@@ -40,10 +40,7 @@ mod tests {
 
     #[test]
     fn test_speed() {
-        assert_eq!(
-            <Speed as HasRefUnit>::REF_UNIT,
-            SpeedUnit::REF_UNIT.unwrap()
-        );
+        assert_eq!(<Speed as HasRefUnit>::REF_UNIT, SpeedUnit::REF_UNIT);
         assert!(METER_PER_SECOND.is_ref_unit());
         let amnt: AmountT = Amnt!(235.4);
         let v = amnt * KILOMETER_PER_HOUR;

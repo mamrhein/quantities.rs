@@ -69,10 +69,10 @@ mod tests {
         assert_eq!(d.unit, GIBIBYTE);
         #[cfg(feature = "std")]
         assert_eq!(d.to_string(), "375 GiB");
-        let d = d.convert(TERABYTE).unwrap();
+        let d = d.convert(TERABYTE);
         assert_eq!(d.unit, TERABYTE);
         assert_eq!(d.amount, Amnt!(0.402653184));
-        let d = d.convert(KIBIBYTE).unwrap();
+        let d = d.convert(KIBIBYTE);
         assert_eq!(d.unit, KIBIBYTE);
         assert_eq!(d.amount, Amnt!(393216000));
     }

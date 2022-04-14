@@ -59,10 +59,7 @@ mod tests {
 
     #[test]
     fn test_volume() {
-        assert_eq!(
-            <Volume as HasRefUnit>::REF_UNIT,
-            VolumeUnit::REF_UNIT.unwrap()
-        );
+        assert_eq!(<Volume as HasRefUnit>::REF_UNIT, VolumeUnit::REF_UNIT);
         assert!(CUBIC_METER.is_ref_unit());
         let amnt: AmountT = Amnt!(29.305);
         let v = amnt * CUBIC_DECIMETER;

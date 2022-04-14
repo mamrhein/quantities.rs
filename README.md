@@ -8,8 +8,8 @@ which is used as a reference, and the number is the ratio of the value of the
 quantity to the unit." (Bureau International des Poids et Mesures: The
 International System of Units, 8th edition, 2006)
 
-**Basic** types of quantities are defined "by convention", they do not depend on
-other types of quantities, for example Length, Mass or Duration.
+**Basic** types of quantities are defined "by convention", they do not depend
+on other types of quantities, for example Length, Mass or Duration.
 
 **Derived** types of quantities, on the opposite, are defined as products of
 other types of quantities raised by some exponent.
@@ -54,17 +54,20 @@ units and provide mechanisms to convert between them.
 
 # The Basics: Quantity and Unit
 
-The essential functionality of the package is provided by the two traits 
-`Quantity` and `Unit`.
+The essential functionality of the package is provided by the traits 
+`Quantity`, `HasRefUnit`, `Unit` and `LinearScaledUnit` and a macro generating
+the code for concrete types of quantities.
 
 A **basic** type of quantity can easily be defined using the proc-macro
 attribute `quantity`, optionally followed by an attribute `refunit` and
 followed by at least one attribute `unit`.
 
 The macro generates an enum with the given units (incl. the refunit, if given)
-as variants, an implemention of trait `Unit` for this enum, a type named after
-the given struct and an implementation of trait `Quantity` for this type as
-well as implementations of some std traits.
+as variants (together with an implemention of trait `Unit` and, if there's a
+reference unit, of trait `LinearScaledUnit`), a type named after the given
+struct, an implementation of trait `Quantity` for this type, an implementation
+of trait `HasRefUnit` in case there's a reference unit, as well as
+implementations of some std traits.
 
 In addition, it creates a constant for each enum variant, thus providing a
 constant for each unit. This implies that the identifiers of all units over
@@ -89,7 +92,7 @@ struct Mass {}
 assert_eq!(MILLIGRAM.name(), "Milligram");
 assert_eq!(POUND.symbol(), "lb");
 assert_eq!(TONNE.si_prefix(), Some(SIPrefix::MEGA));
-assert_eq!(CARAT.scale(), Some(Amnt!(0.0002)));
+assert_eq!(CARAT.scale(), Amnt!(0.0002));
 ```
 
 In order to create a **derived** type of quantity based on more basic types of
@@ -201,7 +204,7 @@ Example:
 # #[unit(Gram, "g", NONE, 0.001)]
 # struct Mass {}
 let x = Mass::new(Amnt!(13.5), GRAM);
-let y = x.convert(CARAT).unwrap();
+let y = x.convert(CARAT);
 assert_eq!(y.to_string(), "67.5 ct");
 ```
 
