@@ -25,14 +25,14 @@ use crate::prelude::*;
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                    | Definition        | Equivalent in 's'   |
-/// |--------|-------------------------|-------------------|---------------------|
-/// | ns     | Nanosecond              | 0.000000001·s     | 0.000000001         |
-/// | µs     | Microsecond             | 0.000001·s        | 0.000001            |
-/// | ms     | Millisecond             | 0.001·s           | 0.001               |
-/// | min    | Minute                  | 60·s              | 60                  |
-/// | h      | Hour                    | 60·min            | 3600                |
-/// | d      | Day                     | 24·h              | 86400               |
+/// | Symbol | Name                  | Definition        | Equivalent in 's'   |
+/// |--------|-----------------------|-------------------|---------------------|
+/// | ns     | Nanosecond            | 0.000000001·s     | 0.000000001         |
+/// | µs     | Microsecond           | 0.000001·s        | 0.000001            |
+/// | ms     | Millisecond           | 0.001·s           | 0.001               |
+/// | min    | Minute                | 60·s              | 60                  |
+/// | h      | Hour                  | 60·min            | 3600                |
+/// | d      | Day                   | 24·h              | 86400               |
 pub struct Duration {}
 
 #[cfg(test)]

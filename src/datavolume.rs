@@ -36,25 +36,25 @@ use crate::prelude::*;
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                    | Definition        | Equivalent in 'B'   |
-/// |--------|-------------------------|-------------------|---------------------|
-/// | b      | Bit                     | 0.125·B           | 0.125               |
-/// | kb     | Kilobit                 | 1000·b            | 125                 |
-/// | Kib    | Kibibit                 | 1024·b            | 128                 |
-/// | kB     | Kilobyte                | 1000·B            | 1000                |
-/// | KiB    | Kibibyte                | 1024·B            | 1024                |
-/// | Mb     | Megabit                 | 1000000·b         | 125000              |
-/// | Mib    | Mebibit                 | 1048576·b         | 131072              |
-/// | MB     | Megabyte                | 1000000·B         | 1000000             |
-/// | MiB    | Mebibyte                | 1048576·B         | 1048576             |
-/// | Gb     | Gigabit                 | 1000000000·b      | 125000000           |
-/// | Gib    | Gibibit                 | 1073741824·b      | 134217728           |
-/// | GB     | Gigabyte                | 1000000000·B      | 1000000000          |
-/// | GiB    | Gibibyte                | 1073741824·B      | 1073741824          |
-/// | Tb     | Terabit                 | 1000000000000·b   | 125000000000        |
-/// | Tib    | Tebibit                 | 1099511627776·b   | 137438953472        |
-/// | TB     | Terabyte                | 1000000000000·B   | 1000000000000       |
-/// | TiB    | Tebibyte                | 1099511627776·B   | 1099511627776       |
+/// | Symbol | Name                  | Definition        | Equivalent in 'B'   |
+/// |--------|-----------------------|-------------------|---------------------|
+/// | b      | Bit                   | 0.125·B           | 0.125               |
+/// | kb     | Kilobit               | 1000·b            | 125                 |
+/// | Kib    | Kibibit               | 1024·b            | 128                 |
+/// | kB     | Kilobyte              | 1000·B            | 1000                |
+/// | KiB    | Kibibyte              | 1024·B            | 1024                |
+/// | Mb     | Megabit               | 1000000·b         | 125000              |
+/// | Mib    | Mebibit               | 1048576·b         | 131072              |
+/// | MB     | Megabyte              | 1000000·B         | 1000000             |
+/// | MiB    | Mebibyte              | 1048576·B         | 1048576             |
+/// | Gb     | Gigabit               | 1000000000·b      | 125000000           |
+/// | Gib    | Gibibit               | 1073741824·b      | 134217728           |
+/// | GB     | Gigabyte              | 1000000000·B      | 1000000000          |
+/// | GiB    | Gibibyte              | 1073741824·B      | 1073741824          |
+/// | Tb     | Terabit               | 1000000000000·b   | 125000000000        |
+/// | Tib    | Tebibit               | 1099511627776·b   | 137438953472        |
+/// | TB     | Terabyte              | 1000000000000·B   | 1000000000000       |
+/// | TiB    | Tebibyte              | 1099511627776·B   | 1099511627776       |
 pub struct DataVolume {}
 
 #[cfg(test)]

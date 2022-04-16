@@ -9,9 +9,7 @@
 
 //! Definition of derived quantity `Force`.
 
-use crate::acceleration::Acceleration;
-use crate::mass::Mass;
-use crate::prelude::*;
+use crate::{acceleration::Acceleration, mass::Mass, prelude::*};
 
 #[quantity(Mass * Acceleration)]
 #[ref_unit(Newton, "N", NONE, "Reference unit of quantity `Force`")]
@@ -32,9 +30,9 @@ pub struct Force {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::acceleration::METER_PER_SECOND_SQUARED;
-    use crate::assert_almost_eq;
-    use crate::mass::GRAM;
+    use crate::{
+        acceleration::METER_PER_SECOND_SQUARED, assert_almost_eq, mass::GRAM,
+    };
 
     #[test]
     fn test_mass_mul_acceleration() {

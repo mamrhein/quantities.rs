@@ -9,8 +9,7 @@
 
 //! Definition of derived quantity `Area`.
 
-use crate::length::Length;
-use crate::prelude::*;
+use crate::{length::Length, prelude::*};
 
 #[quantity(Length * Length)]
 #[ref_unit(Square_Meter, "m²", NONE, "Reference unit of quantity `Area`")]
@@ -33,26 +32,28 @@ use crate::prelude::*;
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                    | Definition        | Equivalent in 'm²'  |
-/// |--------|-------------------------|-------------------|---------------------|
-/// | mm²    | Square Millimeter       | mm²               | 0.000001            |
-/// | cm²    | Square Centimeter       | cm²               | 0.0001              |
-/// | in²    | Square Inch             | in²               | 0.00064516          |
-/// | dm²    | Square Decimeter        | dm²               | 0.01                |
-/// | ft²    | Square Foot             | ft²               | 0.09290304          |
-/// | yd²    | Square Yard             | yd²               | 0.83612736          |
-/// | a      | Are                     | 100·m²            | 100                 |
-/// | ac     | Acre                    | 4840·yd²          | 4046.8564224        |
-/// | ha     | Hectare                 | 100·a             | 10000               |
-/// | km²    | Square Kilometer        | km²               | 1000000             |
-/// | mi²    | Square Mile             | mi²               | 2589988.110336      |
+/// | Symbol | Name                    | Definition      | Equivalent in 'm²'  |
+/// |--------|-------------------------|-----------------|---------------------|
+/// | mm²    | Square Millimeter       | mm²             | 0.000001            |
+/// | cm²    | Square Centimeter       | cm²             | 0.0001              |
+/// | in²    | Square Inch             | in²             | 0.00064516          |
+/// | dm²    | Square Decimeter        | dm²             | 0.01                |
+/// | ft²    | Square Foot             | ft²             | 0.09290304          |
+/// | yd²    | Square Yard             | yd²             | 0.83612736          |
+/// | a      | Are                     | 100·m²          | 100                 |
+/// | ac     | Acre                    | 4840·yd²        | 4046.8564224        |
+/// | ha     | Hectare                 | 100·a           | 10000               |
+/// | km²    | Square Kilometer        | km²             | 1000000             |
+/// | mi²    | Square Mile             | mi²             | 2589988.110336      |
 pub struct Area {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::length::{CENTIMETER, KILOMETER, METER};
+    use crate::{
+        assert_almost_eq,
+        length::{CENTIMETER, KILOMETER, METER},
+    };
 
     #[test]
     fn test_area() {

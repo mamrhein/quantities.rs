@@ -61,7 +61,9 @@ pub(crate) fn parse_args(args: TokenStream) -> Option<DerivedAs> {
         "Unknown argument(s) given to attribute `quantity`.";
     const OPERATOR_ERROR: &str = "Binary expression with '*' or '/' expected.";
     const OPERAND_ERROR: &str = "Identifier expected.";
-    const ARGS_HELP: &str = "Use `#[quantity]`\n\
+    #[rustfmt::skip]
+    const ARGS_HELP: &str =
+        "Use `#[quantity]`\n\
          or  `#[quantity(<lhs_ident> * <rhs_ident>]`\n\
          or  `#[quantity(<lhs_ident> / <rhs_ident>]`.";
 
@@ -94,7 +96,11 @@ pub(crate) fn parse_args(args: TokenStream) -> Option<DerivedAs> {
 }
 
 pub(crate) fn parse_item(item: TokenStream) -> Item {
-    const ITEM_HELP: &str = "Use `#[quantity]\n  ...\nstruct <ident> {}`.";
+    #[rustfmt::skip]
+    const ITEM_HELP: &str =
+        "Use `#[quantity]\n\
+              ...\n\
+              struct <ident> {}`.";
 
     match syn::parse2::<Item>(item.clone()) {
         Ok(item) => item,
@@ -131,6 +137,7 @@ fn is_ref_unit_attr(attr: &syn::Attribute) -> bool {
 const ARGS_LIST_ERROR: &str =
     "A comma-separated list of 2 to 5 arguments expected.";
 
+#[rustfmt::skip]
 const UNIT_ATTR_HELP: &str =
     "Use `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>, \"<doc>\")]`\n\
      or  `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>)]`\n\
@@ -221,6 +228,7 @@ fn ref_unit_def_from_attr(ref_unit_attr: &syn::Attribute) -> UnitDef {
     const WRONG_NUMBER_OF_ARGS_ERROR: &str =
         "2, 3 or 4 comma-separated args expected.";
     const WRONG_TYPE_OF_ARG_ERROR: &str = "No scale expected for ref_unit.";
+    #[rustfmt::skip]
     const HELP: &str =
         "Use `#[ref_unit(<ident>, \"<symbol>\", <si_prefix>, \"<doc>\")]`\n\
          or  `#[ref_unit(<ident>, \"<symbol>\", <si_prefix>)]`\n\
@@ -250,6 +258,7 @@ fn unit_defs_with_scale_from_attrs(
     const WRONG_NUMBER_OF_ARGS_ERROR: &str =
         "3, 4 or 5 comma-separated args expected.";
     const NO_SCALE_ERROR: &str = "<scale> arg expected.";
+    #[rustfmt::skip]
     const HELP: &str =
         "Use `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>, \"<doc>\")]`
          or  `#[unit(<ident>, \"<symbol>\", <si_prefix>, <scale>)]`\n\
@@ -278,7 +287,9 @@ fn unit_defs_without_scale_from_attrs(
 ) -> Vec<UnitDef> {
     const WRONG_NUMBER_OF_ARGS_ERROR: &str =
         "2 or 3 comma-separated args expected.";
-    const HELP: &str = "Use `#[unit(<ident>, \"<symbol>\", \"<doc>\")]`\n\
+    #[rustfmt::skip]
+    const HELP: &str =
+        "Use `#[unit(<ident>, \"<symbol>\", \"<doc>\")]`\n\
          or  `#[unit(<ident>, \"<symbol>\")]`.";
 
     let mut unit_defs: Vec<UnitDef> = vec![];
@@ -1108,6 +1119,7 @@ mod internal_fn_tests {
         let mut item = get_ast_basic_qty();
         let qty_def = analyze(&mut item);
         let code_unit_variants = codegen_unit_variants(&qty_def.units);
+        #[rustfmt::skip]
         assert_eq!(
             code_unit_variants.to_string(),
             "Pop , \

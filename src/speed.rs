@@ -9,9 +9,7 @@
 
 //! Definition of derived quantity `Speed`.
 
-use crate::duration::Duration;
-use crate::length::Length;
-use crate::prelude::*;
+use crate::{duration::Duration, length::Length, prelude::*};
 
 #[quantity(Length / Duration)]
 #[ref_unit(Meter_per_Second, "m/s", NONE, "Reference unit of quantity `Speed`")]
@@ -25,18 +23,20 @@ use crate::prelude::*;
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                    | Definition        | Equivalent in 'm/s' |
-/// |--------|-------------------------|-------------------|---------------------|
-/// | km/h   | Kilometer per Hour      | km/h              | 5/18                |
-/// | mph    | Miles per Hour          | mi/h              | 0.44704             |
+/// | Symbol | Name                  | Definition        | Equivalent in 'm/s' |
+/// |--------|-----------------------|-------------------|---------------------|
+/// | km/h   | Kilometer per Hour    | km/h              | 5/18                |
+/// | mph    | Miles per Hour        | mi/h              | 0.44704             |
 pub struct Speed {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::duration::MINUTE;
-    use crate::length::{METER, MILE};
+    use crate::{
+        assert_almost_eq,
+        duration::MINUTE,
+        length::{METER, MILE},
+    };
 
     #[test]
     fn test_speed() {

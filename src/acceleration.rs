@@ -9,9 +9,7 @@
 
 //! Definition of derived quantity `Acceleration`.
 
-use crate::duration::Duration;
-use crate::prelude::*;
-use crate::speed::Speed;
+use crate::{duration::Duration, prelude::*, speed::Speed};
 
 #[quantity(Speed / Duration)]
 #[ref_unit(
@@ -37,9 +35,9 @@ pub struct Acceleration {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::duration::MILLISECOND;
-    use crate::speed::METER_PER_SECOND;
+    use crate::{
+        assert_almost_eq, duration::MILLISECOND, speed::METER_PER_SECOND,
+    };
 
     #[test]
     fn test_speed_div_duration() {

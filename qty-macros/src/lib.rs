@@ -11,13 +11,14 @@
 
 mod quantity_attr_helper;
 
-use crate::quantity_attr_helper::{analyze, codegen, parse_args, parse_item};
 use ::convert_case::{Case, Casing};
 use ::proc_macro::TokenStream;
 use ::proc_macro2::{Span, TokenStream as TokenStream2};
 use ::proc_macro_error::proc_macro_error;
 use ::quote::quote;
 use ::syn::{parse_macro_input, Ident, ItemEnum};
+
+use crate::quantity_attr_helper::{analyze, codegen, parse_args, parse_item};
 
 /// Derives a constant for each variant of a fieldless enum.
 ///
@@ -111,10 +112,13 @@ pub fn derive_variants_as_constants(input: TokenStream) -> TokenStream {
 /// #     Blue,
 /// # }
 /// impl Color {
-///     const VARIANTS: [Color; 3usize] = [Color::Red, Color::Green, Color::Blue, ];
+///     const VARIANTS: [Color; 3usize] =
+///         [Color::Red, Color::Green, Color::Blue];
 ///     #[doc = "Returns an iterator over the variants of `Self`."]
 ///     #[inline(always)]
-///     pub fn iter() -> core::slice::Iter<'static, Self> { Self::VARIANTS.iter() }
+///     pub fn iter() -> core::slice::Iter<'static, Self> {
+///         Self::VARIANTS.iter()
+///     }
 /// }
 /// ```
 #[proc_macro_derive(EnumIter)]

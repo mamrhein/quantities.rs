@@ -9,8 +9,7 @@
 
 //! Definition of derived quantity `Frequency`.
 
-use crate::duration::Duration;
-use crate::prelude::*;
+use crate::{duration::Duration, prelude::*};
 
 #[quantity(AmountT / Duration)]
 #[ref_unit(Hertz, "Hz", NONE, "Reference unit of quantity `Frequency`")]
@@ -25,18 +24,17 @@ use crate::prelude::*;
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                    | Definition        | Equivalent in 'Hz'  |
-/// |--------|-------------------------|-------------------|---------------------|
-/// | kHz    | Kilohertz               | 1000·Hz           | 1000                |
-/// | MHz    | Megahertz               | 1000000·Hz        | 1000000             |
-/// | GHz    | Gigahertz               | 1000000000·Hz     | 1000000000          |
+/// | Symbol | Name                  | Definition        | Equivalent in 'Hz'  |
+/// |--------|-----------------------|-------------------|---------------------|
+/// | kHz    | Kilohertz             | 1000·Hz           | 1000                |
+/// | MHz    | Megahertz             | 1000000·Hz        | 1000000             |
+/// | GHz    | Gigahertz             | 1000000000·Hz     | 1000000000          |
 pub struct Frequency {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::duration::MILLISECOND;
+    use crate::{assert_almost_eq, duration::MILLISECOND};
 
     #[test]
     fn test_amount_div_duration() {

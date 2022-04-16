@@ -9,9 +9,7 @@
 
 //! Definition of derived quantity `Power`.
 
-use crate::duration::Duration;
-use crate::energy::Energy;
-use crate::prelude::*;
+use crate::{duration::Duration, energy::Energy, prelude::*};
 
 #[quantity(Energy / Duration)]
 #[ref_unit(Watt, "W", NONE, "Reference unit of quantity `Power`")]
@@ -28,21 +26,19 @@ use crate::prelude::*;
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                    | Definition        | Equivalent in 'W'   |
-/// |--------|-------------------------|-------------------|---------------------|
-/// | mW     | Milliwatt               | 0.001·W           | 0.001               |
-/// | kW     | Kilowatt                | 1000·W            | 1000                |
-/// | MW     | Megawatt                | 1000000·W         | 1000000             |
-/// | GW     | Gigawatt                | 1000000000·W      | 1000000000          |
-/// | TW     | Terawatt                | 1000000000000·W   | 1000000000000       |
+/// | Symbol | Name                  | Definition        | Equivalent in 'W'   |
+/// |--------|-----------------------|-------------------|---------------------|
+/// | mW     | Milliwatt             | 0.001·W           | 0.001               |
+/// | kW     | Kilowatt              | 1000·W            | 1000                |
+/// | MW     | Megawatt              | 1000000·W         | 1000000             |
+/// | GW     | Gigawatt              | 1000000000·W      | 1000000000          |
+/// | TW     | Terawatt              | 1000000000000·W   | 1000000000000       |
 pub struct Power {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::duration::MINUTE;
-    use crate::energy::KILOWATT_HOUR;
+    use crate::{assert_almost_eq, duration::MINUTE, energy::KILOWATT_HOUR};
 
     #[test]
     fn test_energy_div_duration() {

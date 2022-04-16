@@ -9,9 +9,7 @@
 
 //! Definition of derived quantity `DataThroughput`.
 
-use crate::datavolume::DataVolume;
-use crate::duration::Duration;
-use crate::prelude::*;
+use crate::{datavolume::DataVolume, duration::Duration, prelude::*};
 
 #[quantity(DataVolume / Duration)]
 #[ref_unit(
@@ -69,9 +67,9 @@ pub struct DataThroughput {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::datavolume::MEBIBYTE;
-    use crate::duration::MILLISECOND;
+    use crate::{
+        assert_almost_eq, datavolume::MEBIBYTE, duration::MILLISECOND,
+    };
 
     #[test]
     fn test_datavolume_div_duration() {

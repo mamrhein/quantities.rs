@@ -9,9 +9,7 @@
 
 //! Definition of derived quantity `Energy`.
 
-use crate::force::Force;
-use crate::length::Length;
-use crate::prelude::*;
+use crate::{force::Force, length::Length, prelude::*};
 
 #[quantity(Force * Length)]
 #[ref_unit(Joule, "J", NONE, "Reference unit of quantity `Energy`")]
@@ -37,9 +35,7 @@ pub struct Energy {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::force::NEWTON;
-    use crate::length::KILOMETER;
+    use crate::{assert_almost_eq, force::NEWTON, length::KILOMETER};
 
     #[test]
     fn test_force_mul_length() {
