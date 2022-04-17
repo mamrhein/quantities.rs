@@ -9,7 +9,7 @@
 
 #[cfg(test)]
 mod quantity_with_ref_unit_tests {
-    use quantities::{assert_almost_eq, prelude::*};
+    use quantities::{assert_almost_eq, prelude::*, AMNT_ONE};
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -53,7 +53,7 @@ mod quantity_with_ref_unit_tests {
 
     #[test]
     fn test_unit_from_scale() {
-        assert_eq!(FooUnit::from_scale(Amnt!(1)), Some(A));
+        assert_eq!(FooUnit::from_scale(AMNT_ONE), Some(A));
         assert_eq!(FooUnit::from_scale(Amnt!(0.4)), Some(B));
         assert_eq!(FooUnit::from_scale(Amnt!(0.01)), Some(C));
         assert_eq!(FooUnit::from_scale(Amnt!(10)), None);
@@ -98,7 +98,7 @@ mod quantity_with_ref_unit_tests {
 
     #[test]
     fn test_qty_unit_from_scale() {
-        assert_eq!(Foo::unit_from_scale(Amnt!(1)), Some(A));
+        assert_eq!(Foo::unit_from_scale(AMNT_ONE), Some(A));
         assert_eq!(Foo::unit_from_scale(Amnt!(0.4)), Some(B));
         assert_eq!(Foo::unit_from_scale(Amnt!(0.01)), Some(C));
         assert_eq!(Foo::unit_from_scale(Amnt!(10)), None);

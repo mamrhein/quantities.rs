@@ -21,6 +21,12 @@ pub use fpdec::{Dec, Decimal};
 /// `AmountT` depending on the configuration.
 pub type AmountT = Decimal;
 
+/// AmountT constant equal 0
+pub const AMNT_ZERO: AmountT = Decimal::ZERO;
+
+/// AmountT constant equal 1
+pub const AMNT_ONE: AmountT = Decimal::ONE;
+
 #[allow(non_snake_case)]
 #[macro_export]
 /// Converts a numeric literal to an `AmountT`.

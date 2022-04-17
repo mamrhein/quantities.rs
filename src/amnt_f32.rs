@@ -19,6 +19,12 @@
 /// `AmountT` depending on the configuration.
 pub type AmountT = f32;
 
+/// AmountT constant equal 0
+pub const AMNT_ZERO: AmountT = 0.;
+
+/// AmountT constant equal 1
+pub const AMNT_ONE: AmountT = 1.;
+
 #[allow(non_snake_case)]
 #[macro_export]
 /// Converts a numeric literal to an `AmountT`.

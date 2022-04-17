@@ -17,11 +17,11 @@ use core::ops::{Add, Div, Mul, Sub};
 pub use si_prefixes::SIPrefix;
 
 #[cfg(feature = "fpdec")]
-pub use amnt_dec::{AmountT, Dec, Decimal};
+pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
 #[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
-pub use amnt_f32::AmountT;
+pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
 #[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
-pub use amnt_f64::AmountT;
+pub use amnt_f64::{AmountT, AMNT_ONE, AMNT_ZERO};
 
 pub mod prelude;
 mod si_prefixes;
