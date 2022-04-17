@@ -11,10 +11,13 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(dead_code)]
 
-use core::cmp::Ordering;
-use core::fmt;
-use core::ops::{Add, Div, Mul, Sub};
-pub use si_prefixes::SIPrefix;
+extern crate core;
+
+use core::{
+    cmp::Ordering,
+    fmt,
+    ops::{Add, Div, Mul, Sub},
+};
 
 #[cfg(feature = "fpdec")]
 pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
@@ -22,8 +25,11 @@ pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
 pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
 #[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
 pub use amnt_f64::{AmountT, AMNT_ONE, AMNT_ZERO};
+pub use rate::Rate;
+pub use si_prefixes::SIPrefix;
 
 pub mod prelude;
+pub mod rate;
 mod si_prefixes;
 
 #[cfg(feature = "fpdec")]
@@ -90,6 +96,11 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
 
     /// Returns the SI prefix of `self`, or None is `self` is not a SI unit.
     fn si_prefix(&self) -> Option<SIPrefix>;
+
+    // Returns `1 * self`
+    fn as_qty(&self) -> Self::QuantityType {
+        Self::QuantityType::new(AMNT_ONE, *self)
+    }
 }
 
 /// Type of units being linear scaled in terms of a reference unit.
@@ -294,7 +305,7 @@ impl Unit for One {
 impl LinearScaledUnit for One {
     const REF_UNIT: Self = ONE;
     fn scale(&self) -> AmountT {
-        Amnt!(1.)
+        AMNT_ONE
     }
 }
 

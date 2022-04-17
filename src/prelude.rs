@@ -19,7 +19,8 @@ pub use core::ops::{Add, Div, Mul, Sub};
 pub use qty_macros::quantity;
 
 pub use crate::{
-    Amnt, AmountT, HasRefUnit, LinearScaledUnit, Quantity, SIPrefix, Unit, ONE,
+    Amnt, AmountT, HasRefUnit, LinearScaledUnit, Quantity, Rate, SIPrefix,
+    Unit, ONE,
 };
 #[cfg(feature = "fpdec")]
 pub use crate::{Dec, Decimal};
