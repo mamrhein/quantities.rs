@@ -29,7 +29,7 @@ pub use rate::Rate;
 pub use si_prefixes::SIPrefix;
 
 pub mod prelude;
-pub mod rate;
+mod rate;
 mod si_prefixes;
 
 #[cfg(feature = "fpdec")]
