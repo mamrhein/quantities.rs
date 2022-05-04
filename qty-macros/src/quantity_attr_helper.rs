@@ -820,6 +820,27 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
                 Self::Output::new(self.amount() / rhs, self.unit())
             }
         }
+        impl<TQ: Quantity> Mul<Rate<TQ, #qty_ident>> for #qty_ident {
+            type Output = TQ;
+
+            fn mul(self, rhs: Rate<TQ, #qty_ident>) -> Self::Output {
+                let amnt: AmountT =
+                    (self / rhs.per_unit().as_qty()) / rhs.per_unit_multiple();
+                Self::Output::new(amnt * rhs.term_amount(), rhs.term_unit())
+            }
+        }
+        impl<PQ: Quantity> Div<Rate<#qty_ident, PQ>> for #qty_ident {
+            type Output = PQ;
+
+            fn div(self, rhs: Rate<#qty_ident, PQ>) -> Self::Output {
+                let amnt: AmountT =
+                    (self / rhs.term_unit().as_qty()) / rhs.term_amount();
+                Self::Output::new(
+                    amnt * rhs.per_unit_multiple(),
+                    rhs.per_unit()
+                )
+            }
+        }
     )
 }
 

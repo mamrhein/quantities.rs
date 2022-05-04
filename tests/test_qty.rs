@@ -278,8 +278,7 @@ mod quantity_with_ref_unit_tests {
 
 #[cfg(test)]
 mod quantity_without_ref_unit_tests {
-    use quantities::assert_almost_eq;
-    use quantities::prelude::*;
+    use quantities::{assert_almost_eq, prelude::*};
 
     /// Foo, a completely useless quantity
     #[quantity]
@@ -424,8 +423,7 @@ mod quantity_without_ref_unit_tests {
 
 #[cfg(test)]
 mod quantity_single_unit_tests {
-    use quantities::assert_almost_eq;
-    use quantities::prelude::*;
+    use quantities::{assert_almost_eq, prelude::*};
 
     #[quantity]
     #[unit(Pop, "p")]

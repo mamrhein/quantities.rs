@@ -74,6 +74,16 @@ mod rate_tests {
         let f = r * b;
         assert_eq!(f.unit, r.term_unit());
         assert_almost_eq!(f.amount, Amnt!(24705));
+        assert_eq!(f, b * r);
+    }
+
+    #[test]
+    fn test_qty_div_rate() {
+        let f = Amnt!(7.5) * KILOFLOP;
+        let r = Rate::from_qty_vals(Amnt!(25) * FLOP, Amnt!(100) * MILLIEMIL);
+        let b = f / r;
+        assert_eq!(b.unit, r.per_unit());
+        assert_almost_eq!(b.amount, Amnt!(30000));
     }
 
     #[test]
