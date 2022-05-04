@@ -457,6 +457,27 @@ fn codegen_qty_single_unit(
                 #unit_enum_ident::#unit_ident
             }
         }
+        impl Add<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn add(self, rhs: Self) -> Self::Output {
+                Self::new(self.amount() + rhs.amount(), self.unit())
+            }
+        }
+        impl Sub<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn sub(self, rhs: Self) -> Self::Output {
+                Self::new(self.amount() - rhs.amount(), self.unit())
+            }
+        }
+        impl Div<Self> for #qty_ident {
+            type Output = AmountT;
+            #[inline(always)]
+            fn div(self, rhs: Self) -> Self::Output {
+                self.amount() / rhs.amount()
+            }
+        }
     )
 }
 
@@ -615,6 +636,27 @@ fn codegen_qty_without_ref_unit(
             #[inline(always)]
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                 <Self as Quantity>::partial_cmp(self, other)
+            }
+        }
+        impl Add<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn add(self, rhs: Self) -> Self::Output {
+                <Self as Quantity>::add(self, rhs)
+            }
+        }
+        impl Sub<Self> for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn sub(self, rhs: Self) -> Self::Output {
+                <Self as Quantity>::sub(self, rhs)
+            }
+        }
+        impl Div<Self> for #qty_ident {
+            type Output = AmountT;
+            #[inline(always)]
+            fn div(self, rhs: Self) -> Self::Output {
+                <Self as Quantity>::div(self, rhs)
             }
         }
     )

@@ -178,6 +178,39 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         }
     }
 
+    fn add(self, rhs: Self) -> Self {
+        if self.unit() == rhs.unit() {
+            return Self::new(self.amount() + rhs.amount(), self.unit());
+        }
+        panic!(
+            "Can't add '{}' and '{}'.",
+            self.unit().symbol(),
+            rhs.unit().symbol()
+        );
+    }
+
+    fn sub(self, rhs: Self) -> Self {
+        if self.unit() == rhs.unit() {
+            return Self::new(self.amount() - rhs.amount(), self.unit());
+        }
+        panic!(
+            "Can't subtract '{}' and '{}'.",
+            self.unit().symbol(),
+            rhs.unit().symbol(),
+        );
+    }
+
+    fn div(self, rhs: Self) -> AmountT {
+        if self.unit() == rhs.unit() {
+            return self.amount() / rhs.amount();
+        }
+        panic!(
+            "Can't divide '{}' and '{}'.",
+            self.unit().symbol(),
+            rhs.unit().symbol()
+        );
+    }
+
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.unit().symbol() {
             "" => write!(f, "{}", self.amount()),
