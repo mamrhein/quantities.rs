@@ -1,5 +1,8 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.7.0     Added type Rate, expressing the ratio between two related quantity
+          values.
+
 0.6.0     Updated dependency 'fpdec' to version '0.5', thus restricting the
           precision of decimal amounts to 18 fractional digits.
           Moved functions depending on a reference unit from trait 'Unit' to
