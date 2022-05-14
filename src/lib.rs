@@ -25,9 +25,11 @@ pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
 pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
 #[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
 pub use amnt_f64::{AmountT, AMNT_ONE, AMNT_ZERO};
+pub use converter::{ConversionTable, Converter};
 pub use rate::Rate;
 pub use si_prefixes::SIPrefix;
 
+mod converter;
 pub mod prelude;
 mod rate;
 mod si_prefixes;
