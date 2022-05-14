@@ -39,6 +39,11 @@ macro_rules! Amnt {
 #[macro_export]
 macro_rules! assert_almost_eq {
     ($x:expr, $y:expr) => {
-        assert_eq!($x, $y, "{} ≉ {}", ($x), ($y));
+        let t = if ($x).abs() >= ($y).abs() {
+            ($x).abs() * Decimal::new_raw(1, 15)
+        } else {
+            ($y).abs() * Decimal::new_raw(1, 15)
+        };
+        assert!(($x - $y).abs() < t, "{} ≉ {}", ($x), ($y));
     };
 }
