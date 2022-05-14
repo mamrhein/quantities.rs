@@ -4,12 +4,30 @@ error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
    |
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Bar
-             Foo
-             f64
    = help: see issue #48214
-   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `BazUnit: quantities::LinearScaledUnit` is not satisfied
+   --> tests/ui/derived_res_no_ref_unit.rs:22:1
+    |
+22  | #[quantity(Foo * Bar)]
+    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
+    |
+note: required by a bound in `quantities::HasRefUnit`
+   --> src/lib.rs
+    |
+    |     <Self as Quantity>::UnitType: LinearScaledUnit,
+    |                                   ^^^^^^^^^^^^^^^^ required by this bound in `quantities::HasRefUnit`
+    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
+   |
+   = note: required because of the requirements on the impl of `std::ops::Div<Bar>` for `Baz`
+   = help: see issue #48214
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
@@ -18,40 +36,6 @@ error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
    |
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Bar
-             Foo
-             f64
-note: required because of the requirements on the impl of `std::ops::Div<Bar>` for `Baz`
-  --> tests/ui/derived_res_no_ref_unit.rs:22:1
-   |
-22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^
-23 | #[unit(Bazoo, "b", "1·f·e")]
-24 | struct Baz {}
-   |        ^^^
+   = note: required because of the requirements on the impl of `std::ops::Div<Foo>` for `Baz`
    = help: see issue #48214
-   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
-   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
-  --> tests/ui/derived_res_no_ref_unit.rs:22:1
-   |
-22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
-   |
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Bar
-             Foo
-             f64
-note: required because of the requirements on the impl of `std::ops::Div<Foo>` for `Baz`
-  --> tests/ui/derived_res_no_ref_unit.rs:22:1
-   |
-22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^
-23 | #[unit(Bazoo, "b", "1·f·e")]
-24 | struct Baz {}
-   |        ^^^
-   = help: see issue #48214
-   = help: add `#![feature(trivial_bounds)]` to the crate attributes to enable
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)

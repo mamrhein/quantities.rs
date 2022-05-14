@@ -1,10 +1,11 @@
 error: <scale> arg expected.
+
+         = help: Use `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>, "<doc>")]`
+                or  `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
+       or  `#[unit(<ident>, "<symbol>", <scale>, "<doc>")]`
+       or  `#[unit(<ident>, "<symbol>", <scale>)]`.
+
   --> tests/ui/missing_scale.rs:16:1
    |
 16 | #[unit(C, "c")]
    | ^^^^^^^^^^^^^^^
-   |
-   = help: Use `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>, "<doc>")]`
-                    or  `#[unit(<ident>, "<symbol>", <si_prefix>, <scale>)]`
-           or  `#[unit(<ident>, "<symbol>", <scale>, "<doc>")]`
-           or  `#[unit(<ident>, "<symbol>", <scale>)]`.
