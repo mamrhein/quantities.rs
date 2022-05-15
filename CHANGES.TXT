@@ -1,5 +1,10 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.8.0     Added trait 'Converter' and generic struct 'ConversionTable' to
+          support conversion between quantity values.
+          Added pre-defined quantity 'Temperature' (with corresponding
+          feature).
+
 0.7.0     Added type Rate, expressing the ratio between two related quantity
           values.
 
