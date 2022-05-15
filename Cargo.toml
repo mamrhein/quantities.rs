@@ -35,10 +35,11 @@ power = ["energy", "duration"]
 frequency = ["duration"]
 datavolume = []
 datathroughput = ["datavolume", "duration"]
+temperature = []
 # used for rustdoc only
 doc = ["mass", "length", "duration", "area", "volume", "speed",
     "acceleration", "force", "energy", "power", "frequency", "datavolume",
-    "datathroughput"]
+    "datathroughput", "temperature"]
 
 [workspace]
 members = [".", "qty-macros"]

@@ -209,8 +209,8 @@ assert_eq!(y.to_string(), "67.5 ct");
 ```
 
 Quantity values with the same unit can always be added or subtracted. Adding
-or subtracting values with different values requires the units to convertable
-into each other.
+or subtracting values with different units requires the values to be
+convertable.
 
 Example:
 
@@ -290,3 +290,5 @@ a predefined quantity.
   [DataVolume](datavolume::DataVolume)
 * **datathroughput** - module [datathroughput] - quantity
   [DataThroughput](datathroughput::DataThroughput)
+* **temperature** - module [temperature] - quantity
+  [Temperature](temperature::Temperature)

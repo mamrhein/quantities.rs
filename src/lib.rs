@@ -68,6 +68,8 @@ pub mod mass;
 pub mod power;
 #[cfg(feature = "speed")]
 pub mod speed;
+#[cfg(feature = "temperature")]
+pub mod temperature;
 #[cfg(feature = "volume")]
 pub mod volume;
 
