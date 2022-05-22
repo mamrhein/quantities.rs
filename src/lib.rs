@@ -232,14 +232,13 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
                 #[cfg(feature = "fpdec")]
                 let abs_amnt = self.amount().abs();
                 #[cfg(not(feature = "fpdec"))]
-                let abs_amnt = if amnt_non_neg { self.amount() } else { -self.amount() };
+                let abs_amnt = if amnt_non_neg {
+                    self.amount()
+                } else {
+                    -self.amount()
+                };
                 if let Some(prec) = form.precision() {
-                    tmp = format!(
-                        "{:.*} {}",
-                        prec,
-                        abs_amnt,
-                        self.unit()
-                    )
+                    tmp = format!("{:.*} {}", prec, abs_amnt, self.unit())
                 } else {
                     tmp = format!("{} {}", abs_amnt, self.unit())
                 }

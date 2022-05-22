@@ -9,8 +9,7 @@
 
 //! Definition of basic quantity `Temperature`.
 
-use crate::converter::ConversionTable;
-use crate::prelude::*;
+use crate::{converter::ConversionTable, prelude::*};
 
 #[quantity]
 #[unit(Kelvin, "K", "K")]
@@ -61,8 +60,7 @@ pub const TEMPERATURE_CONVERTER: ConversionTable<Temperature, 6> =
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assert_almost_eq;
-    use crate::converter::Converter;
+    use crate::{assert_almost_eq, converter::Converter};
 
     #[test]
     fn test_temperature() {
