@@ -1,5 +1,7 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.9.0     Enhanced formatting of quantity values.
+
 0.8.0     Added trait 'Converter' and generic struct 'ConversionTable' to
           support conversion between quantity values.
           Added pre-defined quantity 'Temperature' (with corresponding
