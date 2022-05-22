@@ -570,6 +570,17 @@ fn codegen_fn_symbol(
     )
 }
 
+fn codegen_impl_unit_display(unit_enum_ident: &syn::Ident) -> TokenStream {
+    quote!(
+        impl fmt::Display for #unit_enum_ident {
+            #[inline(always)]
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                <Self as Unit>::fmt(self, f)
+            }
+        }
+    )
+}
+
 fn codegen_impl_quantity(
     qty_ident: &syn::Ident,
     unit_enum_ident: &syn::Ident,
@@ -795,6 +806,7 @@ fn codegen_qty_with_ref_unit(
 fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
     quote!(
         impl fmt::Display for #qty_ident {
+            #[inline(always)]
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                 <Self as Quantity>::fmt(self, f)
             }
@@ -1079,6 +1091,7 @@ pub(crate) fn codegen(
         codegen_unit_constants(&unit_enum_ident, &qty_def.units);
     let code_impl_mul =
         codegen_impl_mul_amnt_unit(&qty_ident, &unit_enum_ident);
+    let code_impl_unit_display = codegen_impl_unit_display(&unit_enum_ident);
     let code_impl_std_traits = codegen_impl_std_traits(&qty_ident);
     let code_mul_div_base_qties =
         codegen_impl_mul_div_qties(&qty_ident, &qty_def.derived_as);
@@ -1087,6 +1100,7 @@ pub(crate) fn codegen(
         #code_qty
         #code_unit_consts
         #code_impl_mul
+        #code_impl_unit_display
         #code_impl_std_traits
         #code_mul_div_base_qties
     )
