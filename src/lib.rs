@@ -11,8 +11,10 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(dead_code)]
 
+extern crate alloc;
 extern crate core;
 
+use alloc::{format, string::String};
 use core::{
     cmp::Ordering,
     fmt,
@@ -74,7 +76,9 @@ pub mod temperature;
 pub mod volume;
 
 /// The abstract type of units used to define quantities.
-pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
+pub trait Unit:
+    Copy + Eq + PartialEq + Sized + Mul<AmountT> + fmt::Display
+{
     /// Associated type of quantity
     type QuantityType: Quantity<UnitType = Self>;
 
@@ -104,6 +108,10 @@ pub trait Unit: Copy + Eq + PartialEq + Sized + Mul<AmountT> {
     // Returns `1 * self`
     fn as_qty(&self) -> Self::QuantityType {
         Self::QuantityType::new(AMNT_ONE, *self)
+    }
+
+    fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(self.symbol(), form)
     }
 }
 
@@ -215,10 +223,28 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         );
     }
 
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.unit().symbol() {
-            "" => write!(f, "{}", self.amount()),
-            _ => write!(f, "{} {}", self.amount(), self.unit().symbol()),
+            "" => fmt::Display::fmt(&self.amount(), form),
+            _ => {
+                let tmp: String;
+                let amnt_non_neg = self.amount() >= AMNT_ZERO;
+                #[cfg(feature = "fpdec")]
+                let abs_amnt = self.amount().abs();
+                #[cfg(not(feature = "fpdec"))]
+                let abs_amnt = if amnt_non_neg { self.amount() } else { -self.amount() };
+                if let Some(prec) = form.precision() {
+                    tmp = format!(
+                        "{:.*} {}",
+                        prec,
+                        abs_amnt,
+                        self.unit()
+                    )
+                } else {
+                    tmp = format!("{} {}", abs_amnt, self.unit())
+                }
+                form.pad_integral(amnt_non_neg, "", &tmp)
+            }
         }
     }
 }
@@ -336,6 +362,13 @@ impl Unit for One {
     }
     fn si_prefix(&self) -> Option<SIPrefix> {
         None
+    }
+}
+
+impl fmt::Display for One {
+    #[inline(always)]
+    fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
+        <Self as Unit>::fmt(self, form)
     }
 }
 

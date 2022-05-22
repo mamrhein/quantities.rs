@@ -13,7 +13,7 @@ mod quantity_with_ref_unit_tests {
 
     /// Foo, a completely useless quantity
     #[quantity]
-    #[ref_unit(A, "a", MEGA)]
+    #[ref_unit(A, "aaa", MEGA)]
     #[unit(B, "b", 0.4)]
     #[unit(C, "c", CENTI, 0.01)]
     struct Foo {}
@@ -23,7 +23,7 @@ mod quantity_with_ref_unit_tests {
         let a = A;
         let b = B;
         assert_eq!(a.name(), "A");
-        assert_eq!(a.symbol(), "a");
+        assert_eq!(a.symbol(), "aaa");
         assert_eq!(a.si_prefix(), Some(SIPrefix::MEGA));
         assert_eq!(a.scale(), Amnt!(1.0));
         assert_eq!(b.name(), "B");
@@ -32,6 +32,19 @@ mod quantity_with_ref_unit_tests {
         assert_eq!(b.scale(), Amnt!(0.4));
         assert_eq!(b.ratio(&a), Amnt!(0.4));
         assert_eq!(a.ratio(&b), Amnt!(2.5));
+    }
+
+    #[test]
+    fn test_unit_to_string() {
+        let unit = FooUnit::A;
+        assert_eq!(unit.to_string(), "aaa");
+    }
+
+    #[test]
+    fn test_unit_fmt() {
+        let unit = FooUnit::A;
+        assert_eq!(format!("{:>7}", unit), "    aaa");
+        assert_eq!(format!("{:>7.2}", unit), "     aa");
     }
 
     #[test]
@@ -45,7 +58,7 @@ mod quantity_with_ref_unit_tests {
 
     #[test]
     fn test_unit_from_symbol() {
-        assert_eq!(FooUnit::from_symbol("a"), Some(A));
+        assert_eq!(FooUnit::from_symbol("aaa"), Some(A));
         assert_eq!(FooUnit::from_symbol("b"), Some(B));
         assert_eq!(FooUnit::from_symbol("c"), Some(C));
         assert_eq!(FooUnit::from_symbol("x"), None);
@@ -90,7 +103,7 @@ mod quantity_with_ref_unit_tests {
 
     #[test]
     fn test_qty_unit_from_symbol() {
-        assert_eq!(Foo::unit_from_symbol("a"), Some(A));
+        assert_eq!(Foo::unit_from_symbol("aaa"), Some(A));
         assert_eq!(Foo::unit_from_symbol("b"), Some(B));
         assert_eq!(Foo::unit_from_symbol("c"), Some(C));
         assert_eq!(Foo::unit_from_symbol("x"), None);
@@ -119,7 +132,27 @@ mod quantity_with_ref_unit_tests {
     #[test]
     fn test_qty_to_string() {
         let qty = Foo::new(Amnt!(184.09), FooUnit::A);
-        assert_eq!(qty.to_string(), "184.09 a");
+        assert_eq!(qty.to_string(), "184.09 aaa");
+    }
+
+    #[test]
+    fn test_unitless_fmt() {
+        let qty = Amnt!(184.09) * ONE;
+        assert_eq!(format!("{}", qty), "184.09");
+        assert_eq!(format!("{:+}", qty), "+184.09");
+        assert_eq!(format!("{:>9.3}", qty), "  184.090");
+    }
+
+    #[test]
+    fn test_qty_fmt() {
+        let qty = Foo::new(Amnt!(184.09), FooUnit::A);
+        assert_eq!(format!("{}", qty), "184.09 aaa");
+        assert_eq!(format!("{:+}", qty), "+184.09 aaa");
+        assert_eq!(format!("{:*<+15}", qty), "+184.09 aaa****");
+        assert_eq!(format!("{:_>15.1}", qty), "______184.1 aaa");
+        assert_eq!(format!("{:_>5.0}", qty), "184 aaa");
+        let qty = Foo::new(Amnt!(189), FooUnit::B);
+        assert_eq!(format!("{:_^15.1}", qty), "____189.0 b____");
     }
 
     #[test]
@@ -282,7 +315,7 @@ mod quantity_without_ref_unit_tests {
 
     /// Foo, a completely useless quantity
     #[quantity]
-    #[unit(A, "a")]
+    #[unit(A, "aaa")]
     #[unit(B, "b")]
     #[unit(C, "c")]
     struct Foo {}
