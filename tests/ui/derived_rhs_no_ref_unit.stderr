@@ -26,7 +26,11 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`
    |
-   = note: required because of the requirements on the impl of `std::ops::Mul<Bar>` for `Foo`
+note: required because of the requirements on the impl of `std::ops::Mul<Bar>` for `Foo`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: see issue #48214
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -36,7 +40,11 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`
    |
-   = note: required because of the requirements on the impl of `std::ops::Mul<Foo>` for `Bar`
+note: required because of the requirements on the impl of `std::ops::Mul<Foo>` for `Bar`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: see issue #48214
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -46,6 +54,13 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`
    |
-   = note: required because of the requirements on the impl of `std::ops::Div<Bar>` for `Baz`
+note: required because of the requirements on the impl of `std::ops::Div<Bar>` for `Baz`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
+...
+24 | struct Baz {}
+   |        ^^^
    = help: see issue #48214
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
