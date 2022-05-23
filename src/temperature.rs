@@ -11,6 +11,7 @@
 
 use crate::{converter::ConversionTable, prelude::*};
 
+#[rustfmt::skip]
 #[quantity]
 #[unit(Kelvin, "K", "K")]
 #[unit(Degree_Celsius, "°C", "°C")]
