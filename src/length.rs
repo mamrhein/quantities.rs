@@ -25,6 +25,10 @@ use crate::prelude::*;
 #[unit(Furlong, "fur", 201.168, "10·ch")]
 #[unit(Kilometer, "km", KILO, 1000, "1000·m")]
 #[unit(Mile, "mi", 1609.344, "8·fur")]
+#[unit(Light_Second, "ls", 299792458, "299792458·m")]
+#[unit(Light_Year, "ly", 9.4607e15, "3.154·10^7·ls")]
+#[unit(Astronomical_Unit, "au", 149_597_870_700, "149_597_870_700·m")]
+#[unit(Parsec, "pc", 30_856_775_814_913_673, "1·au / tan(1\")")]
 /// The quantity of distance between two points in spacetime.
 ///
 /// Reference unit: Meter ('m')
@@ -45,6 +49,10 @@ use crate::prelude::*;
 /// | fur    | Furlong                 | 10·ch             | 201.168           |
 /// | km     | Kilometer               | 1000·m            | 1000              |
 /// | mi     | Mile                    | 8·fur             | 1609.344          |
+/// | ls     | Light-Second            | 299_792_458·m     | 299792458         |
+/// | ly     | Light-Year              | 3.154·10^7·ls     | 9.4607e15         |
+/// | au     | Astronomical Unit       | 149_597_870_700·m | 149_597_870_700   |
+/// | pc     | Parsec                  | 1·au / tan(1")    | 1609.344          |
 pub struct Length {}
 
 #[cfg(test)]
