@@ -19,20 +19,28 @@ use crate::prelude::*;
 #[unit(Minute, "min", 60, "60·s")]
 #[unit(Hour, "h", 3600, "60·min")]
 #[unit(Day, "d", 86400, "24·h")]
+#[unit(Gregorian_Year, "yr", 31_556_952, "365.2425·d")]
+#[unit(Julian_Year, "a", 31_557_600, "365.25·d")]
+#[unit(Earth_Period, "T🜨", 31_558_149.7635, "365.256363004·d")]
+#[unit(Sideral_Day, "dₛ", 86_164, "(1·a)/ (1·a + 1·d) ·d")]
 /// Duration: 'what a clock reads'
 ///
 /// Reference unit: Second ('s')
 ///
 /// Predefined units:
 ///
-/// | Symbol | Name                  | Definition        | Equivalent in 's'   |
-/// |--------|-----------------------|-------------------|---------------------|
-/// | ns     | Nanosecond            | 0.000000001·s     | 0.000000001         |
-/// | µs     | Microsecond           | 0.000001·s        | 0.000001            |
-/// | ms     | Millisecond           | 0.001·s           | 0.001               |
-/// | min    | Minute                | 60·s              | 60                  |
-/// | h      | Hour                  | 60·min            | 3600                |
-/// | d      | Day                   | 24·h              | 86400               |
+/// | Symbol | Name                     | Definition                   | Equivalent in 's'   |
+/// |--------|--------------------------|------------------------------|---------------------|
+/// | ns     | Nanosecond               | 0.000000001·s                | 0.000000001         |
+/// | µs     | Microsecond              | 0.000001·s                   | 0.000001            |
+/// | ms     | Millisecond              | 0.001·s                      | 0.001               |
+/// | min    | Minute                   | 60·s                         | 60                  |
+/// | h      | Hour                     | 60·min                       | 3600                |
+/// | d      | Day                      | 24·h                         | 86400               |
+/// | yr     | Calender Year            | 365.2425·d                   | 31_556_952          |
+/// | a      | Julian Year              | 356.25·d                     | 31_557_600          |
+/// | T🜨     | Earth's Orbital Period   | 365.256363004·d              | 315_58_149.7635     |
+/// | dₛ     | Sidereal Day             | (1·a)/(1·a+1·d)·d            | 86164.0905          |
 pub struct Duration {}
 
 #[cfg(test)]
