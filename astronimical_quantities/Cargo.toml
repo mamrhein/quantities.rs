@@ -1,0 +1,24 @@
+[package]
+name = "astronomical-quantities"
+version = "0.0.0"
+edition = "2021"
+authors = ["Michael Amrhein <michael@adrhinum.de>"]
+description = "Unit-safe computations with astronomical quantities."
+readme = "README.md"
+homepage = "https://github.com/mamrhein/quantities.rs"
+repository = "https://github.com/mamrhein/quantities.rs"
+documentation = "https://docs.rs/quantities/"
+license-file = "../LICENSE.TXT"
+keywords = ["quantity", "unit", "unit-safe", "measure", "astronomical"]
+categories = ["data-structures", "mathematics", "Science"]
+
+[dependencies]
+quantities = { version = "0.9.0", path = ".." }
+qty-macros = { version = "0.9.0", path = "../qty-macros" }
+
+[dev-dependencies]
+trybuild = "1"
+
+[features]
+default = ["std"]
+std = []
