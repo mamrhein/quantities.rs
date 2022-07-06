@@ -9,10 +9,54 @@
 
 #![doc = include_str ! ("../README.md")]
 #![cfg_attr(not(feature = "std"), no_std)]
+// activate some rustc lints
+#![deny(non_ascii_idents)]
+#![deny(unsafe_code)]
+#![warn(missing_debug_implementations)]
+// #![warn(missing_docs)]
+#![warn(trivial_casts)]
+#![warn(unused)]
 #![allow(dead_code)]
+// activate some clippy lints
+#![warn(clippy::cast_possible_truncation)]
+#![warn(clippy::cast_possible_wrap)]
+#![warn(clippy::cast_precision_loss)]
+#![warn(clippy::cast_sign_loss)]
+#![warn(clippy::cognitive_complexity)]
+#![warn(clippy::decimal_literal_representation)]
+#![warn(clippy::enum_glob_use)]
+#![warn(clippy::equatable_if_let)]
+#![warn(clippy::fallible_impl_from)]
+#![warn(clippy::if_not_else)]
+#![warn(clippy::if_then_some_else_none)]
+#![warn(clippy::implicit_clone)]
+#![warn(clippy::integer_division)]
+#![warn(clippy::manual_assert)]
+#![warn(clippy::match_same_arms)]
+// #![warn(clippy::mismatching_type_param_order)] TODO: enable when got stable
+#![warn(clippy::missing_const_for_fn)]
+#![warn(clippy::missing_errors_doc)]
+#![warn(clippy::missing_panics_doc)]
+#![warn(clippy::multiple_crate_versions)]
+#![warn(clippy::multiple_inherent_impl)]
+#![warn(clippy::must_use_candidate)]
+#![warn(clippy::needless_pass_by_value)]
+#![warn(clippy::print_stderr)]
+#![warn(clippy::print_stdout)]
+#![warn(clippy::semicolon_if_nothing_returned)]
+#![warn(clippy::str_to_string)]
+#![warn(clippy::string_to_string)]
+#![warn(clippy::undocumented_unsafe_blocks)]
+#![warn(clippy::unicode_not_nfc)]
+#![warn(clippy::unimplemented)]
+#![warn(clippy::unseparated_literal_suffix)]
+#![warn(clippy::unused_self)]
+#![warn(clippy::unwrap_in_result)]
+#![warn(clippy::use_self)]
+#![warn(clippy::used_underscore_binding)]
+#![warn(clippy::wildcard_imports)]
 
 extern crate alloc;
-extern crate core;
 
 use alloc::{format, string::String};
 use core::{
@@ -87,6 +131,7 @@ pub trait Unit:
 
     /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
     /// there is no such unit.
+    #[must_use]
     fn from_symbol(symbol: &str) -> Option<Self> {
         for unit in Self::iter() {
             if unit.symbol() == symbol {
@@ -105,11 +150,12 @@ pub trait Unit:
     /// Returns the SI prefix of `self`, or None is `self` is not a SI unit.
     fn si_prefix(&self) -> Option<SIPrefix>;
 
-    // Returns `1 * self`
+    /// Returns `1 * self`
     fn as_qty(&self) -> Self::QuantityType {
         Self::QuantityType::new(AMNT_ONE, *self)
     }
 
+    /// Formats `self` using the given formatter.
     fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(self.symbol(), form)
     }
@@ -122,6 +168,7 @@ pub trait LinearScaledUnit: Unit {
 
     /// Returns `Some(unit)` where `unit.scale()` == `Some(amnt)`, or `None` if
     /// there is no such unit.
+    #[must_use]
     fn from_scale(amnt: AmountT) -> Option<Self> {
         for unit in Self::iter() {
             if unit.scale() == amnt {
@@ -159,6 +206,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
 
     /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
     /// there is no such unit.
+    #[must_use]
     fn unit_from_symbol(symbol: &str) -> Option<Self::UnitType> {
         for unit in Self::iter_units() {
             if unit.symbol() == symbol {
@@ -238,9 +286,9 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
                     -self.amount()
                 };
                 if let Some(prec) = form.precision() {
-                    tmp = format!("{:.*} {}", prec, abs_amnt, self.unit())
+                    tmp = format!("{:.*} {}", prec, abs_amnt, self.unit());
                 } else {
-                    tmp = format!("{} {}", abs_amnt, self.unit())
+                    tmp = format!("{} {}", abs_amnt, self.unit());
                 }
                 form.pad_integral(amnt_non_neg, "", &tmp)
             }
@@ -258,6 +306,7 @@ where
 
     /// Returns `Some(unit)` where `unit.scale()` == `amnt`, or `None` if
     /// there is no such unit.
+    #[must_use]
     fn unit_from_scale(amnt: AmountT) -> Option<Self::UnitType> {
         for unit in Self::iter_units() {
             if unit.scale() == amnt {
@@ -319,6 +368,7 @@ where
     /// scale less than or equal to `amount` or - if there is no such unit - to
     /// the unit with the smallest scale greater than `amount`, in any case
     /// taking only SI units into account if Self::REF_UNIT is a SI unit.
+    #[must_use]
     fn _fit(amount: AmountT) -> Self {
         let take_all = Self::REF_UNIT.si_prefix().is_none();
         let mut it =
@@ -338,6 +388,7 @@ where
 /// The "unit" of the "unitless" quantity.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum One {
+    /// Special singleton used as "unit" for the "unitless" quantity.
     One,
 }
 
@@ -379,7 +430,7 @@ impl LinearScaledUnit for One {
 }
 
 impl Mul<One> for AmountT {
-    type Output = AmountT;
+    type Output = Self;
     #[inline(always)]
     fn mul(self, _rhs: One) -> Self::Output {
         self
