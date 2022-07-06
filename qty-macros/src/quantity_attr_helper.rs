@@ -11,7 +11,6 @@ use convert_case::{Case, Casing};
 use proc_macro2::{Span, TokenStream};
 use proc_macro_error::{abort, abort_call_site};
 use quote::quote;
-use syn;
 
 pub(crate) struct DerivedAs {
     lhs_ident: syn::Ident,
@@ -68,30 +67,28 @@ pub(crate) fn parse_args(args: TokenStream) -> Option<DerivedAs> {
          or  `#[quantity(<lhs_ident> / <rhs_ident>]`.";
 
     if args.is_empty() {
-        return None;
-    } else {
-        if let Ok(expr) = syn::parse2::<syn::Expr>(args) {
-            match expr {
-                syn::Expr::Binary(args) => match args.op {
-                    syn::BinOp::Mul(_) | syn::BinOp::Div(_) => {
-                        let lhs = get_ident(args.left.as_ref());
-                        let rhs = get_ident(args.right.as_ref());
-                        if lhs.is_none() || rhs.is_none() {
-                            abort!(args, OPERAND_ERROR; help = ARGS_HELP)
-                        }
-                        return Some(DerivedAs {
-                            lhs_ident: lhs.unwrap().clone(),
-                            op: args.op,
-                            rhs_ident: rhs.unwrap().clone(),
-                        });
+        None
+    } else if let Ok(expr) = syn::parse2::<syn::Expr>(args) {
+        match expr {
+            syn::Expr::Binary(args) => match args.op {
+                syn::BinOp::Mul(_) | syn::BinOp::Div(_) => {
+                    let lhs = get_ident(args.left.as_ref());
+                    let rhs = get_ident(args.right.as_ref());
+                    if lhs.is_none() || rhs.is_none() {
+                        abort!(args, OPERAND_ERROR; help = ARGS_HELP)
                     }
-                    _ => abort!(args, OPERATOR_ERROR; help = ARGS_HELP),
-                },
-                _ => abort!(expr, ARGS_ERROR; help = ARGS_HELP),
-            }
-        } else {
-            abort_call_site!(ARGS_ERROR; help = ARGS_HELP)
+                    Some(DerivedAs {
+                        lhs_ident: lhs.unwrap().clone(),
+                        op: args.op,
+                        rhs_ident: rhs.unwrap().clone(),
+                    })
+                }
+                _ => abort!(args, OPERATOR_ERROR; help = ARGS_HELP),
+            },
+            _ => abort!(expr, ARGS_ERROR; help = ARGS_HELP),
         }
+    } else {
+        abort_call_site!(ARGS_ERROR; help = ARGS_HELP)
     }
 }
 
@@ -396,14 +393,14 @@ fn codegen_impl_mul_amnt_unit(
             type Output = #qty_ident;
             #[inline(always)]
             fn mul(self, rhs: #unit_enum_ident) -> Self::Output {
-                #qty_ident::new(self, rhs)
+                Self::Output::new(self, rhs)
             }
         }
         impl Mul<AmountT> for #unit_enum_ident {
             type Output = #qty_ident;
             #[inline(always)]
             fn mul(self, rhs: AmountT) -> Self::Output {
-                #qty_ident::new(rhs, self)
+                Self::Output::new(rhs, self)
             }
         }
     )
@@ -424,7 +421,7 @@ fn codegen_qty_single_unit(
             #unit_ident,
         }
         impl #unit_enum_ident {
-            const VARIANTS: [Self; 1] = [#unit_enum_ident::#unit_ident];
+            const VARIANTS: [Self; 1] = [Self::#unit_ident];
         }
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
@@ -454,7 +451,7 @@ fn codegen_qty_single_unit(
 
             #[inline(always)]
             fn unit(&self) -> Self::UnitType {
-                #unit_enum_ident::#unit_ident
+                Self::UnitType::#unit_ident
             }
         }
         impl Add<Self> for #qty_ident {
@@ -515,28 +512,25 @@ fn codegen_unit_variants_array(
         let unit_ident = unit.unit_ident.clone();
         code = quote!(
             #code
-            #unit_enum_ident::#unit_ident,
+            Self::#unit_ident,
         );
     }
     code = quote!(
         impl #unit_enum_ident {
-            const VARIANTS: [#unit_enum_ident; #n_variants] = [#code];
+            const VARIANTS: [Self; #n_variants] = [#code];
         }
     );
     code
 }
 
-fn codegen_fn_name(
-    unit_enum_ident: &syn::Ident,
-    units: &Vec<UnitDef>,
-) -> TokenStream {
+fn codegen_fn_name(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
         let unit_ident = unit.unit_ident.clone();
         let unit_name = unit.name.clone();
         code = quote!(
             #code
-            #unit_enum_ident::#unit_ident => #unit_name,
+            Self::#unit_ident => #unit_name,
         )
     }
     quote!(
@@ -548,17 +542,14 @@ fn codegen_fn_name(
     )
 }
 
-fn codegen_fn_symbol(
-    unit_enum_ident: &syn::Ident,
-    units: &Vec<UnitDef>,
-) -> TokenStream {
+fn codegen_fn_symbol(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
         let unit_ident = unit.unit_ident.clone();
         let unit_symbol = unit.symbol.clone();
         code = quote!(
             #code
-            #unit_enum_ident::#unit_ident => #unit_symbol,
+            Self::#unit_ident => #unit_symbol,
         )
     }
     quote!(
@@ -617,8 +608,8 @@ fn codegen_qty_without_ref_unit(
     let code_unit_variants = codegen_unit_variants(units);
     let code_unit_variants_array =
         codegen_unit_variants_array(unit_enum_ident, units);
-    let code_fn_name = codegen_fn_name(unit_enum_ident, units);
-    let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
+    let code_fn_name = codegen_fn_name(units);
+    let code_fn_symbol = codegen_fn_symbol(units);
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
@@ -673,10 +664,7 @@ fn codegen_qty_without_ref_unit(
     )
 }
 
-fn codegen_fn_si_prefix(
-    unit_enum_ident: &syn::Ident,
-    units: &Vec<UnitDef>,
-) -> TokenStream {
+fn codegen_fn_si_prefix(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
         if unit.si_prefix.is_some() {
@@ -684,7 +672,7 @@ fn codegen_fn_si_prefix(
             let unit_si_prefix: &syn::Ident = unit.si_prefix.as_ref().unwrap();
             code = quote!(
                 #code
-                #unit_enum_ident::#unit_ident =>
+                Self::#unit_ident =>
                     Some(SIPrefix::#unit_si_prefix),
             )
         }
@@ -699,10 +687,7 @@ fn codegen_fn_si_prefix(
     )
 }
 
-fn codegen_fn_scale(
-    unit_enum_ident: &syn::Ident,
-    units: &Vec<UnitDef>,
-) -> TokenStream {
+fn codegen_fn_scale(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
         if unit.scale.is_some() {
@@ -710,7 +695,7 @@ fn codegen_fn_scale(
             let unit_scale: &syn::Lit = unit.scale.as_ref().unwrap();
             code = quote!(
                 #code
-                #unit_enum_ident::#unit_ident => Amnt!(#unit_scale),
+                Self::#unit_ident => Amnt!(#unit_scale),
             )
         } else {
             // should not happen!
@@ -735,10 +720,10 @@ fn codegen_qty_with_ref_unit(
     let code_unit_variants = codegen_unit_variants(units);
     let code_unit_variants_array =
         codegen_unit_variants_array(unit_enum_ident, units);
-    let code_fn_name = codegen_fn_name(unit_enum_ident, units);
-    let code_fn_symbol = codegen_fn_symbol(unit_enum_ident, units);
-    let code_fn_si_prefix = codegen_fn_si_prefix(unit_enum_ident, units);
-    let code_fn_scale = codegen_fn_scale(unit_enum_ident, units);
+    let code_fn_name = codegen_fn_name(units);
+    let code_fn_symbol = codegen_fn_symbol(units);
+    let code_fn_si_prefix = codegen_fn_si_prefix(units);
+    let code_fn_scale = codegen_fn_scale(units);
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
     let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
@@ -759,7 +744,7 @@ fn codegen_qty_with_ref_unit(
             #code_fn_si_prefix
         }
         impl LinearScaledUnit for #unit_enum_ident {
-            const REF_UNIT: Self = #unit_enum_ident::#ref_unit_ident;
+            const REF_UNIT: Self = Self::#ref_unit_ident;
             #code_fn_scale
         }
         impl HasRefUnit for #qty_ident {
@@ -832,25 +817,81 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
                 Self::Output::new(self.amount() / rhs, self.unit())
             }
         }
-        impl<TQ: Quantity> Mul<Rate<TQ, #qty_ident>> for #qty_ident {
+        impl<TQ: Quantity> Mul<Rate<TQ, Self>> for #qty_ident {
             type Output = TQ;
 
-            fn mul(self, rhs: Rate<TQ, #qty_ident>) -> Self::Output {
+            fn mul(self, rhs: Rate<TQ, Self>) -> Self::Output {
                 let amnt: AmountT =
                     (self / rhs.per_unit().as_qty()) / rhs.per_unit_multiple();
                 Self::Output::new(amnt * rhs.term_amount(), rhs.term_unit())
             }
         }
-        impl<PQ: Quantity> Div<Rate<#qty_ident, PQ>> for #qty_ident {
+        impl<PQ: Quantity> Div<Rate<Self, PQ>> for #qty_ident {
             type Output = PQ;
 
-            fn div(self, rhs: Rate<#qty_ident, PQ>) -> Self::Output {
+            fn div(self, rhs: Rate<Self, PQ>) -> Self::Output {
                 let amnt: AmountT =
                     (self / rhs.term_unit().as_qty()) / rhs.term_amount();
                 Self::Output::new(
                     amnt * rhs.per_unit_multiple(),
                     rhs.per_unit()
                 )
+            }
+        }
+    )
+}
+
+fn codegen_impl_qty_sqared(
+    res_qty_ident: &syn::Ident,
+    qty_ident: &syn::Ident,
+) -> TokenStream {
+    quote!(
+        impl Mul<Self> for #qty_ident
+        where
+            Self: HasRefUnit,
+        {
+            type Output = #res_qty_ident;
+            fn mul(self, rhs: Self) -> Self::Output {
+                let scale =
+                    self.unit().scale() * rhs.unit().scale();
+                match Self::Output::unit_from_scale(scale) {
+                    Some(unit) =>
+                        Self::Output::new(self.amount() * rhs.amount(), unit),
+                    None =>
+                        <Self::Output as HasRefUnit>::_fit(
+                            self.amount() * rhs.amount() * scale
+                        )
+                }
+            }
+        }
+        impl<'a> Mul<#qty_ident> for &'a #qty_ident
+        where
+            #qty_ident: Mul<#qty_ident>,
+        {
+            type Output = <#qty_ident as Mul<#qty_ident>>::Output;
+            #[inline(always)]
+            fn mul(self, rhs: #qty_ident) -> Self::Output {
+                Mul::mul(*self, rhs)
+            }
+        }
+        impl Mul<&Self> for #qty_ident
+        where
+            Self: Mul<Self>,
+        {
+            type Output = <Self as Mul<Self>>::Output;
+            #[inline(always)]
+            fn mul(self, rhs: &Self) -> Self::Output {
+                Mul::mul(self, *rhs)
+            }
+        }
+        impl Mul<Self> for &#qty_ident
+        where
+            #qty_ident: Mul<#qty_ident>,
+        {
+            type Output = <#qty_ident as Mul<#qty_ident>>::Output;
+            #[inline(always)]
+            fn mul(self, rhs: Self) -> Self::Output {
+                Mul::mul(*self, *rhs)
             }
         }
     )
@@ -864,7 +905,7 @@ fn codegen_impl_qty_mul_qty(
     quote!(
         impl Mul<#rhs_qty_ident> for #lhs_qty_ident
         where
-            #lhs_qty_ident: HasRefUnit,
+            Self: HasRefUnit,
             #rhs_qty_ident: HasRefUnit,
         {
             type Output = #res_qty_ident;
@@ -893,9 +934,9 @@ fn codegen_impl_qty_mul_qty(
         }
         impl Mul<&#rhs_qty_ident> for #lhs_qty_ident
         where
-            #lhs_qty_ident: Mul<#rhs_qty_ident>,
+            Self: Mul<#rhs_qty_ident>,
         {
-            type Output = <#lhs_qty_ident as Mul<#rhs_qty_ident>>::Output;
+            type Output = <Self as Mul<#rhs_qty_ident>>::Output;
             #[inline(always)]
             fn mul(self, rhs: &#rhs_qty_ident) -> Self::Output {
                 Mul::mul(self, *rhs)
@@ -919,17 +960,27 @@ fn codegen_impl_mul_qties(
     lhs_qty_ident: &syn::Ident,
     rhs_qty_ident: &syn::Ident,
 ) -> TokenStream {
-    let code_lr =
-        codegen_impl_qty_mul_qty(res_qty_ident, lhs_qty_ident, rhs_qty_ident);
-    let code_rl = if lhs_qty_ident == rhs_qty_ident {
-        TokenStream::new()
+    if lhs_qty_ident == rhs_qty_ident {
+        let code = codegen_impl_qty_sqared(res_qty_ident, lhs_qty_ident);
+        quote!(
+            #code
+        )
     } else {
-        codegen_impl_qty_mul_qty(res_qty_ident, rhs_qty_ident, lhs_qty_ident)
-    };
-    quote!(
-        #code_lr
-        #code_rl
-    )
+        let code_lr = codegen_impl_qty_mul_qty(
+            res_qty_ident,
+            lhs_qty_ident,
+            rhs_qty_ident,
+        );
+        let code_rl = codegen_impl_qty_mul_qty(
+            res_qty_ident,
+            rhs_qty_ident,
+            lhs_qty_ident,
+        );
+        quote!(
+            #code_lr
+            #code_rl
+        )
+    }
 }
 
 fn codegen_impl_div_qties(
@@ -940,7 +991,7 @@ fn codegen_impl_div_qties(
     quote!(
         impl Div<#rhs_qty_ident> for #lhs_qty_ident
         where
-            #lhs_qty_ident: HasRefUnit,
+            Self: HasRefUnit,
             #rhs_qty_ident: HasRefUnit,
         {
             type Output = #res_qty_ident;
@@ -969,9 +1020,9 @@ fn codegen_impl_div_qties(
         }
         impl Div<&#rhs_qty_ident> for #lhs_qty_ident
         where
-            #lhs_qty_ident: Div<#rhs_qty_ident>,
+            Self: Div<#rhs_qty_ident>,
         {
-            type Output = <#lhs_qty_ident as Div<#rhs_qty_ident>>::Output;
+            type Output = <Self as Div<#rhs_qty_ident>>::Output;
             #[inline(always)]
             fn div(self, rhs: &#rhs_qty_ident) -> Self::Output {
                 Div::div(self, *rhs)
@@ -1083,7 +1134,7 @@ pub(crate) fn codegen(
         codegen_qty_with_ref_unit(
             &qty_ident,
             &unit_enum_ident,
-            &ref_unit_ident,
+            ref_unit_ident,
             &qty_def.units,
         )
     };
@@ -1227,10 +1278,7 @@ mod internal_fn_tests {
         let (opt_derived_as, item) = get_ast_derived_qty();
         assert!(opt_derived_as.is_some());
         let derived_as = opt_derived_as.unwrap();
-        assert!(match derived_as.op {
-            syn::BinOp::Mul(_) => true,
-            _ => false,
-        });
+        assert!(matches!(derived_as.op, syn::BinOp::Mul(_)));
         assert_eq!(derived_as.lhs_ident.to_string(), "Foo");
         assert_eq!(derived_as.rhs_ident.to_string(), "Foo");
         assert_eq!(item.ident.to_string(), "FooSquared");
