@@ -26,7 +26,10 @@ pub trait Converter<Q: Quantity> {
 /// * offset: AmountT
 /// defining the conversion
 /// to_amount = from_amount * factor + offset
+#[derive(Debug)]
 pub struct ConversionTable<Q: Quantity, const N: usize> {
+    /// Table of tuples (from_unit, to_unit, factor, offset), defining the
+    /// conversion to_amount = from_amount * factor + offset
     pub mappings: [(Q::UnitType, Q::UnitType, AmountT, AmountT); N],
 }
 
@@ -36,11 +39,8 @@ impl<Q: Quantity, const N: usize> Converter<Q> for ConversionTable<Q, N> {
             return Some(*qty);
         }
         self.mappings.iter().find_map(|(from, to, factor, offset)| {
-            if *from == (*qty).unit() && *to == to_unit {
-                Some(Q::new(qty.amount() * factor + offset, to_unit))
-            } else {
-                None
-            }
+            (*from == (*qty).unit() && *to == to_unit)
+                .then(|| Q::new(qty.amount() * factor + offset, to_unit))
         })
     }
 }
