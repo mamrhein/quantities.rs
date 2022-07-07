@@ -112,8 +112,8 @@ pub fn derive_variants_as_constants(input: TokenStream) -> TokenStream {
 /// #     Blue,
 /// # }
 /// impl Color {
-///     const VARIANTS: [Color; 3usize] =
-///         [Color::Red, Color::Green, Color::Blue];
+///     const VARIANTS: [Self; 3usize] =
+///         [Self::Red, Self::Green, Self::Blue];
 ///     #[doc = "Returns an iterator over the variants of `Self`."]
 ///     #[inline(always)]
 ///     pub fn iter() -> core::slice::Iter<'static, Self> {
@@ -134,14 +134,14 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
         let variant_ident = &variant.ident;
         output = quote!(
             #output
-            #enum_ident::#variant_ident,
+            Self::#variant_ident,
         );
     }
     let n_variants = &enum_def.variants.len();
     // create impl for fn iter
     output = quote!(
         impl #enum_ident {
-            const VARIANTS: [#enum_ident; #n_variants] = [#output];
+            const VARIANTS: [Self; #n_variants] = [#output];
             #[doc = "Returns an iterator over the variants of `Self`."]
             #[inline(always)]
             pub fn iter() -> core::slice::Iter<'static, Self> {
