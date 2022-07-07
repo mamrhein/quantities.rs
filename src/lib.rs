@@ -13,7 +13,7 @@
 #![deny(non_ascii_idents)]
 #![deny(unsafe_code)]
 #![warn(missing_debug_implementations)]
-// #![warn(missing_docs)]
+#![warn(missing_docs)]
 #![warn(trivial_casts)]
 #![warn(unused)]
 #![allow(dead_code)]
@@ -230,11 +230,15 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     /// Returns the unit of `self`.
     fn unit(&self) -> Self::UnitType;
 
+    /// Return `true` if `self` and `other` have the same unit and their amounts
+    /// are equal, otherwise `false`.
     #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
         self.unit() == other.unit() && self.amount() == other.amount()
     }
 
+    /// Returns the partial order of `self`s and `other`s amounts, if both have
+    /// the same unit, otherwise `None`.
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.unit() == other.unit() {
             PartialOrd::partial_cmp(&self.amount(), &other.amount())
@@ -243,6 +247,11 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         }
     }
 
+    /// Returns the sum of `self` and `other`, if both have the same unit.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `self` and `other` have different units.
     fn add(self, rhs: Self) -> Self {
         if self.unit() == rhs.unit() {
             return Self::new(self.amount() + rhs.amount(), self.unit());
@@ -254,6 +263,12 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         );
     }
 
+    /// Returns the difference between `self` and `other`, if both have the same
+    /// unit.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `self` and `other` have different units.
     fn sub(self, rhs: Self) -> Self {
         if self.unit() == rhs.unit() {
             return Self::new(self.amount() - rhs.amount(), self.unit());
@@ -265,6 +280,11 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         );
     }
 
+    /// Returns the quotient `self` / `other`, if both have the same unit.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `self` and `other` have different units.
     fn div(self, rhs: Self) -> AmountT {
         if self.unit() == rhs.unit() {
             return self.amount() / rhs.amount();
@@ -342,11 +362,15 @@ where
         Self::new(self.equiv_amount(to_unit), to_unit)
     }
 
+    /// Returns true, if `self` and `other` have equivalent amounts, otherwise
+    /// `false`.
     #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
         self.amount() == other.equiv_amount(self.unit())
     }
 
+    /// Returns the partial order of `self`s amount and `other`s eqivalent
+    /// amount in `self`s unit.
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.unit() == other.unit() {
             PartialOrd::partial_cmp(&self.amount(), &other.amount())
@@ -358,16 +382,19 @@ where
         }
     }
 
+    /// Returns the sum of `self` and `other`
     #[inline]
     fn add(self, rhs: Self) -> Self {
         Self::new(self.amount() + rhs.equiv_amount(self.unit()), self.unit())
     }
 
+    /// Returns the difference between `self` and `other`
     #[inline]
     fn sub(self, rhs: Self) -> Self {
         Self::new(self.amount() - rhs.equiv_amount(self.unit()), self.unit())
     }
 
+    /// Returns the quotient `self` / `other`
     #[inline]
     fn div(self, rhs: Self) -> AmountT {
         self.amount() / rhs.equiv_amount(self.unit())
