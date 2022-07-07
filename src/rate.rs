@@ -26,7 +26,7 @@ pub struct Rate<TQ: Quantity, PQ: Quantity> {
 impl<TQ: Quantity, PQ: Quantity> Rate<TQ, PQ> {
     /// Returns a new instance of `Rate` with attributes equal to given params.
     #[inline(always)]
-    pub fn new(
+    pub const fn new(
         term_amount: AmountT,
         term_unit: TQ::UnitType,
         per_unit_multiple: AmountT,
@@ -54,36 +54,36 @@ impl<TQ: Quantity, PQ: Quantity> Rate<TQ, PQ> {
 
     /// Returns the term amount of `self`.
     #[inline(always)]
-    pub fn term_amount(&self) -> AmountT {
+    pub const fn term_amount(&self) -> AmountT {
         self.term_amount
     }
 
     /// Returns the term unit of `self`.
     #[inline(always)]
-    pub fn term_unit(&self) -> TQ::UnitType {
+    pub const fn term_unit(&self) -> TQ::UnitType {
         self.term_unit
     }
 
     /// Returns the per unit multiple of `self`.
     #[inline(always)]
-    pub fn per_unit_multiple(&self) -> AmountT {
+    pub const fn per_unit_multiple(&self) -> AmountT {
         self.per_unit_multiple
     }
 
     /// Returns the per unit of `self`.
     #[inline(always)]
-    pub fn per_unit(&self) -> PQ::UnitType {
+    pub const fn per_unit(&self) -> PQ::UnitType {
         self.per_unit
     }
 
     /// Returns the multiplicative inverse of `self`
-    pub fn reciprocal(&self) -> Rate<PQ, TQ> {
-        return Rate::<PQ, TQ>::new(
+    pub const fn reciprocal(&self) -> Rate<PQ, TQ> {
+        Rate::<PQ, TQ>::new(
             self.per_unit_multiple(),
             self.per_unit(),
             self.term_amount(),
             self.term_unit(),
-        );
+        )
     }
 }
 

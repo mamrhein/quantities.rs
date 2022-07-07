@@ -156,6 +156,11 @@ pub trait Unit:
     }
 
     /// Formats `self` using the given formatter.
+    ///
+    /// # Errors
+    ///
+    /// This function will only return an instance of `Error` returned from the
+    /// formatter.
     fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Display::fmt(self.symbol(), form)
     }
@@ -271,6 +276,12 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         );
     }
 
+    /// Formats `self` using the given formatter.
+    ///
+    /// # Errors
+    ///
+    /// This function will only return an instance of `Error` returned from the
+    /// formatter.
     fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.unit().symbol() {
             "" => fmt::Display::fmt(&self.amount(), form),

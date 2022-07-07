@@ -361,6 +361,7 @@ mod quantity_without_ref_unit_tests {
         assert!(qty3 >= qty2);
     }
 
+    #[allow(clippy::neg_cmp_op_on_partial_ord)]
     #[test]
     fn test_cmp_diff_unit() {
         let qty1 = Amnt!(17.4) * FooUnit::A;
