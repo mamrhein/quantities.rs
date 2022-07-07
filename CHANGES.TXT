@@ -1,5 +1,8 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.9.1     Code hygiene based on rustc and clippy lints.
+          Added doc comments.
+
 0.9.0     Enhanced formatting of quantity values.
 
 0.8.0     Added trait 'Converter' and generic struct 'ConversionTable' to
