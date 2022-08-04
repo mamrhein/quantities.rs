@@ -1,5 +1,7 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.10.0    Added crate 'astronomical_quantities'.
+
 0.9.1     Code hygiene based on rustc and clippy lints.
           Added doc comments.
 
