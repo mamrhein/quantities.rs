@@ -10,7 +10,7 @@ repository = "https://github.com/mamrhein/quantities.rs"
 documentation = "https://docs.rs/quantities/"
 license-file = "../LICENSE.TXT"
 keywords = ["quantity", "unit", "unit-safe", "measure", "astronomical"]
-categories = ["data-structures", "mathematics", "Science"]
+categories = ["data-structures", "mathematics", "science"]
 
 [dependencies]
 quantities = { version = "0.10.0", path = ".." }
