@@ -42,7 +42,7 @@ doc = ["mass", "length", "duration", "area", "volume", "speed",
     "datathroughput", "temperature"]
 
 [workspace]
-members = [".", "qty-macros"]
+members = [".", "qty-macros", "astronimical_quantities"]
 
 [package.metadata.docs.rs]
 features = ["doc"]
