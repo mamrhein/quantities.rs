@@ -1,6 +1,6 @@
 [package]
 name = "quantities"
-version = "0.10.0"
+version = "0.11.0"
 edition = "2021"
 authors = ["Michael Amrhein <michael@adrhinum.de>"]
 description = "Unit-safe computations with quantities."
@@ -13,7 +13,7 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
 
 [dependencies]
-qty-macros = { version = "0.9.0", path = "qty-macros" }
+qty-macros = { version = "0.11.0", path = "qty-macros" }
 fpdec = { version = "0.5.2", optional = true }
 
 [dev-dependencies]
