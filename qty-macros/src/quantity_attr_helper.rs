@@ -1089,9 +1089,15 @@ fn codegen_impl_mul_div_qties(
                         qty_ident,
                         rhs_qty_ident,
                     );
+                    let code_impl_div_res = codegen_impl_div_qties(
+                        rhs_qty_ident,
+                        lhs_qty_ident,
+                        qty_ident,
+                    );
                     quote!(
                         #code_impl_div
                         #code_impl_mul_res
+                        #code_impl_div_res
                     )
                 }
                 _ => {

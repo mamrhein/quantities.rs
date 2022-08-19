@@ -38,7 +38,11 @@ pub struct Power {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{assert_almost_eq, duration::MINUTE, energy::KILOWATT_HOUR};
+    use crate::{
+        assert_almost_eq,
+        duration::{HOUR, MINUTE},
+        energy::KILOWATT_HOUR,
+    };
 
     #[test]
     fn test_energy_div_duration() {
@@ -49,5 +53,16 @@ mod tests {
         let p = e / t;
         assert_almost_eq!(p.amount(), ae / at * Amnt!(60.));
         assert_eq!(p.unit(), KILOWATT);
+    }
+
+    #[test]
+    fn test_energy_div_power() {
+        let ae: AmountT = Amnt!(90.3);
+        let e = ae * KILOWATT_HOUR;
+        let ap: AmountT = Amnt!(4.2);
+        let p = ap * KILOWATT;
+        let t = e / p;
+        assert_almost_eq!(t.amount(), ae / ap);
+        assert_eq!(t.unit(), HOUR);
     }
 }

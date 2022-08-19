@@ -34,8 +34,8 @@ mod tests {
     use super::*;
     use crate::{
         assert_almost_eq,
-        duration::MINUTE,
-        length::{METER, MILE},
+        duration::{MINUTE, SECOND},
+        length::{KILOMETER, METER, MILE},
     };
 
     #[test]
@@ -70,5 +70,16 @@ mod tests {
         let l = v * t;
         assert_almost_eq!(l.amount(), av * at * Amnt!(60.));
         assert_eq!(l.unit(), METER);
+    }
+
+    #[test]
+    fn test_length_div_speed() {
+        let al = Amnt!(0.7);
+        let l = al * KILOMETER;
+        let av: AmountT = Amnt!(2.94);
+        let v = av * METER_PER_SECOND;
+        let t = l / v;
+        assert_almost_eq!(t.amount(), al * Amnt!(1000.) / av);
+        assert_eq!(t.unit(), SECOND);
     }
 }
