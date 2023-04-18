@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Copyright:   (c) 2021 ff. Michael Amrhein (michael@adrhinum.de)
+// Copyright:   (c) 2023 ff. Michael Amrhein (michael@adrhinum.de)
 // License:     This program is part of a larger application. For license
 //              details please read the file LICENSE.TXT provided together
 //              with the application.
@@ -15,6 +15,10 @@ use ::qty_macros::EnumIter;
 /// of the original unit.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, EnumIter)]
 pub enum SIPrefix {
+    /// 10⁻³⁰
+    QUEKTO = -30,
+    /// 10⁻²⁷
+    RONTO = -27,
     /// 10⁻²⁴
     YOCTO = -24,
     /// 10⁻²¹
@@ -57,6 +61,10 @@ pub enum SIPrefix {
     ZETTA = 21,
     /// 10²⁴
     YOTTA = 24,
+    /// 10²⁷
+    RONNA = 27,
+    /// 10³⁰
+    QUETTA = 30,
 }
 
 impl SIPrefix {
@@ -64,6 +72,8 @@ impl SIPrefix {
     #[must_use]
     pub const fn name(&self) -> &'static str {
         match self {
+            Self::QUEKTO => "Quekto",
+            Self::RONTO => "Ronto",
             Self::YOCTO => "Yocto",
             Self::ZEPTO => "Zepto",
             Self::ATTO => "Atto",
@@ -85,6 +95,8 @@ impl SIPrefix {
             Self::EXA => "Exa",
             Self::ZETTA => "Zetta",
             Self::YOTTA => "Yotta",
+            Self::RONNA => "Ronna",
+            Self::QUETTA => "Quetta"
         }
     }
 
@@ -92,6 +104,8 @@ impl SIPrefix {
     #[must_use]
     pub const fn abbr(&self) -> &'static str {
         match self {
+            Self::QUEKTO => "q",
+            Self::RONTO => "r",
             Self::YOCTO => "y",
             Self::ZEPTO => "z",
             Self::ATTO => "a",
@@ -113,6 +127,8 @@ impl SIPrefix {
             Self::EXA => "E",
             Self::ZETTA => "Z",
             Self::YOTTA => "Y",
+            Self::RONNA => "R",
+            Self::QUETTA => "Q"
         }
     }
 
@@ -128,6 +144,8 @@ impl SIPrefix {
     #[must_use]
     pub fn from_abbr(abbr: &str) -> Option<Self> {
         match abbr {
+            "q" => Some(Self::QUEKTO),
+            "r" => Some(Self::RONTO),
             "y" => Some(Self::YOCTO),
             "z" => Some(Self::ZEPTO),
             "a" => Some(Self::ATTO),
@@ -149,6 +167,8 @@ impl SIPrefix {
             "E" => Some(Self::EXA),
             "Z" => Some(Self::ZETTA),
             "Y" => Some(Self::YOTTA),
+            "R" => Some(Self::RONNA),
+            "Q" => Some(Self::QUETTA),
             _ => None,
         }
     }
@@ -158,6 +178,8 @@ impl SIPrefix {
     #[must_use]
     pub const fn from_exp(exp: i8) -> Option<Self> {
         match exp {
+            -30 => Some(Self::QUEKTO),
+            -27 => Some(Self::RONTO),
             -24 => Some(Self::YOCTO),
             -21 => Some(Self::ZEPTO),
             -18 => Some(Self::ATTO),
@@ -179,6 +201,8 @@ impl SIPrefix {
             18 => Some(Self::EXA),
             21 => Some(Self::ZETTA),
             24 => Some(Self::YOTTA),
+            27 => Some(Self::RONNA),
+            30 => Some(Self::QUETTA),
             _ => None,
         }
     }
@@ -191,6 +215,8 @@ mod tests {
     #[test]
     fn test_iter() {
         let mut it = SIPrefix::iter();
+        assert_eq!(it.next(), Some(&SIPrefix::QUEKTO));
+        assert_eq!(it.next(), Some(&SIPrefix::RONTO));
         assert_eq!(it.next(), Some(&SIPrefix::YOCTO));
         assert_eq!(it.next(), Some(&SIPrefix::ZEPTO));
         assert_eq!(it.next(), Some(&SIPrefix::ATTO));
@@ -212,6 +238,8 @@ mod tests {
         assert_eq!(it.next(), Some(&SIPrefix::EXA));
         assert_eq!(it.next(), Some(&SIPrefix::ZETTA));
         assert_eq!(it.next(), Some(&SIPrefix::YOTTA));
+        assert_eq!(it.next(), Some(&SIPrefix::RONNA));
+        assert_eq!(it.next(), Some(&SIPrefix::QUETTA));
         assert_eq!(it.next(), None);
     }
 
