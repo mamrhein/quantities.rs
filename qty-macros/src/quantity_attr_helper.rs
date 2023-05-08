@@ -417,6 +417,7 @@ fn codegen_qty_single_unit(
     quote!(
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+        #[cfg_attr(feature = "serde", derive(::serde::Deserialize, ::serde::Serialize))]
         pub enum #unit_enum_ident {
             #unit_ident,
         }
@@ -433,6 +434,7 @@ fn codegen_qty_single_unit(
             fn si_prefix(&self) -> Option<SIPrefix> { None }
         }
         #[derive(Copy, Clone, Debug)]
+        #[cfg_attr(feature = "serde", derive(::serde::Deserialize, ::serde::Serialize))]
         pub struct #qty_ident {
             amount: AmountT
         }
@@ -578,6 +580,7 @@ fn codegen_impl_quantity(
 ) -> TokenStream {
     quote!(
         #[derive(Copy, Clone, Debug)]
+        #[cfg_attr(feature = "serde", derive(::serde::Deserialize, ::serde::Serialize))]
         pub struct #qty_ident {
             amount: AmountT,
             unit: #unit_enum_ident
@@ -616,6 +619,7 @@ fn codegen_qty_without_ref_unit(
         #code_impl_quantity
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+        #[cfg_attr(feature = "serde", derive(::serde::Deserialize, ::serde::Serialize))]
         pub enum #unit_enum_ident { #code_unit_variants }
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
@@ -730,6 +734,7 @@ fn codegen_qty_with_ref_unit(
         #code_impl_quantity
         #[doc = #unit_doc]
         #[derive(Copy, Clone, Debug, Eq, PartialEq)]
+        #[cfg_attr(feature = "serde", derive(::serde::Deserialize, ::serde::Serialize))]
         pub enum #unit_enum_ident {
             #code_unit_variants
         }
