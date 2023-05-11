@@ -23,7 +23,7 @@ trybuild = "1"
 [features]
 default = ["std"]
 std = []
-serde = ["dep:serde"]
+serde = ["dep:serde", "fpdec/serde-as-str"]
 mass = []
 length = []
 duration = []
