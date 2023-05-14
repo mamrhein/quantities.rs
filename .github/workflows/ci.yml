@@ -1,0 +1,58 @@
+on:
+  push:
+    tags:
+      - quantities@**
+
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: ⬇️ checkout repository
+        uses: actions/checkout@v3
+      - name: 🛠 setup cargo toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: ♻️ cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ${{ matrix.os }}
+      - name: ✅ run cargo check
+        run: |
+          cargo check
+          cargo check --all-features
+  test:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ checkout repository
+        uses: actions/checkout@v3
+      - name: 🛠 setup cargo toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: ♻️ cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ubuntu-latest
+      - name: 🛟 run cargo test
+        run: |
+          cargo test
+          cargo test --all-features --doc
+        env:
+          TRYBUILD: overwrite
+  lint:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ checkout repository
+        uses: actions/checkout@v3
+      - name: 🛠 setup cargo toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: ♻️ cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: ubuntu-latest
+      - name: 🔍 run cargo clippy
+        run: |
+          cargo clippy --all-features
