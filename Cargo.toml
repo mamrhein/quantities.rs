@@ -1,6 +1,6 @@
 [package]
 name = "quantities"
-version = "0.11.1"
+version = "0.11.3"
 edition = "2021"
 authors = ["Michael Amrhein <michael@adrhinum.de>"]
 description = "Unit-safe computations with quantities."
@@ -14,7 +14,7 @@ categories = ["data-structures", "mathematics"]
 
 [dependencies]
 qty-macros = { version = "0.11.0", path = "qty-macros" }
-fpdec = { version = "0.7.0", features = ["serde-as-str"], optional = true }
+fpdec = { version = "0.7", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
@@ -39,9 +39,22 @@ datavolume = []
 datathroughput = ["datavolume", "duration"]
 temperature = []
 # used for rustdoc only
-doc = ["mass", "length", "duration", "area", "volume", "speed",
-    "acceleration", "force", "energy", "power", "frequency", "datavolume",
-    "datathroughput", "temperature"]
+doc = [
+  "mass",
+  "length",
+  "duration",
+  "area",
+  "volume",
+  "speed",
+  "acceleration",
+  "force",
+  "energy",
+  "power",
+  "frequency",
+  "datavolume",
+  "datathroughput",
+  "temperature",
+]
 
 [workspace]
 members = [".", "qty-macros", "astronimical_quantities"]

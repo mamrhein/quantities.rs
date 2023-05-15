@@ -121,13 +121,13 @@ fn check_struct(ast: &Item) {
 
 #[inline]
 fn is_unit_attr(attr: &syn::Attribute) -> bool {
-    attr.path
+    attr.path()
         .is_ident(&syn::Ident::new("unit", Span::call_site()))
 }
 
 #[inline]
 fn is_ref_unit_attr(attr: &syn::Attribute) -> bool {
-    attr.path
+    attr.path()
         .is_ident(&syn::Ident::new("ref_unit", Span::call_site()))
 }
 
@@ -1192,7 +1192,7 @@ mod internal_fn_tests {
         let attr_names: Vec<String> = item
             .attrs
             .iter()
-            .map(|attr| attr.path.segments.first().unwrap().ident.to_string())
+            .map(|attr| attr.path().segments.first().unwrap().ident.to_string())
             .collect();
         assert_eq!(attr_names, ["ref_unit", "unit", "unit", "doc"]);
     }
