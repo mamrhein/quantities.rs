@@ -1,5 +1,7 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.12.0    Added 'serde' support (thx to Roms1383).
+
 0.11.2    Added CI jobs for cargo check, test and clippy (thx to Roms1383).
 
 0.11.1    Added new SI prefixes (thanks to Johann Dirry).
