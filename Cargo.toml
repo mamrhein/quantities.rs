@@ -15,13 +15,17 @@ categories = ["data-structures", "mathematics"]
 [dependencies]
 qty-macros = { version = "0.11.0", path = "qty-macros" }
 fpdec = { version = "0.7", optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
 trybuild = "1"
+serde = "1"
+serde_json = { version = "1.0" }
 
 [features]
 default = ["std"]
 std = []
+serde = ["dep:serde", "fpdec?/serde-as-str"]
 mass = []
 length = []
 duration = []
@@ -37,9 +41,22 @@ datavolume = []
 datathroughput = ["datavolume", "duration"]
 temperature = []
 # used for rustdoc only
-doc = ["mass", "length", "duration", "area", "volume", "speed",
-    "acceleration", "force", "energy", "power", "frequency", "datavolume",
-    "datathroughput", "temperature"]
+doc = [
+  "mass",
+  "length",
+  "duration",
+  "area",
+  "volume",
+  "speed",
+  "acceleration",
+  "force",
+  "energy",
+  "power",
+  "frequency",
+  "datavolume",
+  "datathroughput",
+  "temperature",
+]
 
 [workspace]
 members = [".", "qty-macros", "astronimical_quantities"]
