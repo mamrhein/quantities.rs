@@ -268,6 +268,8 @@ By default, only the feature `std` is enabled.
 * **fpdec** - When enabled, instead of `f64` or `f32` `fpdec::Decimal` is used
   as `AmountT` (see [above](#type-of-the-numerical-part)).
 
+* **serde** - When enabled, support for `serde` is enabled.
+
 ## Predefined quantities
 
 With the following features additional modules can be enabled, each providing
