@@ -14,7 +14,7 @@ categories = ["data-structures", "mathematics"]
 
 [dependencies]
 qty-macros = { version = "0.12.0", path = "qty-macros" }
-fpdec = { version = "0.8", optional = true }
+fpdec = { version = "0.10", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
