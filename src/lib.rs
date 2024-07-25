@@ -58,7 +58,10 @@
 
 extern crate alloc;
 
-use alloc::{format, string::String};
+use alloc::{
+    format,
+    string::{String, ToString},
+};
 use core::{
     cmp::Ordering,
     fmt,
@@ -142,10 +145,10 @@ pub trait Unit:
     }
 
     /// Returns the name of `self`.
-    fn name(&self) -> &'static str;
+    fn name(&self) -> String;
 
     /// Returns the symbol used to represent `self`.
-    fn symbol(&self) -> &'static str;
+    fn symbol(&self) -> String;
 
     /// Returns the SI prefix of `self`, or None is `self` is not a SI unit.
     fn si_prefix(&self) -> Option<SIPrefix>;
@@ -159,10 +162,10 @@ pub trait Unit:
     ///
     /// # Errors
     ///
-    /// This function will only return an instance of `Error` returned from the
-    /// formatter.
+    /// This function will only return an instance of `Error` returned from
+    /// the formatter.
     fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(self.symbol(), form)
+        fmt::Display::fmt(&self.symbol(), form)
     }
 }
 
@@ -171,8 +174,8 @@ pub trait LinearScaledUnit: Unit {
     /// Unit used as reference for scaling the units.
     const REF_UNIT: Self;
 
-    /// Returns `Some(unit)` where `unit.scale()` == `Some(amnt)`, or `None` if
-    /// there is no such unit.
+    /// Returns `Some(unit)` where `unit.scale()` == `Some(amnt)`, or `None`
+    /// if there is no such unit.
     #[must_use]
     fn from_scale(amnt: AmountT) -> Option<Self> {
         for unit in Self::iter() {
@@ -230,15 +233,15 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     /// Returns the unit of `self`.
     fn unit(&self) -> Self::UnitType;
 
-    /// Return `true` if `self` and `other` have the same unit and their amounts
-    /// are equal, otherwise `false`.
+    /// Return `true` if `self` and `other` have the same unit and their
+    /// amounts are equal, otherwise `false`.
     #[inline(always)]
     fn eq(&self, other: &Self) -> bool {
         self.unit() == other.unit() && self.amount() == other.amount()
     }
 
-    /// Returns the partial order of `self`s and `other`s amounts, if both have
-    /// the same unit, otherwise `None`.
+    /// Returns the partial order of `self`s and `other`s amounts, if both
+    /// have the same unit, otherwise `None`.
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.unit() == other.unit() {
             PartialOrd::partial_cmp(&self.amount(), &other.amount())
@@ -263,8 +266,8 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         );
     }
 
-    /// Returns the difference between `self` and `other`, if both have the same
-    /// unit.
+    /// Returns the difference between `self` and `other`, if both have the
+    /// same unit.
     ///
     /// # Panics
     ///
@@ -300,29 +303,28 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     ///
     /// # Errors
     ///
-    /// This function will only return an instance of `Error` returned from the
-    /// formatter.
+    /// This function will only return an instance of `Error` returned from
+    /// the formatter.
     fn fmt(&self, form: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.unit().symbol() {
-            "" => fmt::Display::fmt(&self.amount(), form),
-            _ => {
-                let tmp: String;
-                let amnt_non_neg = self.amount() >= AMNT_ZERO;
-                #[cfg(feature = "fpdec")]
-                let abs_amnt = self.amount().abs();
-                #[cfg(not(feature = "fpdec"))]
-                let abs_amnt = if amnt_non_neg {
-                    self.amount()
-                } else {
-                    -self.amount()
-                };
-                if let Some(prec) = form.precision() {
-                    tmp = format!("{:.*} {}", prec, abs_amnt, self.unit());
-                } else {
-                    tmp = format!("{} {}", abs_amnt, self.unit());
-                }
-                form.pad_integral(amnt_non_neg, "", &tmp)
+        if self.unit().symbol().is_empty() {
+            fmt::Display::fmt(&self.amount(), form)
+        } else {
+            let tmp: String;
+            let amnt_non_neg = self.amount() >= AMNT_ZERO;
+            #[cfg(feature = "fpdec")]
+            let abs_amnt = self.amount().abs();
+            #[cfg(not(feature = "fpdec"))]
+            let abs_amnt = if amnt_non_neg {
+                self.amount()
+            } else {
+                -self.amount()
+            };
+            if let Some(prec) = form.precision() {
+                tmp = format!("{:.*} {}", prec, abs_amnt, self.unit());
+            } else {
+                tmp = format!("{} {}", abs_amnt, self.unit());
             }
+            form.pad_integral(amnt_non_neg, "", &tmp)
         }
     }
 }
@@ -401,16 +403,17 @@ where
     }
 
     #[doc(hidden)]
-    /// Returns a new instance of the type implementing `HasRefUnit`, equivalent
-    /// to `amount * Self::REF_UNIT`, converted to the unit with the greatest
-    /// scale less than or equal to `amount` or - if there is no such unit - to
-    /// the unit with the smallest scale greater than `amount`, in any case
-    /// taking only SI units into account if Self::REF_UNIT is a SI unit.
+    /// Returns a new instance of the type implementing `HasRefUnit`,
+    /// equivalent to `amount * Self::REF_UNIT`, converted to the unit
+    /// with the greatest scale less than or equal to `amount` or - if
+    /// there is no such unit - to the unit with the smallest scale
+    /// greater than `amount`, in any case taking only SI units into
+    /// account if Self::REF_UNIT is a SI unit.
     #[must_use]
     fn _fit(amount: AmountT) -> Self {
         let take_all = Self::REF_UNIT.si_prefix().is_none();
-        let mut it =
-            Self::iter_units().filter(|u| take_all || u.si_prefix().is_some());
+        let mut it = Self::iter_units()
+            .filter(|u| take_all || u.si_prefix().is_some());
         // `it` returns atleast the reference unit, so its safe to unwrap here
         let first = it.next().unwrap();
         let last = it
@@ -442,11 +445,11 @@ impl Unit for One {
     fn iter<'a>() -> core::slice::Iter<'a, Self> {
         Self::VARIANTS.iter()
     }
-    fn name(&self) -> &'static str {
-        "One"
+    fn name(&self) -> String {
+        "One".to_string()
     }
-    fn symbol(&self) -> &'static str {
-        ""
+    fn symbol(&self) -> String {
+        "".to_string()
     }
     fn si_prefix(&self) -> Option<SIPrefix> {
         None

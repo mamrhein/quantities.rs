@@ -429,8 +429,8 @@ fn codegen_qty_single_unit(
             fn iter<'a>() -> core::slice::Iter<'a, Self> {
                 Self::VARIANTS.iter()
             }
-            fn name(&self) -> &'static str { #unit_name }
-            fn symbol(&self) -> &'static str { #unit_symbol }
+            fn name(&self) -> String { #unit_name.to_string() }
+            fn symbol(&self) -> String { #unit_symbol.to_string() }
             fn si_prefix(&self) -> Option<SIPrefix> { None }
         }
         #[derive(Copy, Clone, Debug)]
@@ -532,11 +532,11 @@ fn codegen_fn_name(units: &Vec<UnitDef>) -> TokenStream {
         let unit_name = unit.name.clone();
         code = quote!(
             #code
-            Self::#unit_ident => #unit_name,
+            Self::#unit_ident => #unit_name.to_string(),
         )
     }
     quote!(
-        fn name(&self) -> &'static str {
+        fn name(&self) -> String {
             match self {
                 #code
             }
@@ -551,11 +551,11 @@ fn codegen_fn_symbol(units: &Vec<UnitDef>) -> TokenStream {
         let unit_symbol = unit.symbol.clone();
         code = quote!(
             #code
-            Self::#unit_ident => #unit_symbol,
+            Self::#unit_ident => #unit_symbol.to_string(),
         )
     }
     quote!(
-        fn symbol(&self) -> &'static str {
+        fn symbol(&self) -> String {
             match self {
                 #code
             }
