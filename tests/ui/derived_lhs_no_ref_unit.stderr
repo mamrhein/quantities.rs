@@ -13,49 +13,43 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
              DataVolume
              Energy
              Force
-           and 8 others
+           and $N others
    = help: see issue #48214
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `FooUnit: quantities::LinearScaledUnit` is not satisfied
-   --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
-    |
-21  | #[quantity(Foo * Bar)]
-    | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `FooUnit`
-    |
-    = help: the following other types implement trait `quantities::LinearScaledUnit`:
-              AccelerationUnit
-              AreaUnit
-              BarUnit
-              BazUnit
-              DataThroughputUnit
-              DataVolumeUnit
-              DurationUnit
-              EnergyUnit
-            and 8 others
-note: required by a bound in `quantities::HasRefUnit`
-   --> src/lib.rs
-    |
-    |     <Self as Quantity>::UnitType: LinearScaledUnit,
-    |                                   ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit`
-    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `FooUnit`
    |
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Acceleration
-             Area
-             Bar
-             Baz
-             DataThroughput
-             DataVolume
-             Energy
-             Force
-           and 8 others
+   = help: the following other types implement trait `quantities::LinearScaledUnit`:
+             AccelerationUnit
+             AreaUnit
+             BarUnit
+             BazUnit
+             DataThroughputUnit
+             DataVolumeUnit
+             DurationUnit
+             EnergyUnit
+           and $N others
+note: required by a bound in `quantities::HasRefUnit`
+  --> src/lib.rs
+   |
+   | pub trait HasRefUnit: Quantity + Add<Self> + Sub<Self> + Div<Self>
+   |           ---------- required by a bound in this trait
+   | where
+   |     <Self as Quantity>::UnitType: LinearScaledUnit,
+   |                                   ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit`
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: cannot multiply `Foo` by `Bar`
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ no implementation for `Foo * Bar`
+   |
+   = help: the trait `quantities::HasRefUnit` is not implemented for `Foo`, which is required by `Foo: std::ops::Mul<Bar>`
 note: required for `Foo` to implement `std::ops::Mul<Bar>`
   --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
    |
@@ -68,7 +62,7 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`, which is required by `Bar: std::ops::Mul<Foo>`
    |
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
@@ -79,13 +73,98 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
              DataVolume
              Energy
              Force
-           and 8 others
+           and $N others
 note: required for `Bar` to implement `std::ops::Mul<Foo>`
   --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^
    = help: see issue #48214
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Foo`, which is required by `Baz: std::ops::Div<Foo>`
+   |
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Acceleration
+             Area
+             Bar
+             Baz
+             DataThroughput
+             DataVolume
+             Energy
+             Force
+           and $N others
+note: required for `Baz` to implement `std::ops::Div<Foo>`
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound introduced here
+...
+24 | struct Baz {}
+   |        ^^^
+   = help: see issue #48214
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: no method named `scale` found for enum `FooUnit` in the current scope
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+12 | #[quantity]
+   | ----------- method `scale` not found for this enum
+...
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ method not found in `FooUnit`
+   |
+   = help: items from traits can only be used if the trait is implemented and in scope
+   = note: the following trait defines an item `scale`, perhaps you need to implement it:
+           candidate #1: `quantities::LinearScaledUnit`
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: no function or associated item named `unit_from_scale` found for struct `Foo` in the current scope
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+12 | #[quantity]
+   | ----------- function or associated item `unit_from_scale` not found for this struct
+...
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ function or associated item not found in `Foo`
+   |
+   = help: items from traits can only be used if the trait is implemented and in scope
+   = note: the following trait defines an item `unit_from_scale`, perhaps you need to implement it:
+           candidate #1: `quantities::HasRefUnit`
+   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
+help: there is an associated function `unit_from_symbol` with a similar name
+   |
+21 | unit_from_symbol
+   |
+
+error[E0277]: the trait bound `FooUnit: quantities::LinearScaledUnit` is not satisfied
+  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
+   |
+21 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `FooUnit`
+   |
+   = help: the following other types implement trait `quantities::LinearScaledUnit`:
+             AccelerationUnit
+             AreaUnit
+             BarUnit
+             BazUnit
+             DataThroughputUnit
+             DataVolumeUnit
+             DurationUnit
+             EnergyUnit
+           and $N others
+note: required by a bound in `_fit`
+  --> src/lib.rs
+   |
+   |     <Self as Quantity>::UnitType: LinearScaledUnit,
+   |                                   ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit::_fit`
+...
+   |     fn _fit(amount: AmountT) -> Self {
+   |        ---- required by a bound in this associated function
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
@@ -103,14 +182,5 @@ error[E0277]: the trait bound `Foo: quantities::HasRefUnit` is not satisfied
              DataVolume
              Energy
              Force
-           and 8 others
-note: required for `Baz` to implement `std::ops::Div<Foo>`
-  --> tests/ui/derived_lhs_no_ref_unit.rs:21:1
-   |
-21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound introduced here
-...
-24 | struct Baz {}
-   |        ^^^
-   = help: see issue #48214
+           and $N others
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
