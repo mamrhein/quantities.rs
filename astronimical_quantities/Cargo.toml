@@ -1,6 +1,6 @@
 [package]
 name = "astronomical-quantities"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 authors = ["Michael Amrhein <michael@adrhinum.de>"]
 description = "Unit-safe computations with astronomical quantities."
@@ -13,8 +13,8 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "astronomical"]
 categories = ["data-structures", "mathematics", "science"]
 
 [dependencies]
-quantities = { version = "0.12.0", path = ".." }
-qty-macros = { version = "0.12.0", path = "../qty-macros" }
+quantities = { version = "0.13.0", path = ".." }
+qty-macros = { version = "0.13.0", path = "../qty-macros" }
 
 [dev-dependencies]
 trybuild = "1"
