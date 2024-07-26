@@ -33,7 +33,7 @@
 #![warn(clippy::integer_division)]
 #![warn(clippy::manual_assert)]
 #![warn(clippy::match_same_arms)]
-// #![warn(clippy::mismatching_type_param_order)] TODO: enable when got stable
+#![warn(clippy::mismatching_type_param_order)]
 #![warn(clippy::missing_const_for_fn)]
 #![warn(clippy::missing_errors_doc)]
 #![warn(clippy::missing_panics_doc)]
@@ -58,10 +58,7 @@
 
 extern crate alloc;
 
-use alloc::{
-    format,
-    string::{String, ToString},
-};
+use alloc::{borrow::ToOwned, format, string::String};
 use core::{
     cmp::Ordering,
     fmt,
@@ -136,12 +133,7 @@ pub trait Unit:
     /// there is no such unit.
     #[must_use]
     fn from_symbol(symbol: &str) -> Option<Self> {
-        for unit in Self::iter() {
-            if unit.symbol() == symbol {
-                return Some(unit);
-            }
-        }
-        None
+        Self::iter().find(|&unit| unit.symbol() == symbol)
     }
 
     /// Returns the name of `self`.
@@ -178,12 +170,7 @@ pub trait LinearScaledUnit: Unit {
     /// if there is no such unit.
     #[must_use]
     fn from_scale(amnt: AmountT) -> Option<Self> {
-        for unit in Self::iter() {
-            if unit.scale() == amnt {
-                return Some(unit);
-            }
-        }
-        None
+        Self::iter().find(|&unit| unit.scale() == amnt)
     }
 
     /// Returns `true` if `self` is the reference unit of its unit type.
@@ -208,6 +195,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     type UnitType: Unit<QuantityType = Self>;
 
     /// Returns an iterator over the variants of `Self::UnitType`.
+    #[must_use]
     fn iter_units() -> impl Iterator<Item = Self::UnitType> {
         Self::UnitType::iter()
     }
@@ -216,12 +204,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     /// there is no such unit.
     #[must_use]
     fn unit_from_symbol(symbol: &str) -> Option<Self::UnitType> {
-        for unit in Self::iter_units() {
-            if unit.symbol() == symbol {
-                return Some(unit);
-            }
-        }
-        None
+        Self::iter_units().find(|&unit| unit.symbol() == symbol)
     }
 
     /// Returns a new instance of the type implementing `Quantity`.
@@ -341,12 +324,7 @@ where
     /// there is no such unit.
     #[must_use]
     fn unit_from_scale(amnt: AmountT) -> Option<Self::UnitType> {
-        for unit in Self::iter_units() {
-            if unit.scale() == amnt {
-                return Some(unit);
-            }
-        }
-        None
+        Self::iter_units().find(|&unit| unit.scale() == amnt)
     }
 
     /// Returns `factor` so that `factor` * `unit` == `self`.
@@ -446,10 +424,10 @@ impl Unit for One {
         Self::VARIANTS.iter().cloned()
     }
     fn name(&self) -> String {
-        "One".to_string()
+        "One".to_owned()
     }
     fn symbol(&self) -> String {
-        "".to_string()
+        "".to_owned()
     }
     fn si_prefix(&self) -> Option<SIPrefix> {
         None

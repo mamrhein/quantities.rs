@@ -430,8 +430,8 @@ fn codegen_qty_single_unit(
             fn iter() -> impl Iterator<Item = Self> {
                 Self::VARIANTS.iter().cloned()
             }
-            fn name(&self) -> String { #unit_name.to_string() }
-            fn symbol(&self) -> String { #unit_symbol.to_string() }
+            fn name(&self) -> String { #unit_name.to_owned() }
+            fn symbol(&self) -> String { #unit_symbol.to_owned() }
             fn si_prefix(&self) -> Option<SIPrefix> { None }
         }
         #[derive(Copy, Clone, Debug)]
@@ -533,7 +533,7 @@ fn codegen_fn_name(units: &Vec<UnitDef>) -> TokenStream {
         let unit_name = unit.name.clone();
         code = quote!(
             #code
-            Self::#unit_ident => #unit_name.to_string(),
+            Self::#unit_ident => #unit_name.to_owned(),
         )
     }
     quote!(
@@ -552,7 +552,7 @@ fn codegen_fn_symbol(units: &Vec<UnitDef>) -> TokenStream {
         let unit_symbol = unit.symbol.clone();
         code = quote!(
             #code
-            Self::#unit_ident => #unit_symbol.to_string(),
+            Self::#unit_ident => #unit_symbol.to_owned(),
         )
     }
     quote!(

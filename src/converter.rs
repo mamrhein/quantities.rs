@@ -24,6 +24,7 @@ pub trait Converter<Q: Quantity> {
 /// * to_unit: Q::UnitType,
 /// * factor: AmountT,
 /// * offset: AmountT
+///
 /// defining the conversion
 /// to_amount = from_amount * factor + offset
 #[derive(Debug)]

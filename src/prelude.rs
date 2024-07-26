@@ -10,7 +10,7 @@
 //! This module reexports all macros and types needed to define a quantity.
 
 #[doc(hidden)]
-pub use alloc::string::{String, ToString};
+pub use alloc::{borrow::ToOwned, string::String};
 #[doc(hidden)]
 pub use core::cmp::Ordering;
 #[doc(hidden)]
