@@ -58,7 +58,8 @@ fn get_ident(expr: &syn::Expr) -> Option<&syn::Ident> {
 pub(crate) fn parse_args(args: TokenStream) -> Option<DerivedAs> {
     const ARGS_ERROR: &str =
         "Unknown argument(s) given to attribute `quantity`.";
-    const OPERATOR_ERROR: &str = "Binary expression with '*' or '/' expected.";
+    const OPERATOR_ERROR: &str =
+        "Binary expression with '*' or '/' expected.";
     const OPERAND_ERROR: &str = "Identifier expected.";
     #[rustfmt::skip]
     const ARGS_HELP: &str =
@@ -426,8 +427,8 @@ fn codegen_qty_single_unit(
         }
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
-            fn iter<'a>() -> core::slice::Iter<'a, Self> {
-                Self::VARIANTS.iter()
+            fn iter() -> impl Iterator<Item = Self> {
+                Self::VARIANTS.iter().cloned()
             }
             fn name(&self) -> String { #unit_name.to_string() }
             fn symbol(&self) -> String { #unit_symbol.to_string() }
@@ -614,7 +615,8 @@ fn codegen_qty_without_ref_unit(
     let code_fn_name = codegen_fn_name(units);
     let code_fn_symbol = codegen_fn_symbol(units);
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
-    let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
+    let code_impl_quantity =
+        codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
         #code_impl_quantity
         #[doc = #unit_doc]
@@ -624,8 +626,8 @@ fn codegen_qty_without_ref_unit(
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
-            fn iter<'a>() -> core::slice::Iter<'a, Self> {
-                Self::VARIANTS.iter()
+            fn iter() -> impl Iterator<Item = Self> {
+                Self::VARIANTS.iter().cloned()
             }
             #code_fn_name
             #code_fn_symbol
@@ -673,7 +675,8 @@ fn codegen_fn_si_prefix(units: &Vec<UnitDef>) -> TokenStream {
     for unit in units {
         if unit.si_prefix.is_some() {
             let unit_ident = &unit.unit_ident;
-            let unit_si_prefix: &syn::Ident = unit.si_prefix.as_ref().unwrap();
+            let unit_si_prefix: &syn::Ident =
+                unit.si_prefix.as_ref().unwrap();
             code = quote!(
                 #code
                 Self::#unit_ident =>
@@ -729,7 +732,8 @@ fn codegen_qty_with_ref_unit(
     let code_fn_si_prefix = codegen_fn_si_prefix(units);
     let code_fn_scale = codegen_fn_scale(units);
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
-    let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
+    let code_impl_quantity =
+        codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
         #code_impl_quantity
         #[doc = #unit_doc]
@@ -741,8 +745,8 @@ fn codegen_qty_with_ref_unit(
         #code_unit_variants_array
         impl Unit for #unit_enum_ident {
             type QuantityType = #qty_ident;
-            fn iter<'a>() -> core::slice::Iter<'a, Self> {
-                Self::VARIANTS.iter()
+            fn iter() -> impl Iterator<Item = Self> {
+                Self::VARIANTS.iter().cloned()
             }
             #code_fn_name
             #code_fn_symbol
@@ -1174,7 +1178,12 @@ mod internal_fn_tests {
 
     fn get_ast_basic_qty() -> Item {
         let item = quote!(
-            #[ref_unit(Megapop, "Mp", MEGA, "1000000·p\nFoo's reference unit")]
+            #[ref_unit(
+                Megapop,
+                "Mp",
+                MEGA,
+                "1000000·p\nFoo's reference unit"
+            )]
             #[unit(Gigapop, "Gp", GIGA, 1000, "1000000000·p")]
             #[unit(Pop, "p", 0.000001)]
             /// Quantity Foo
@@ -1192,7 +1201,9 @@ mod internal_fn_tests {
         let attr_names: Vec<String> = item
             .attrs
             .iter()
-            .map(|attr| attr.path().segments.first().unwrap().ident.to_string())
+            .map(|attr| {
+                attr.path().segments.first().unwrap().ident.to_string()
+            })
             .collect();
         assert_eq!(attr_names, ["ref_unit", "unit", "unit", "doc"]);
     }
@@ -1206,7 +1217,7 @@ mod internal_fn_tests {
             item.attrs
                 .first()
                 .unwrap()
-                .path
+                .path()
                 .segments
                 .first()
                 .unwrap()

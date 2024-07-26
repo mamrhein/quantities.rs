@@ -130,7 +130,7 @@ pub trait Unit:
     type QuantityType: Quantity<UnitType = Self>;
 
     /// Returns an iterator over the variants of `Self`.
-    fn iter<'a>() -> core::slice::Iter<'a, Self>;
+    fn iter() -> impl Iterator<Item = Self>;
 
     /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
     /// there is no such unit.
@@ -138,7 +138,7 @@ pub trait Unit:
     fn from_symbol(symbol: &str) -> Option<Self> {
         for unit in Self::iter() {
             if unit.symbol() == symbol {
-                return Some(*unit);
+                return Some(unit);
             }
         }
         None
@@ -180,7 +180,7 @@ pub trait LinearScaledUnit: Unit {
     fn from_scale(amnt: AmountT) -> Option<Self> {
         for unit in Self::iter() {
             if unit.scale() == amnt {
-                return Some(*unit);
+                return Some(unit);
             }
         }
         None
@@ -208,7 +208,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     type UnitType: Unit<QuantityType = Self>;
 
     /// Returns an iterator over the variants of `Self::UnitType`.
-    fn iter_units<'a>() -> core::slice::Iter<'a, Self::UnitType> {
+    fn iter_units() -> impl Iterator<Item = Self::UnitType> {
         Self::UnitType::iter()
     }
 
@@ -218,7 +218,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     fn unit_from_symbol(symbol: &str) -> Option<Self::UnitType> {
         for unit in Self::iter_units() {
             if unit.symbol() == symbol {
-                return Some(*unit);
+                return Some(unit);
             }
         }
         None
@@ -343,7 +343,7 @@ where
     fn unit_from_scale(amnt: AmountT) -> Option<Self::UnitType> {
         for unit in Self::iter_units() {
             if unit.scale() == amnt {
-                return Some(*unit);
+                return Some(unit);
             }
         }
         None
@@ -420,8 +420,8 @@ where
             .filter(|u| u.scale() > first.scale() && u.scale() <= amount)
             .last();
         match last {
-            Some(unit) => Self::new(amount / unit.scale(), *unit),
-            None => Self::new(amount / first.scale(), *first),
+            Some(unit) => Self::new(amount / unit.scale(), unit),
+            None => Self::new(amount / first.scale(), first),
         }
     }
 }
@@ -442,8 +442,8 @@ pub const ONE: One = One::One;
 
 impl Unit for One {
     type QuantityType = AmountT;
-    fn iter<'a>() -> core::slice::Iter<'a, Self> {
-        Self::VARIANTS.iter()
+    fn iter() -> impl Iterator<Item = Self> {
+        Self::VARIANTS.iter().cloned()
     }
     fn name(&self) -> String {
         "One".to_string()

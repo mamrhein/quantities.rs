@@ -50,9 +50,9 @@ mod quantity_with_ref_unit_tests {
     #[test]
     fn test_unit_iter() {
         let mut iter_units = FooUnit::iter();
-        assert_eq!(iter_units.next(), Some(&C));
-        assert_eq!(iter_units.next(), Some(&B));
-        assert_eq!(iter_units.next(), Some(&A));
+        assert_eq!(iter_units.next(), Some(C));
+        assert_eq!(iter_units.next(), Some(B));
+        assert_eq!(iter_units.next(), Some(A));
         assert_eq!(iter_units.next(), None);
     }
 
@@ -75,9 +75,9 @@ mod quantity_with_ref_unit_tests {
     #[test]
     fn test_qty_iter_units() {
         let mut iter_units = Foo::iter_units();
-        assert_eq!(iter_units.next(), Some(&C));
-        assert_eq!(iter_units.next(), Some(&B));
-        assert_eq!(iter_units.next(), Some(&A));
+        assert_eq!(iter_units.next(), Some(C));
+        assert_eq!(iter_units.next(), Some(B));
+        assert_eq!(iter_units.next(), Some(A));
         assert_eq!(iter_units.next(), None);
     }
 
@@ -331,18 +331,18 @@ mod quantity_without_ref_unit_tests {
     #[test]
     fn test_unit_iter() {
         let mut iter_units = FooUnit::iter();
-        assert_eq!(iter_units.next(), Some(&A));
-        assert_eq!(iter_units.next(), Some(&B));
-        assert_eq!(iter_units.next(), Some(&C));
+        assert_eq!(iter_units.next(), Some(A));
+        assert_eq!(iter_units.next(), Some(B));
+        assert_eq!(iter_units.next(), Some(C));
         assert_eq!(iter_units.next(), None);
     }
 
     #[test]
     fn test_qty_iter_units() {
         let mut iter_units = Foo::iter_units();
-        assert_eq!(iter_units.next(), Some(&A));
-        assert_eq!(iter_units.next(), Some(&B));
-        assert_eq!(iter_units.next(), Some(&C));
+        assert_eq!(iter_units.next(), Some(A));
+        assert_eq!(iter_units.next(), Some(B));
+        assert_eq!(iter_units.next(), Some(C));
         assert_eq!(iter_units.next(), None);
     }
 
@@ -466,14 +466,14 @@ mod quantity_single_unit_tests {
     #[test]
     fn test_unit_iter() {
         let mut iter_units = FooUnit::iter();
-        assert_eq!(iter_units.next(), Some(&POP));
+        assert_eq!(iter_units.next(), Some(POP));
         assert_eq!(iter_units.next(), None);
     }
 
     #[test]
     fn test_qty_iter_units() {
         let mut iter_units = Foo::iter_units();
-        assert_eq!(iter_units.next(), Some(&POP));
+        assert_eq!(iter_units.next(), Some(POP));
         assert_eq!(iter_units.next(), None);
     }
 
