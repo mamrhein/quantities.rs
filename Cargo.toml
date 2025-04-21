@@ -11,7 +11,7 @@ documentation = "https://docs.rs/quantities/"
 license-file = "LICENSE.TXT"
 keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
-rust-version = "1.75.0"
+rust-version = "1.80.1"
 
 [dependencies]
 qty-macros = { version = "0.13.0", path = "qty-macros" }
@@ -43,20 +43,20 @@ datathroughput = ["datavolume", "duration"]
 temperature = []
 # used for rustdoc only
 doc = [
-  "mass",
-  "length",
-  "duration",
-  "area",
-  "volume",
-  "speed",
-  "acceleration",
-  "force",
-  "energy",
-  "power",
-  "frequency",
-  "datavolume",
-  "datathroughput",
-  "temperature",
+    "mass",
+    "length",
+    "duration",
+    "area",
+    "volume",
+    "speed",
+    "acceleration",
+    "force",
+    "energy",
+    "power",
+    "frequency",
+    "datavolume",
+    "datathroughput",
+    "temperature",
 ]
 
 [workspace]
