@@ -1,6 +1,6 @@
 [package]
 name = "quantities"
-version = "0.13.3"
+version = "0.14.0"
 edition = "2021"
 authors = ["Michael Amrhein <michael@adrhinum.de>"]
 description = "Unit-safe computations with quantities."
@@ -14,7 +14,7 @@ categories = ["data-structures", "mathematics"]
 rust-version = "1.80.1"
 
 [dependencies]
-qty-macros = { version = "0.13.0", path = "qty-macros" }
+qty-macros = { version = "0.14.0", path = "qty-macros" }
 fpdec = { version = "0.11", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
