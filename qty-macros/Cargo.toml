@@ -15,9 +15,9 @@ categories = ["data-structures", "mathematics"]
 [dependencies]
 convert_case = "0.8"
 proc-macro2 = "1"
-proc-macro-error = "1"
+proc-macro-error2 = "2"
 quote = "1"
-syn = {version="2", features=["full"]}
+syn = { version = "2", features = ["full"] }
 
 [dev-dependencies]
 trybuild = "1"

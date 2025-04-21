@@ -14,7 +14,7 @@ mod quantity_attr_helper;
 use ::convert_case::{Case, Casing};
 use ::proc_macro::TokenStream;
 use ::proc_macro2::{Span, TokenStream as TokenStream2};
-use ::proc_macro_error::proc_macro_error;
+use ::proc_macro_error2::proc_macro_error;
 use ::quote::quote;
 use ::syn::{parse_macro_input, Ident, ItemEnum};
 
@@ -112,8 +112,7 @@ pub fn derive_variants_as_constants(input: TokenStream) -> TokenStream {
 /// #     Blue,
 /// # }
 /// impl Color {
-///     const VARIANTS: [Self; 3usize] =
-///         [Self::Red, Self::Green, Self::Blue];
+///     const VARIANTS: [Self; 3usize] = [Self::Red, Self::Green, Self::Blue];
 ///     #[doc = "Returns an iterator over the variants of `Self`."]
 ///     #[inline(always)]
 ///     pub fn iter() -> core::slice::Iter<'static, Self> {
@@ -153,8 +152,8 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 }
 
 /// Generates an enum with the given units (incl. the refunit, if given) as
-/// variants, an implemention of trait `Unit` for this enum and a type alias of
-/// `Qty` with the enum as parameter and named after the given struct.
+/// variants, an implemention of trait `Unit` for this enum and a type alias
+/// of `Qty` with the enum as parameter and named after the given struct.
 ///
 /// In addition, it creates a constant for each enum variant, thus providing a
 /// constant for each unit.
@@ -195,7 +194,8 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// * The given struct does have generic parameters and/or fields.
 /// * More than one attribute `#[ref_unit]` is given.
 /// * No attribute `#[unit]` is given.
-/// * Wrong number or wrong type of arguments given to attribute `#[ref_unit]`.
+/// * Wrong number or wrong type of arguments given to attribute
+///   `#[ref_unit]`.
 /// * Wrong number of arguments given to an attribute `#[unit]`.
 /// * No \<scale\> argument given to an attribute `#[unit]` when required.
 ///
