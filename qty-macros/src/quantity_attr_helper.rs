@@ -1124,7 +1124,7 @@ pub(crate) fn codegen(
 ) -> TokenStream {
     let qty_ident = qty_def.qty_ident.clone();
     let unit_enum_ident =
-        syn::Ident::new(&*format!("{}Unit", qty_ident), Span::call_site());
+        syn::Ident::new(&format!("{}Unit", qty_ident), Span::call_site());
     let code_attrs = codegen_attrs(attrs);
     let code_qty = if qty_def.units.len() == 1 {
         let unit_ident = qty_def.units[0].unit_ident.clone();
