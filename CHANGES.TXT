@@ -1,5 +1,8 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.14.1    Updated convert_case requirement from 0.8 to 0.10.
+          Updated fpdec requirement from 0.11 to 0.13.
+
 0.14.0    Set msrv to 1.80.1.
           Changed dependency proc_macro_error to proc_macro_error2.
           Added Length unit 'Nautical Mile'.
