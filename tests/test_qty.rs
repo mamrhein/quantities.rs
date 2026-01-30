@@ -156,6 +156,15 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_qty_neg() {
+        let amnt = Amnt!(184.09);
+        let qty = Foo::new(amnt, FooUnit::A);
+        let neg = -qty;
+        assert_eq!(neg.amount(), -amnt);
+        assert_eq!(neg.unit(), FooUnit::A);
+    }
+
+    #[test]
     fn test_convert() {
         let qty = Foo::new(Amnt!(17.4), FooUnit::B);
         let equiv = qty.convert(FooUnit::A);

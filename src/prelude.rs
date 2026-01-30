@@ -16,7 +16,7 @@ pub use core::cmp::Ordering;
 #[doc(hidden)]
 pub use core::fmt;
 #[doc(hidden)]
-pub use core::ops::{Add, Div, Mul, Sub};
+pub use core::ops::{Add, Div, Mul, Sub, Neg};
 
 pub use qty_macros::quantity;
 

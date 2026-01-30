@@ -805,6 +805,13 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
                 <Self as Quantity>::fmt(self, f)
             }
         }
+        impl Neg for #qty_ident {
+            type Output = Self;
+            #[inline(always)]
+            fn neg(self) -> Self::Output {
+                Self::Output::new(-self.amount(), self.unit())
+            }
+        }
         impl Mul<#qty_ident> for AmountT {
             type Output = #qty_ident;
             #[inline(always)]

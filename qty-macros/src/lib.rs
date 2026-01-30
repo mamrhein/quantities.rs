@@ -380,6 +380,13 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///         <Self as Quantity>::fmt(self, f)
 ///     }
 /// }
+/// impl Neg for Mass {
+///     type Output = Mass;
+///     #[inline(always)]
+///     fn neg(self) -> Self::Output {
+///         Self::Output::new(-self.amount(), self.unit())
+///     }
+/// }
 /// impl Mul<Mass> for AmountT {
 ///     type Output = Mass;
 ///     #[inline(always)]
