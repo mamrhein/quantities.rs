@@ -67,9 +67,17 @@ use core::{
 
 #[cfg(feature = "fpdec")]
 pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
+#[cfg(all(not(feature = "fpdec"), any(
+    all(feature = "f32", not(feature = "f64")),
+    all(feature = "f32", feature = "f64", target_pointer_width = "32"),
+    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "32")
+)))]
 pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
+#[cfg(all(not(feature = "fpdec"), any(
+    all(not(feature = "f32"), feature = "f64"),
+    all(feature = "f32", feature = "f64", target_pointer_width = "64"),
+    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "64")
+)))]
 pub use amnt_f64::{AmountT, AMNT_ONE, AMNT_ZERO};
 pub use converter::{ConversionTable, Converter};
 pub use rate::Rate;
@@ -83,10 +91,18 @@ mod si_prefixes;
 #[cfg(feature = "fpdec")]
 #[doc(hidden)]
 pub mod amnt_dec;
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "32"))]
+#[cfg(all(not(feature = "fpdec"), any(
+    all(feature = "f32", not(feature = "f64")),
+    all(feature = "f32", feature = "f64", target_pointer_width = "32"),
+    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "32")
+)))]
 #[doc(hidden)]
 pub mod amnt_f32;
-#[cfg(all(not(feature = "fpdec"), target_pointer_width = "64"))]
+#[cfg(all(not(feature = "fpdec"), any(
+    all(not(feature = "f32"), feature = "f64"),
+    all(feature = "f32", feature = "f64", target_pointer_width = "64"),
+    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "64")
+)))]
 #[doc(hidden)]
 pub mod amnt_f64;
 
