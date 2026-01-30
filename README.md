@@ -158,11 +158,16 @@ the numerical part of a `Quantity` value.
 Internally the type alias `AmountT` is used. This alias can be controlled by
 the optional feature `fpdec` (see [features](#crate-features)).
 
-When feature `fpdec` is off (= default), `AmountT` is defined as `f64` on a
-64-bit system or as `f32` on a 32-bit system.
+When the features `fpdec`, `f32`, and `f64` are off (= default), `AmountT` is
+defined as `f64` on a 64-bit system or as `f32` on a 32-bit system.
+
+If only one of the features `f32`/`f64` are enabled, `AmountT` is defined as the
+enabled type. If both `f32` and `f64` are enabled, `AmountT` is defined by the
+default behavior.
 
 When feature `fpdec` is activated, `AmountT` is defined as `Decimal` (imported
-from crate `fpdec`).
+from crate `fpdec`). This feature takes precedence over both `f32` and `f64`
+features.
 
 The macro `Amnt!` can be used to convert float literals correctly to `AmountT`
 depending on the configuration. This is done automatically for the scale 

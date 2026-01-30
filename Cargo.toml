@@ -27,6 +27,8 @@ serde_json = { version = "1.0" }
 default = ["std"]
 std = []
 serde = ["dep:serde", "fpdec?/serde-as-str"]
+f32 = []
+f64 = []
 mass = []
 length = []
 duration = []
