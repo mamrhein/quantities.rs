@@ -121,3 +121,59 @@ pub struct Duration {}
 /// | m/s    | Meter per Second     | SI reference unit | 5.775483273639937e-7 |
 /// | c      | Speed of Light       | ls/s              | 173.14463267424034   |
 pub struct Speed {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mass() {
+        assert_eq!(<Mass as HasRefUnit>::REF_UNIT, MassUnit::REF_UNIT);
+        assert!(SOLAR_MASS.is_ref_unit());
+        let amnt: AmountT = Amnt!(29.35);
+        let m = amnt * SOLAR_MASS;
+        assert_eq!(m.amount, amnt);
+        assert_eq!(m.unit, SOLAR_MASS);
+        #[cfg(feature = "std")]
+        assert_eq!(m.to_string(), "29.35 M☉");
+    }
+
+    #[test]
+    fn test_length() {
+        assert_eq!(<Length as HasRefUnit>::REF_UNIT, LengthUnit::REF_UNIT);
+        assert!(ASTRONOMICAL_UNIT.is_ref_unit());
+        let amnt: AmountT = Amnt!(29.35);
+        let l = amnt * PARSEC;
+        assert_eq!(l.amount, amnt);
+        assert_eq!(l.unit, PARSEC);
+        #[cfg(feature = "std")]
+        assert_eq!(l.to_string(), "29.35 pc");
+    }
+
+    #[test]
+    fn test_duration() {
+        assert_eq!(
+            <Duration as HasRefUnit>::REF_UNIT,
+            DurationUnit::REF_UNIT
+        );
+        assert!(DAY.is_ref_unit());
+        let amnt: AmountT = Amnt!(29.35);
+        let d = amnt * JULIAN_YEAR;
+        assert_eq!(d.amount, amnt);
+        assert_eq!(d.unit, JULIAN_YEAR);
+        #[cfg(feature = "std")]
+        assert_eq!(d.to_string(), "29.35 a");
+    }
+
+    #[test]
+    fn test_speed() {
+        assert_eq!(<Speed as HasRefUnit>::REF_UNIT, SpeedUnit::REF_UNIT);
+        assert!(ASTRONOMICAL_UNITS_PER_DAY.is_ref_unit());
+        let amnt: AmountT = Amnt!(235.4);
+        let v = amnt * SPEED_OF_LIGHT;
+        assert_eq!(v.amount(), amnt);
+        assert_eq!(v.unit(), SPEED_OF_LIGHT);
+        #[cfg(feature = "std")]
+        assert_eq!(v.to_string(), "235.4 c");
+    }
+}
