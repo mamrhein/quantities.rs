@@ -41,7 +41,7 @@ mod tests {
         let a: AmountT = Amnt!(9030.);
         let at: AmountT = Amnt!(2.5);
         let t = at * MILLISECOND;
-        let f = a / t;
+        let f = (a / t).convert(KILOHERTZ);
         assert_almost_eq!(f.amount(), a / at);
         assert_eq!(f.unit(), KILOHERTZ);
     }
