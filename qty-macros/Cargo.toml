@@ -13,7 +13,7 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
 
 [dependencies]
-convert_case = "0.10"
+convert_case = "0.11"
 proc-macro2 = "1"
 proc-macro-error2 = "2"
 quote = "1"
