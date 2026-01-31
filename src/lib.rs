@@ -44,8 +44,6 @@
 #![warn(clippy::print_stderr)]
 #![warn(clippy::print_stdout)]
 #![warn(clippy::semicolon_if_nothing_returned)]
-#![warn(clippy::str_to_string)]
-#![warn(clippy::string_to_string)]
 #![warn(clippy::undocumented_unsafe_blocks)]
 #![warn(clippy::unicode_not_nfc)]
 #![warn(clippy::unimplemented)]
@@ -67,17 +65,31 @@ use core::{
 
 #[cfg(feature = "fpdec")]
 pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
-#[cfg(all(not(feature = "fpdec"), any(
-    all(feature = "f32", not(feature = "f64")),
-    all(feature = "f32", feature = "f64", target_pointer_width = "32"),
-    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "32")
-)))]
+#[cfg(all(
+    not(feature = "fpdec"),
+    any(
+        all(feature = "f32", not(feature = "f64")),
+        all(feature = "f32", feature = "f64", target_pointer_width = "32"),
+        all(
+            not(feature = "f32"),
+            not(feature = "f64"),
+            target_pointer_width = "32"
+        )
+    )
+))]
 pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
-#[cfg(all(not(feature = "fpdec"), any(
-    all(not(feature = "f32"), feature = "f64"),
-    all(feature = "f32", feature = "f64", target_pointer_width = "64"),
-    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "64")
-)))]
+#[cfg(all(
+    not(feature = "fpdec"),
+    any(
+        all(not(feature = "f32"), feature = "f64"),
+        all(feature = "f32", feature = "f64", target_pointer_width = "64"),
+        all(
+            not(feature = "f32"),
+            not(feature = "f64"),
+            target_pointer_width = "64"
+        )
+    )
+))]
 pub use amnt_f64::{AmountT, AMNT_ONE, AMNT_ZERO};
 pub use converter::{ConversionTable, Converter};
 pub use rate::Rate;
@@ -91,18 +103,32 @@ mod si_prefixes;
 #[cfg(feature = "fpdec")]
 #[doc(hidden)]
 pub mod amnt_dec;
-#[cfg(all(not(feature = "fpdec"), any(
-    all(feature = "f32", not(feature = "f64")),
-    all(feature = "f32", feature = "f64", target_pointer_width = "32"),
-    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "32")
-)))]
+#[cfg(all(
+    not(feature = "fpdec"),
+    any(
+        all(feature = "f32", not(feature = "f64")),
+        all(feature = "f32", feature = "f64", target_pointer_width = "32"),
+        all(
+            not(feature = "f32"),
+            not(feature = "f64"),
+            target_pointer_width = "32"
+        )
+    )
+))]
 #[doc(hidden)]
 pub mod amnt_f32;
-#[cfg(all(not(feature = "fpdec"), any(
-    all(not(feature = "f32"), feature = "f64"),
-    all(feature = "f32", feature = "f64", target_pointer_width = "64"),
-    all(not(feature = "f32"), not(feature = "f64"), target_pointer_width = "64")
-)))]
+#[cfg(all(
+    not(feature = "fpdec"),
+    any(
+        all(not(feature = "f32"), feature = "f64"),
+        all(feature = "f32", feature = "f64", target_pointer_width = "64"),
+        all(
+            not(feature = "f32"),
+            not(feature = "f64"),
+            target_pointer_width = "64"
+        )
+    )
+))]
 #[doc(hidden)]
 pub mod amnt_f64;
 
