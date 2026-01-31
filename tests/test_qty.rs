@@ -197,6 +197,15 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_qty_neg() {
+        let amnt = Amnt!(184.09);
+        let qty = Foo::new(amnt, FooUnit::A);
+        let neg = -qty;
+        assert_eq!(neg.amount(), -amnt);
+        assert_eq!(neg.unit(), qty.unit());
+    }
+
+    #[test]
     fn test_add_same_unit() {
         let amnt1 = Amnt!(0.1);
         let unit1 = FooUnit::A;
@@ -375,6 +384,15 @@ mod quantity_without_ref_unit_tests {
         assert!(!(qty1 > qty2));
         assert!(!(qty2 <= qty3));
         assert!(!(qty3 >= qty2));
+    }
+
+    #[test]
+    fn test_qty_neg() {
+        let amnt = Amnt!(184.09);
+        let qty = Foo::new(amnt, FooUnit::A);
+        let neg = -qty;
+        assert_eq!(neg.amount(), -amnt);
+        assert_eq!(neg.unit(), qty.unit());
     }
 
     #[test]
