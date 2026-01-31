@@ -1,4 +1,5 @@
 #!/bin/bash
-TRYBUILD=overwrite cargo hack test --feature-powerset --optional-deps \
+TRYBUILD=overwrite cargo hack test --lib --tests --no-fail-fast --feature-powerset --optional-deps \
   --group-features mass,length,duration,area,volume,speed,acceleration,force,energy,power,frequency,datavolume,datathroughput,temperature \
   --exclude-features doc
+cargo test --doc --features fpdec
