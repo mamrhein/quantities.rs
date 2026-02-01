@@ -1,5 +1,9 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.14.2    Added features f32 and f64 enabling to force a specific floating
+          point type to be used as AmountT (thanks to Phena Ildanach).
+          Added impl of Neg for quantities (thanks to Phena Ildanach).
+
 0.14.1    Updated convert_case requirement from 0.8 to 0.10.
           Updated fpdec requirement from 0.11 to 0.13.
 
