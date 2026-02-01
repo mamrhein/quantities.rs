@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: ⬇️ checkout repository
@@ -46,6 +46,8 @@ jobs:
       - name: 🛟 run cargo test
         run: |
           cargo hack test \
+          --lib \
+          --tests \
           --feature-powerset \
           --optional-deps \
           --group-features \
@@ -54,6 +56,9 @@ jobs:
           --exclude-features doc
         env:
           TRYBUILD: overwrite
+      - name: 🛟 run cargo doctest
+        run: |
+          cargo test --doc --features fpdec
   lint:
     needs: test
     runs-on: ubuntu-latest
