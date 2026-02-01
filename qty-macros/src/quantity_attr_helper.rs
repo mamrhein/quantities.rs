@@ -673,14 +673,12 @@ fn codegen_qty_without_ref_unit(
 fn codegen_fn_si_prefix(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
-        if unit.si_prefix.is_some() {
+        if let Some(si_prefix) = &unit.si_prefix {
             let unit_ident = &unit.unit_ident;
-            let unit_si_prefix: &syn::Ident =
-                unit.si_prefix.as_ref().unwrap();
             code = quote!(
                 #code
                 Self::#unit_ident =>
-                    Some(SIPrefix::#unit_si_prefix),
+                    Some(SIPrefix::#si_prefix),
             )
         }
     }
@@ -697,9 +695,8 @@ fn codegen_fn_si_prefix(units: &Vec<UnitDef>) -> TokenStream {
 fn codegen_fn_scale(units: &Vec<UnitDef>) -> TokenStream {
     let mut code = TokenStream::new();
     for unit in units {
-        if unit.scale.is_some() {
+        if let Some(unit_scale) = &unit.scale {
             let unit_ident = &unit.unit_ident;
-            let unit_scale: &syn::Lit = unit.scale.as_ref().unwrap();
             code = quote!(
                 #code
                 Self::#unit_ident => Amnt!(#unit_scale),

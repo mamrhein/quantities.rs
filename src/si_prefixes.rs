@@ -212,6 +212,7 @@ impl SIPrefix {
 mod tests {
     use super::*;
 
+    #[allow(clippy::cognitive_complexity)]
     #[test]
     fn test_iter() {
         let mut it = SIPrefix::iter();
