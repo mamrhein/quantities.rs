@@ -16,13 +16,13 @@ other types of quantities raised by some exponent.
 
 Examples:
 
-* Volume = Length ³
+- Volume = Length ³
 
-* Speed = Length ¹ · Duration ⁻¹
+- Speed = Length ¹ · Duration ⁻¹
 
-* Acceleration = Length ¹ · Duration ⁻²
+- Acceleration = Length ¹ · Duration ⁻²
 
-* Force = Mass ¹ · Acceleration ¹
+- Force = Mass ¹ · Acceleration ¹
 
 Each type of quantity may have one special unit which is used as a reference
 for the definition of all other units, for example Meter, Kilogram and
@@ -35,12 +35,11 @@ that follows the formula defining the type of quantity.
 
 Examples:
 
-* Speed -> Meter per Second = Meter ¹ · Second ⁻¹
+- Speed -> Meter per Second = Meter ¹ · Second ⁻¹
 
-* Acceleration -> Meter per Second squared = Meter ¹ · Second ⁻²
+- Acceleration -> Meter per Second squared = Meter ¹ · Second ⁻²
 
-* Force -> Newton = Kilogram ¹ · Meter ¹ · Second ⁻²
-
+- Force -> Newton = Kilogram ¹ · Meter ¹ · Second ⁻²
 
 # "Systems of Measure"
 
@@ -54,7 +53,7 @@ units and provide mechanisms to convert between them.
 
 # The Basics: Quantity and Unit
 
-The essential functionality of the package is provided by the traits 
+The essential functionality of the package is provided by the traits
 `Quantity`, `HasRefUnit`, `Unit` and `LinearScaledUnit` and a macro generating
 the code for concrete types of quantities.
 
@@ -152,26 +151,27 @@ assert_eq!(d, Amnt!(375.) * MILE);
 
 # Type of the numerical part
 
-The package allows to use either `float` or `fixed-point decimal` values for
+The package allows to use either binary or decimal floating-point values for
 the numerical part of a `Quantity` value.
 
 Internally the type alias `AmountT` is used. This alias can be controlled by
-the optional feature `fpdec` (see [features](#crate-features)).
+the optional features `f32`, `f64` and `fpdec` (see
+[features](#crate-features)).
 
-When the features `fpdec`, `f32`, and `f64` are off (= default), `AmountT` is
-defined as `f64` on a 64-bit system or as `f32` on a 32-bit system.
+When all three features are off (= default), `AmountT` is defined as `f64` on
+a 64-bit system or as `f32` on a 32-bit system.
 
-If only one of the features `f32`/`f64` are enabled, `AmountT` is defined as the
-enabled type. If both `f32` and `f64` are enabled, `AmountT` is defined by the
-default behavior.
+If only one of the features `f32` or `f64` is enabled, `AmountT` is defined as
+the corresponding type. If both `f32` and `f64` are enabled, `AmountT` is
+defined by the default behavior.
 
 When feature `fpdec` is activated, `AmountT` is defined as `Decimal` (imported
 from crate `fpdec`). This feature takes precedence over both `f32` and `f64`
 features.
 
-The macro `Amnt!` can be used to convert float literals correctly to `AmountT`
-depending on the configuration. This is done automatically for the scale 
-values of units by the proc-macro `quantity` described above.
+The macro `Amnt!` can be used to convert numerical literals correctly to
+`AmountT` depending on the configuration. This is done automatically for the
+scale values of units by the proc-macro `quantity` described above.
 
 # Instantiating quantities
 
@@ -234,7 +234,7 @@ let z = y + x;
 assert_eq!(z.to_string(), "1.4244 kg");
 ```
 
-Quantity values can always be multiplied or divided by numerical values, 
+Quantity values can always be multiplied or divided by numerical values,
 preserving the unit.
 
 Example:
@@ -263,39 +263,48 @@ By default, only the feature `std` is enabled.
 
 ## Ecosystem
 
-* **std** - When enabled, this will cause `quantities` to use the standard
-  library, so that conversion to string, formatting and printing are 
+- **std** - When enabled, this will cause `quantities` to use the standard
+  library, so that conversion to string, formatting and printing are
   available. When disabled, the use of crate `alloc` together with a
   system-specific allocator is needed to use that functionality.
 
 ## Optional dependencies
 
-* **fpdec** - When enabled, instead of `f64` or `f32` `fpdec::Decimal` is used
+- **fpdec** - When enabled, instead of `f64` or `f32` `fpdec::Decimal` is used
   as `AmountT` (see [above](#type-of-the-numerical-part)).
 
-* **serde** - When enabled, support for `serde` is enabled.
+- **serde** - When enabled, support for `serde` is enabled.
+
+## Controling the type alias `AmountT`
+
+These features are conflicting, at most one of them should be activated. See
+[above](#type-of-the-numerical-part) how possible conflicts are solved.
+
+- **fpdec** - Use `fpdec::Decimal` as `AmountT`.
+- **f32** - Use `f32` as `AmountT`.
+- **f64** - Use `f64` as `AmountT`.
 
 ## Predefined quantities
 
 With the following features additional modules can be enabled, each providing
 a predefined quantity.
 
-* **mass** - module [mass] - quantity [Mass](mass::Mass)
-* **length** - module [length] - quantity [Length](length::Length)
-* **duration** - module [duration] - quantity [Duration](duration::Duration)
-* **area** - module [area] - quantity [Area](area::Area)
-* **volume** - module [volume] - quantity [Volume](volume::Volume)
-* **speed** - module [speed] - quantity [Speed](speed::Speed)
-* **acceleration** - module [acceleration] - quantity 
+- **mass** - module [mass] - quantity [Mass](mass::Mass)
+- **length** - module [length] - quantity [Length](length::Length)
+- **duration** - module [duration] - quantity [Duration](duration::Duration)
+- **area** - module [area] - quantity [Area](area::Area)
+- **volume** - module [volume] - quantity [Volume](volume::Volume)
+- **speed** - module [speed] - quantity [Speed](speed::Speed)
+- **acceleration** - module [acceleration] - quantity
   [Acceleration](acceleration::Acceleration)
-* **force** - module [force] - quantity [Force](force::Force)
-* **energy** - module [energy] - quantity [Energy](energy::Energy)
-* **power** - module [power] - quantity [Power](power::Power)
-* **frequency** - module [frequency] - quantity 
+- **force** - module [force] - quantity [Force](force::Force)
+- **energy** - module [energy] - quantity [Energy](energy::Energy)
+- **power** - module [power] - quantity [Power](power::Power)
+- **frequency** - module [frequency] - quantity
   [Frequency](frequency::Frequency)
-* **datavolume** - module [datavolume] - quantity
+- **datavolume** - module [datavolume] - quantity
   [DataVolume](datavolume::DataVolume)
-* **datathroughput** - module [datathroughput] - quantity
+- **datathroughput** - module [datathroughput] - quantity
   [DataThroughput](datathroughput::DataThroughput)
-* **temperature** - module [temperature] - quantity
+- **temperature** - module [temperature] - quantity
   [Temperature](temperature::Temperature)
