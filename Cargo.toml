@@ -14,7 +14,7 @@ categories = ["data-structures", "mathematics"]
 rust-version = "1.80.1"
 
 [dependencies]
-qty-macros = { version = "*", path = "qty-macros" }
+qty-macros = { version = "0.14.2", path = "qty-macros" }
 fpdec = { version = "0.13", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 

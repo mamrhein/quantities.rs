@@ -13,8 +13,8 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "astronomical"]
 categories = ["data-structures", "mathematics", "science"]
 
 [dependencies]
-qty-macros = { version = "*", path = "../qty-macros" }
-quantities = { version = "*", path = ".." }
+qty-macros = { version = "0.14.2", path = "../qty-macros" }
+quantities = { version = "0.14.2", path = ".." }
 serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
