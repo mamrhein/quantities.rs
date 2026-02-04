@@ -1,5 +1,9 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.14.4    Fixed warning: unexpected `cfg` condition value: `serde` when using
+          'quantities' as dependency but not 'serde' (thanks to Phena
+          Ildanach).
+
 0.14.3    Clarified documentation.
 
 0.14.2    Added features f32 and f64 enabling to force a specific floating
