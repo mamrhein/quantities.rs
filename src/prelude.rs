@@ -26,3 +26,5 @@ pub use crate::{
 };
 #[cfg(feature = "fpdec")]
 pub use crate::{Dec, Decimal};
+#[cfg(feature = "serde")]
+pub use serde;

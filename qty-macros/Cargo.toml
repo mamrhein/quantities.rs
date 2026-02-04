@@ -22,5 +22,8 @@ syn = { version = "2", features = ["full"] }
 [dev-dependencies]
 trybuild = "1"
 
+[features]
+serde = []
+
 [lib]
 proc-macro = true
