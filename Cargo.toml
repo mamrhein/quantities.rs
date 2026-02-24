@@ -11,11 +11,11 @@ documentation = "https://docs.rs/quantities/"
 license-file = "LICENSE.TXT"
 keywords = ["quantity", "unit", "unit-safe", "measure", "arithmetics"]
 categories = ["data-structures", "mathematics"]
-rust-version = "1.80.1"
+rust-version = "1.81"
 
 [dependencies]
 qty-macros = { version = "0.14.2", path = "qty-macros" }
-fpdec = { version = "0.13", optional = true }
+fpdec = { version = "0.14", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
