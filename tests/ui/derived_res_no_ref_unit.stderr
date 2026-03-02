@@ -2,8 +2,13 @@ error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
 22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
              Area
@@ -21,8 +26,13 @@ error[E0277]: the trait bound `BazUnit: quantities::LinearScaledUnit` is not sat
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
 22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: the following other types implement trait `quantities::LinearScaledUnit`:
              AccelerationUnit
              AreaUnit
@@ -49,7 +59,21 @@ error[E0277]: cannot divide `Baz` by `Bar`
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ no implementation for `Baz / Bar`
    |
-   = help: the trait `quantities::HasRefUnit` is not implemented for `Baz`, which is required by `Baz: std::ops::Div<Bar>`
+help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Acceleration
+             Area
+             Bar
+             DataThroughput
+             DataVolume
+             Energy
+             Foo
+             Force
+           and $N others
 note: required for `Baz` to implement `std::ops::Div<Bar>`
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
@@ -67,7 +91,21 @@ error[E0277]: cannot divide `Baz` by `Foo`
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ no implementation for `Baz / Foo`
    |
-   = help: the trait `quantities::HasRefUnit` is not implemented for `Baz`, which is required by `Baz: std::ops::Div<Foo>`
+help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Acceleration
+             Area
+             Bar
+             DataThroughput
+             DataVolume
+             Energy
+             Foo
+             Force
+           and $N others
 note: required for `Baz` to implement `std::ops::Div<Foo>`
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
@@ -92,17 +130,18 @@ error[E0599]: no function or associated item named `unit_from_scale` found for s
    = note: the following trait defines an item `unit_from_scale`, perhaps you need to implement it:
            candidate #1: `quantities::HasRefUnit`
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: there is an associated function `unit_from_symbol` with a similar name
-   |
-22 | unit_from_symbol
-   |
 
 error[E0277]: the trait bound `BazUnit: quantities::LinearScaledUnit` is not satisfied
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
 22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: the following other types implement trait `quantities::LinearScaledUnit`:
              AccelerationUnit
              AreaUnit
@@ -127,8 +166,13 @@ error[E0277]: the trait bound `Baz: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
 22 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Baz`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
+  --> tests/ui/derived_res_no_ref_unit.rs:22:1
+   |
+22 | #[quantity(Foo * Bar)]
+   | ^^^^^^^^^^^^^^^^^^^^^^
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
              Area

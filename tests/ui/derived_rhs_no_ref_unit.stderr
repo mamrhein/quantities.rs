@@ -2,8 +2,13 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::HasRefUnit` is not implemented for `Bar`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
              Area
@@ -21,8 +26,13 @@ error[E0277]: the trait bound `BarUnit: quantities::LinearScaledUnit` is not sat
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `BarUnit`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::LinearScaledUnit` is not implemented for `BarUnit`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
    = help: the following other types implement trait `quantities::LinearScaledUnit`:
              AccelerationUnit
              AreaUnit
@@ -47,8 +57,13 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`, which is required by `Foo: std::ops::Mul<Bar>`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::HasRefUnit` is not implemented for `Bar`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
              Area
@@ -73,7 +88,21 @@ error[E0277]: cannot multiply `Bar` by `Foo`
 21 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^ no implementation for `Bar * Foo`
    |
-   = help: the trait `quantities::HasRefUnit` is not implemented for `Bar`, which is required by `Bar: std::ops::Mul<Foo>`
+help: the trait `quantities::HasRefUnit` is not implemented for `Bar`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
+   = help: the following other types implement trait `quantities::HasRefUnit`:
+             Acceleration
+             Area
+             Baz
+             DataThroughput
+             DataVolume
+             Energy
+             Foo
+             Force
+           and $N others
 note: required for `Bar` to implement `std::ops::Mul<Foo>`
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
@@ -86,8 +115,13 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`, which is required by `Baz: std::ops::Div<Bar>`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::HasRefUnit` is not implemented for `Bar`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
              Area
@@ -136,17 +170,18 @@ error[E0599]: no function or associated item named `unit_from_scale` found for s
    = note: the following trait defines an item `unit_from_scale`, perhaps you need to implement it:
            candidate #1: `quantities::HasRefUnit`
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
-help: there is an associated function `unit_from_symbol` with a similar name
-   |
-21 | unit_from_symbol
-   |
 
 error[E0277]: the trait bound `BarUnit: quantities::LinearScaledUnit` is not satisfied
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::LinearScaledUnit` is not implemented for `BarUnit`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::LinearScaledUnit` is not implemented for `BarUnit`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
    = help: the following other types implement trait `quantities::LinearScaledUnit`:
              AccelerationUnit
              AreaUnit
@@ -171,8 +206,13 @@ error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
 21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ the trait `quantities::HasRefUnit` is not implemented for `Bar`
+   | ^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
    |
+help: the trait `quantities::HasRefUnit` is not implemented for `Bar`
+  --> tests/ui/derived_rhs_no_ref_unit.rs:17:1
+   |
+17 | #[quantity]
+   | ^^^^^^^^^^^
    = help: the following other types implement trait `quantities::HasRefUnit`:
              Acceleration
              Area

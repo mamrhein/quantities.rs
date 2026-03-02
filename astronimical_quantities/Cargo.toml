@@ -1,6 +1,6 @@
 [package]
 name = "astronomical-quantities"
-version = "0.14.4"
+version = "0.15.0"
 edition = "2021"
 authors = ["Michael Amrhein <michael@adrhinum.de>"]
 description = "Unit-safe computations with astronomical quantities."
@@ -13,7 +13,7 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "astronomical"]
 categories = ["data-structures", "mathematics", "science"]
 
 [dependencies]
-quantities = { version = "0.14.3", path = ".." }
+quantities = { version = "0.15.0", path = ".." }
 
 [dev-dependencies]
 trybuild = "1"
