@@ -118,6 +118,23 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_abs() {
+        let amnt = Amnt!(123.4);
+        let qty1 = Foo::new(amnt, FooUnit::A);
+        let qty2 = Foo::new(-amnt, FooUnit::A);
+        assert_eq!(qty1.abs(), qty1);
+        assert_eq!(qty2.abs(), qty1);
+    }
+
+    #[test]
+    fn test_signum() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).signum(), Amnt!(1.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).signum(), Amnt!(-1.0));
+        #[cfg(feature = "fpdec")]
+        assert_eq!(Foo::new(Amnt!(0.0), FooUnit::A).signum(), Amnt!(0.0));
+    }
+
+    #[test]
     fn test_qty() {
         let amnt = Amnt!(17.4);
         let unit = FooUnit::B;
@@ -387,6 +404,23 @@ mod quantity_without_ref_unit_tests {
     }
 
     #[test]
+    fn test_abs() {
+        let amnt = Amnt!(123.4);
+        let qty1 = Foo::new(amnt, FooUnit::A);
+        let qty2 = Foo::new(-amnt, FooUnit::A);
+        assert_eq!(qty1.abs(), qty1);
+        assert_eq!(qty2.abs(), qty1);
+    }
+
+    #[test]
+    fn test_signum() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).signum(), Amnt!(1.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).signum(), Amnt!(-1.0));
+        #[cfg(feature = "fpdec")]
+        assert_eq!(Foo::new(Amnt!(0.0), FooUnit::A).signum(), Amnt!(0.0));
+    }
+
+    #[test]
     fn test_qty_neg() {
         let amnt = Amnt!(184.09);
         let qty = Foo::new(amnt, FooUnit::A);
@@ -506,6 +540,23 @@ mod quantity_single_unit_tests {
         let qty = POP * amnt;
         assert_eq!(qty.amount(), amnt);
         assert_eq!(qty.unit(), POP);
+    }
+
+    #[test]
+    fn test_abs() {
+        let amnt = Amnt!(123.4);
+        let qty1 = Foo::new(amnt, FooUnit::Pop);
+        let qty2 = Foo::new(-amnt, FooUnit::Pop);
+        assert_eq!(qty1.abs().amount(), amnt);
+        assert_eq!(qty2.abs().amount(), amnt);
+    }
+
+    #[test]
+    fn test_signum() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::Pop).signum(), Amnt!(1.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::Pop).signum(), Amnt!(-1.0));
+        #[cfg(feature = "fpdec")]
+        assert_eq!(Foo::new(Amnt!(0.0), FooUnit::Pop).signum(), Amnt!(0.0));
     }
 
     #[test]

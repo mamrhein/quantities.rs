@@ -452,6 +452,14 @@ fn codegen_qty_single_unit(
         pub struct #qty_ident {
             amount: AmountT
         }
+        impl #qty_ident {
+            fn abs(&self) -> Self {
+                Self { amount: self.amount.abs() }
+            }
+            fn signum(&self) -> AmountT {
+                self.amount.signum()
+            }
+        }
         impl Quantity for #qty_ident {
             type UnitType = #unit_enum_ident;
 
@@ -599,6 +607,14 @@ fn codegen_impl_quantity(
         pub struct #qty_ident {
             amount: AmountT,
             unit: #unit_enum_ident
+        }
+        impl #qty_ident {
+            pub fn abs(&self) -> Self {
+                Self { amount: self.amount.abs(), unit: self.unit }
+            }
+            pub fn signum(&self) -> AmountT {
+                self.amount.signum()
+            }
         }
         impl Quantity for #qty_ident {
             type UnitType = #unit_enum_ident;
