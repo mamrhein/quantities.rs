@@ -15,7 +15,7 @@ rust-version = "1.81"
 
 [dependencies]
 qty-macros = { version = "0.14.2", path = "qty-macros" }
-fpdec = { version = "0.14", optional = true }
+fpdec = { version = "0.14.1", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
 [dev-dependencies]
