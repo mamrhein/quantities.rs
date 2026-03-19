@@ -1,5 +1,8 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.15.1    Added abs and signum methods to quantities (thanks to Phena
+          Ildanach).
+
 0.15.0    Update fpdec requirement from 0.13 to 0.14
           Set minimal rust version to 1.81.
 
