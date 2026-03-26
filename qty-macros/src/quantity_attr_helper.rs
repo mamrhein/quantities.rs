@@ -785,6 +785,12 @@ fn codegen_qty_with_ref_unit(
             const REF_UNIT: Self = Self::#ref_unit_ident;
             #code_fn_scale
         }
+        impl Default for #unit_enum_ident {
+            #[inline(always)]
+            fn default() -> Self {
+                Self::#ref_unit_ident
+            }
+        }
         impl HasRefUnit for #qty_ident {
             const REF_UNIT: #unit_enum_ident =
                 #unit_enum_ident::#ref_unit_ident;
@@ -800,6 +806,12 @@ fn codegen_qty_with_ref_unit(
             #[inline(always)]
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                 <Self as HasRefUnit>::partial_cmp(self, other)
+            }
+        }
+        impl Default for #qty_ident {
+            #[inline(always)]
+            fn default() -> Self {
+                Self::new(AmountT::default(), #unit_enum_ident::default())
             }
         }
         impl Add<Self> for #qty_ident {

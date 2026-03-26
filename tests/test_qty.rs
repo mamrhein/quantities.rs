@@ -48,6 +48,11 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_unit_default() {
+        assert_eq!(FooUnit::default(), A);
+    }
+
+    #[test]
     fn test_unit_iter() {
         let mut iter_units = FooUnit::iter();
         assert_eq!(iter_units.next(), Some(C));
@@ -211,6 +216,13 @@ mod quantity_with_ref_unit_tests {
         assert!(qty1 > qty2);
         assert!(qty2 <= qty3);
         assert!(qty3 >= qty2);
+    }
+
+    #[test]
+    fn test_qty_default() {
+        let qty = Foo::default();
+        assert_eq!(qty.amount(), AmountT::default());
+        assert_eq!(qty.unit(), FooUnit::default());
     }
 
     #[test]
