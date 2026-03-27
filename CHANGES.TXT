@@ -1,5 +1,7 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.15.2    Added Default impl for quantities/units (thanks to  Phena Ildanach).
+
 0.15.1    Added abs and signum methods to quantities (thanks to Phena
           Ildanach).
 
