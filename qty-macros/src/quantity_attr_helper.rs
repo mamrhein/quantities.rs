@@ -8,8 +8,8 @@
 // $Revision$
 
 use convert_case::{Case, Casing};
-use proc_macro2::{Span, TokenStream};
 use proc_macro_error2::{abort, abort_call_site};
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
 
 pub(crate) struct DerivedAs {
@@ -58,8 +58,7 @@ fn get_ident(expr: &syn::Expr) -> Option<&syn::Ident> {
 pub(crate) fn parse_args(args: TokenStream) -> Option<DerivedAs> {
     const ARGS_ERROR: &str =
         "Unknown argument(s) given to attribute `quantity`.";
-    const OPERATOR_ERROR: &str =
-        "Binary expression with '*' or '/' expected.";
+    const OPERATOR_ERROR: &str = "Binary expression with '*' or '/' expected.";
     const OPERAND_ERROR: &str = "Identifier expected.";
     #[rustfmt::skip]
     const ARGS_HELP: &str =
@@ -613,6 +612,18 @@ fn codegen_impl_quantity(
     unit_enum_ident: &syn::Ident,
 ) -> TokenStream {
     let serde_derives = codegen_serde_derives();
+    let fn_abs_doc =
+        format!("Returns the absolute value of the `{}` value.", qty_ident);
+    let fn_signum_doc =
+        format!("Returns the sign of the `{}` values amount.", qty_ident);
+    let fn_new_doc = format!(
+        "Creates a new `{}` value with the given amount and unit.",
+        qty_ident
+    );
+    let fn_amount_doc =
+        format!("Returns the amount of the `{}` value.", qty_ident);
+    let fn_unit_doc =
+        format!("Returns the unit of the `{}` value.", qty_ident);
     quote!(
         #[derive(Copy, Clone, Debug)]
         #serde_derives
@@ -621,9 +632,11 @@ fn codegen_impl_quantity(
             unit: #unit_enum_ident
         }
         impl #qty_ident {
+            #[doc = #fn_abs_doc]
             pub fn abs(&self) -> Self {
                 Self { amount: self.amount.abs(), unit: self.unit }
             }
+            #[doc = #fn_signum_doc]
             pub fn signum(&self) -> AmountT {
                 self.amount.signum()
             }
@@ -631,14 +644,17 @@ fn codegen_impl_quantity(
         impl Quantity for #qty_ident {
             type UnitType = #unit_enum_ident;
             #[inline(always)]
+            #[doc = #fn_new_doc]
             fn new(amount: AmountT, unit: Self::UnitType) -> Self {
                 Self { amount, unit }
             }
             #[inline(always)]
+            #[doc = #fn_amount_doc]
             fn amount(&self) -> AmountT {
                 self.amount
             }
             #[inline(always)]
+            #[doc = #fn_unit_doc]
             fn unit(&self) -> Self::UnitType {
                 self.unit
             }
@@ -658,8 +674,7 @@ fn codegen_qty_without_ref_unit(
     let code_fn_symbol = codegen_fn_symbol(units);
     let serde_derives = codegen_serde_derives();
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
-    let code_impl_quantity =
-        codegen_impl_quantity(qty_ident, unit_enum_ident);
+    let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
         #code_impl_quantity
         #[doc = #unit_doc]
@@ -785,8 +800,7 @@ fn codegen_qty_with_ref_unit(
     let code_fn_scale = codegen_fn_scale(units);
     let serde_derives = codegen_serde_derives();
     let unit_doc = format!("Unit of quantity `{}`.", qty_ident);
-    let code_impl_quantity =
-        codegen_impl_quantity(qty_ident, unit_enum_ident);
+    let code_impl_quantity = codegen_impl_quantity(qty_ident, unit_enum_ident);
     quote!(
         #code_impl_quantity
         #[doc = #unit_doc]
@@ -1274,12 +1288,7 @@ mod internal_fn_tests {
 
     fn get_ast_basic_qty() -> Item {
         let item = quote!(
-            #[ref_unit(
-                Megapop,
-                "Mp",
-                MEGA,
-                "1000000·p\nFoo's reference unit"
-            )]
+            #[ref_unit(Megapop, "Mp", MEGA, "1000000·p\nFoo's reference unit")]
             #[unit(Gigapop, "Gp", GIGA, 1000, "1000000000·p")]
             #[unit(Pop, "p", 0.000001)]
             /// Quantity Foo
