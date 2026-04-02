@@ -64,7 +64,7 @@ use core::{
 };
 
 #[cfg(feature = "fpdec")]
-pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
+pub use amnt_dec::{AMNT_ONE, AMNT_ZERO, AmountT, Dec, Decimal};
 #[cfg(all(
     not(feature = "fpdec"),
     any(
@@ -77,7 +77,7 @@ pub use amnt_dec::{AmountT, Dec, Decimal, AMNT_ONE, AMNT_ZERO};
         )
     )
 ))]
-pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
+pub use amnt_f32::{AMNT_ONE, AMNT_ZERO, AmountT};
 #[cfg(all(
     not(feature = "fpdec"),
     any(
@@ -90,7 +90,7 @@ pub use amnt_f32::{AmountT, AMNT_ONE, AMNT_ZERO};
         )
     )
 ))]
-pub use amnt_f64::{AmountT, AMNT_ONE, AMNT_ZERO};
+pub use amnt_f64::{AMNT_ONE, AMNT_ZERO, AmountT};
 pub use converter::{ConversionTable, Converter};
 pub use rate::Rate;
 pub use si_prefixes::SIPrefix;
@@ -298,15 +298,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     ///
     /// Panics if `self` and `other` have different units.
     fn add_assign(&mut self, rhs: Self) {
-        if self.unit() == rhs.unit() {
-            *self = self.add(rhs);
-        } else {
-            panic!(
-                "Can't add '{}' and '{}'.",
-                self.unit().symbol(),
-                rhs.unit().symbol()
-            )
-        }
+        *self = self.add(rhs);
     }
 
     /// Returns the difference between `self` and `other`, if both have the
@@ -333,15 +325,7 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     ///
     /// Panics if `self` and `other` have different units.
     fn sub_assign(&mut self, rhs: Self) {
-        if self.unit() == rhs.unit() {
-            *self = self.sub(rhs);
-        } else {
-            panic!(
-                "Can't add '{}' and '{}'.",
-                self.unit().symbol(),
-                rhs.unit().symbol()
-            )
-        }
+        *self = self.sub(rhs);
     }
 
     /// Returns the quotient `self` / `other`, if both have the same unit.
@@ -485,8 +469,8 @@ where
     #[must_use]
     fn _fit(amount: AmountT) -> Self {
         let take_all = Self::REF_UNIT.si_prefix().is_none();
-        let mut it = Self::iter_units()
-            .filter(|u| take_all || u.si_prefix().is_some());
+        let mut it =
+            Self::iter_units().filter(|u| take_all || u.si_prefix().is_some());
         // `it` returns atleast the reference unit, so its safe to unwrap here
         let first = it.next().unwrap();
         let last = it
