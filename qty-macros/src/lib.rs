@@ -13,10 +13,10 @@ mod quantity_attr_helper;
 
 use ::convert_case::{Case, Casing};
 use ::proc_macro::TokenStream;
-use ::proc_macro2::{Span, TokenStream as TokenStream2};
 use ::proc_macro_error2::proc_macro_error;
+use ::proc_macro2::{Span, TokenStream as TokenStream2};
 use ::quote::quote;
-use ::syn::{parse_macro_input, Ident, ItemEnum};
+use ::syn::{Ident, ItemEnum, parse_macro_input};
 
 use crate::quantity_attr_helper::{analyze, codegen, parse_args, parse_item};
 
@@ -194,8 +194,7 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 /// * The given struct does have generic parameters and/or fields.
 /// * More than one attribute `#[ref_unit]` is given.
 /// * No attribute `#[unit]` is given.
-/// * Wrong number or wrong type of arguments given to attribute
-///   `#[ref_unit]`.
+/// * Wrong number or wrong type of arguments given to attribute `#[ref_unit]`.
 /// * Wrong number of arguments given to an attribute `#[unit]`.
 /// * No \<scale\> argument given to an attribute `#[unit]` when required.
 ///
@@ -335,11 +334,23 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///         <Self as HasRefUnit>::add(self, rhs)
 ///     }
 /// }
+/// impl AddAssign<Self> for Mass {
+///     #[inline(always)]
+///     fn add_assign(&mut self, rhs: Self) {
+///         <Self as HasRefUnit>::add_assign(self, rhs);
+///     }
+/// }
 /// impl Sub<Self> for Mass {
 ///     type Output = Self;
 ///     #[inline(always)]
 ///     fn sub(self, rhs: Self) -> Self::Output {
 ///         <Self as HasRefUnit>::sub(self, rhs)
+///     }
+/// }
+/// impl SubAssign<Self> for Mass {
+///     #[inline(always)]
+///     fn sub_assign(&mut self, rhs: Self) {
+///         <Self as HasRefUnit>::sub_assign(self, rhs);
 ///     }
 /// }
 /// impl Div<Self> for Mass {
@@ -401,11 +412,39 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///         Self::Output::new(self.amount() * rhs, self.unit())
 ///     }
 /// }
+/// impl MulAssign<AmountT> for Mass {
+///     #[inline(always)]
+///     fn mul_assign(&mut self, rhs: AmountT) {
+///         *self = *self * rhs;
+///     }
+/// }
 /// impl Div<AmountT> for Mass {
 ///     type Output = Self;
 ///     #[inline(always)]
 ///     fn div(self, rhs: AmountT) -> Self::Output {
 ///         Self::Output::new(self.amount() / rhs, self.unit())
+///     }
+/// }
+/// impl DivAssign<AmountT> for Mass {
+///     #[inline(always)]
+///     fn div_assign(&mut self, rhs: AmountT) {
+///         *self = *self / rhs;
+///     }
+/// }
+/// impl<TQ: Quantity> Mul<Rate<TQ, Self>> for Mass {
+///     type Output = TQ;
+///     fn mul(self, rhs: Rate<TQ, Self>) -> Self::Output {
+///         let amnt: AmountT = (self / rhs.per_unit().as_qty())
+///             / rhs.per_unit_multiple();
+///         Self::Output::new(amnt * rhs.term_amount(), rhs.term_unit())
+///     }
+/// }
+/// impl<PQ: Quantity> Div<Rate<Self, PQ>> for Mass {
+///     type Output = PQ;
+///     fn div(self, rhs: Rate<Self, PQ>) -> Self::Output {
+///         let amnt: AmountT = (self / rhs.term_unit().as_qty())
+///             / rhs.term_amount();
+///         Self::Output::new(amnt * rhs.per_unit_multiple(), rhs.per_unit())
 ///     }
 /// }
 /// ```
