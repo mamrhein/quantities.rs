@@ -485,11 +485,23 @@ fn codegen_qty_single_unit(
                 Self::new(self.amount() + rhs.amount(), self.unit())
             }
         }
+        impl AddAssign<Self> for #qty_ident {
+            #[inline(always)]
+            fn add_assign(&mut self, rhs: Self) {
+                *self = *self + rhs;
+            }
+        }
         impl Sub<Self> for #qty_ident {
             type Output = Self;
             #[inline(always)]
             fn sub(self, rhs: Self) -> Self::Output {
                 Self::new(self.amount() - rhs.amount(), self.unit())
+            }
+        }
+        impl SubAssign<Self> for #qty_ident {
+            #[inline(always)]
+            fn sub_assign(&mut self, rhs: Self) {
+                *self = *self - rhs;
             }
         }
         impl Div<Self> for #qty_ident {
@@ -684,11 +696,23 @@ fn codegen_qty_without_ref_unit(
                 <Self as Quantity>::add(self, rhs)
             }
         }
+        impl AddAssign<Self> for #qty_ident {
+            #[inline(always)]
+            fn add_assign(&mut self, rhs: Self) {
+                <Self as Quantity>::add_assign(self, rhs);
+            }
+        }
         impl Sub<Self> for #qty_ident {
             type Output = Self;
             #[inline(always)]
             fn sub(self, rhs: Self) -> Self::Output {
                 <Self as Quantity>::sub(self, rhs)
+            }
+        }
+        impl SubAssign<Self> for #qty_ident {
+            #[inline(always)]
+            fn sub_assign(&mut self, rhs: Self) {
+                <Self as Quantity>::sub_assign(self, rhs);
             }
         }
         impl Div<Self> for #qty_ident {
@@ -821,11 +845,23 @@ fn codegen_qty_with_ref_unit(
                 <Self as HasRefUnit>::add(self, rhs)
             }
         }
+        impl AddAssign<Self> for #qty_ident {
+            #[inline(always)]
+            fn add_assign(&mut self, rhs: Self) {
+                <Self as HasRefUnit>::add_assign(self, rhs);
+            }
+        }
         impl Sub<Self> for #qty_ident {
             type Output = Self;
             #[inline(always)]
             fn sub(self, rhs: Self) -> Self::Output {
                 <Self as HasRefUnit>::sub(self, rhs)
+            }
+        }
+        impl SubAssign<Self> for #qty_ident {
+            #[inline(always)]
+            fn sub_assign(&mut self, rhs: Self) {
+                <Self as HasRefUnit>::sub_assign(self, rhs);
             }
         }
         impl Div<Self> for #qty_ident {
@@ -867,11 +903,23 @@ fn codegen_impl_std_traits(qty_ident: &syn::Ident) -> TokenStream {
                 Self::Output::new(self.amount() * rhs, self.unit())
             }
         }
+        impl MulAssign<AmountT> for #qty_ident {
+            #[inline(always)]
+            fn mul_assign(&mut self, rhs: AmountT) {
+                *self = *self * rhs;
+            }
+        }
         impl Div<AmountT> for #qty_ident {
             type Output = Self;
             #[inline(always)]
             fn div(self, rhs: AmountT) -> Self::Output {
                 Self::Output::new(self.amount() / rhs, self.unit())
+            }
+        }
+        impl DivAssign<AmountT> for #qty_ident {
+            #[inline(always)]
+            fn div_assign(&mut self, rhs: AmountT) {
+                *self = *self / rhs;
             }
         }
         impl<TQ: Quantity> Mul<Rate<TQ, Self>> for #qty_ident {

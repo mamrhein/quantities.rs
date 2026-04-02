@@ -189,6 +189,17 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_convert_assign() {
+        let mut qty = Foo::new(Amnt!(17.4), FooUnit::B);
+        qty.convert_assign(FooUnit::A);
+        assert_almost_eq!(qty.amount(), Amnt!(6.96));
+        assert_eq!(qty.unit(), FooUnit::A);
+        qty.convert_assign(FooUnit::B);
+        assert_almost_eq!(qty.amount(), Amnt!(17.4));
+        assert_eq!(qty.unit(), FooUnit::B);
+    }
+
+    #[test]
     fn test_cmp_same_unit() {
         let qty1 = Amnt!(17.4) * FooUnit::A;
         let qty2 = Amnt!(0.37) * FooUnit::A;
@@ -250,6 +261,18 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_add_assign_same_unit() {
+        let amnt1 = Amnt!(0.1);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(-0.2);
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit1;
+        qty1 += qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 + amnt2);
+        assert_eq!(qty1.unit(), unit1);
+    }
+
+    #[test]
     fn test_add_diff_unit() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
@@ -263,6 +286,19 @@ mod quantity_with_ref_unit_tests {
         let res = qty2 + qty1;
         assert_almost_eq!(res.amount(), amnt1 * Amnt!(2.5) + amnt2);
         assert_eq!(res.unit(), unit2);
+    }
+
+    #[test]
+    fn test_add_assign_diff_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let unit2 = FooUnit::B;
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit2;
+        qty1 += qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 + amnt2 * Amnt!(0.4));
+        assert_eq!(qty1.unit(), unit1);
     }
 
     #[test]
@@ -281,6 +317,18 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_sub_assign_same_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit1;
+        qty1 -= qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 - amnt2);
+        assert_eq!(qty1.unit(), unit1);
+    }
+
+    #[test]
     fn test_sub_diff_unit() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
@@ -294,6 +342,19 @@ mod quantity_with_ref_unit_tests {
         let res = qty2 - qty1;
         assert_almost_eq!(res.amount(), amnt2 - amnt1 * Amnt!(2.5));
         assert_eq!(res.unit(), unit2);
+    }
+
+    #[test]
+    fn test_sub_assign_diff_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.3);
+        let unit2 = FooUnit::B;
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit2;
+        qty1 -= qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 - amnt2 * Amnt!(0.4));
+        assert_eq!(qty1.unit(), unit1);
     }
 
     #[test]
@@ -336,6 +397,17 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_mul_assign_amnt() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let mut qty1 = amnt1 * unit1;
+        qty1 *= amnt2;
+        assert_almost_eq!(qty1.amount(), amnt1 * amnt2);
+        assert_eq!(qty1.unit(), qty1.unit());
+    }
+
+    #[test]
     fn test_div_amnt() {
         let amnt1 = Amnt!(15.54);
         let unit1 = FooUnit::A;
@@ -344,6 +416,17 @@ mod quantity_with_ref_unit_tests {
         let res = qty1 / amnt2;
         assert_almost_eq!(res.amount(), amnt1 / amnt2);
         assert_eq!(res.unit(), qty1.unit());
+    }
+
+    #[test]
+    fn test_div_assign_amnt() {
+        let amnt1 = Amnt!(15.54);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(3.7);
+        let mut qty1 = amnt1 * unit1;
+        qty1 /= amnt2;
+        assert_almost_eq!(qty1.amount(), amnt1 / amnt2);
+        assert_eq!(qty1.unit(), unit1);
     }
 }
 
@@ -457,6 +540,18 @@ mod quantity_without_ref_unit_tests {
     }
 
     #[test]
+    fn test_add_assign_same_unit() {
+        let amnt1 = Amnt!(5000.17);
+        let unit1 = FooUnit::C;
+        let amnt2 = Amnt!(-2);
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit1;
+        qty1 += qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 + amnt2);
+        assert_eq!(qty1.unit(), unit1);
+    }
+
+    #[test]
     #[should_panic]
     fn test_add_diff_unit() {
         let amnt1 = Amnt!(17.4);
@@ -466,6 +561,18 @@ mod quantity_without_ref_unit_tests {
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit2;
         let _res = qty1 + qty2;
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_add_assign_diff_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let unit2 = FooUnit::B;
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit2;
+        qty1 += qty2;
     }
 
     #[test]
@@ -484,6 +591,18 @@ mod quantity_without_ref_unit_tests {
     }
 
     #[test]
+    fn test_sub_assign_same_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit1;
+        qty1 -= qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 - amnt2);
+        assert_eq!(qty1.unit(), unit1);
+    }
+
+    #[test]
     #[should_panic]
     fn test_sub_diff_unit() {
         let amnt1 = Amnt!(17.4);
@@ -493,6 +612,18 @@ mod quantity_without_ref_unit_tests {
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit2;
         let _res = qty1 - qty2;
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_sub_assign_diff_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.3);
+        let unit2 = FooUnit::B;
+        let mut qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit2;
+        qty1 -= qty2;
     }
 
     #[test]
@@ -516,6 +647,53 @@ mod quantity_without_ref_unit_tests {
         let qty1 = amnt1 * unit1;
         let qty2 = amnt2 * unit2;
         let _res = qty1 / qty2;
+    }
+
+    #[test]
+    fn test_mul_amnt() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = crate::quantity_with_ref_unit_tests::FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let qty1 = amnt1 * unit1;
+        let res = qty1 * amnt2;
+        assert_almost_eq!(res.amount(), amnt1 * amnt2);
+        assert_eq!(res.unit(), qty1.unit());
+        let res = amnt2 * qty1;
+        assert_almost_eq!(res.amount(), amnt1 * amnt2);
+        assert_eq!(res.unit(), qty1.unit());
+    }
+
+    #[test]
+    fn test_mul_assign_amnt() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = crate::quantity_with_ref_unit_tests::FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let mut qty1 = amnt1 * unit1;
+        qty1 *= amnt2;
+        assert_almost_eq!(qty1.amount(), amnt1 * amnt2);
+        assert_eq!(qty1.unit(), qty1.unit());
+    }
+
+    #[test]
+    fn test_div_amnt() {
+        let amnt1 = Amnt!(15.54);
+        let unit1 = crate::quantity_with_ref_unit_tests::FooUnit::A;
+        let amnt2 = Amnt!(3.7);
+        let qty1 = amnt1 * unit1;
+        let res = qty1 / amnt2;
+        assert_almost_eq!(res.amount(), amnt1 / amnt2);
+        assert_eq!(res.unit(), qty1.unit());
+    }
+
+    #[test]
+    fn test_div_assign_amnt() {
+        let amnt1 = Amnt!(15.54);
+        let unit1 = crate::quantity_with_ref_unit_tests::FooUnit::A;
+        let amnt2 = Amnt!(3.7);
+        let mut qty1 = amnt1 * unit1;
+        qty1 /= amnt2;
+        assert_almost_eq!(qty1.amount(), amnt1 / amnt2);
+        assert_eq!(qty1.unit(), unit1);
     }
 }
 
@@ -586,6 +764,17 @@ mod quantity_single_unit_tests {
     }
 
     #[test]
+    fn test_add_assign() {
+        let amnt1 = Amnt!(517.04);
+        let amnt2 = Amnt!(14.3);
+        let mut qty1 = amnt1 * POP;
+        let qty2 = amnt2 * POP;
+        qty1 += qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 + amnt2);
+        assert_eq!(qty1.unit(), POP);
+    }
+
+    #[test]
     fn test_sub() {
         let amnt1 = Amnt!(14.3);
         let amnt2 = Amnt!(517.04);
@@ -597,6 +786,17 @@ mod quantity_single_unit_tests {
         let res = qty2 - qty1;
         assert_almost_eq!(res.amount(), amnt2 - amnt1);
         assert_eq!(res.unit(), POP);
+    }
+
+    #[test]
+    fn test_sub_assign() {
+        let amnt1 = Amnt!(14.3);
+        let amnt2 = Amnt!(517.04);
+        let mut qty1 = amnt1 * POP;
+        let qty2 = amnt2 * POP;
+        qty1 -= qty2;
+        assert_almost_eq!(qty1.amount(), amnt1 - amnt2);
+        assert_eq!(qty1.unit(), POP);
     }
 
     #[test]

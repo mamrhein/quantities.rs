@@ -291,6 +291,24 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         );
     }
 
+    /// Adds the amount of `other` to `self` in place, if both have the same
+    /// unit.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `self` and `other` have different units.
+    fn add_assign(&mut self, rhs: Self) {
+        if self.unit() == rhs.unit() {
+            *self = self.add(rhs);
+        } else {
+            panic!(
+                "Can't add '{}' and '{}'.",
+                self.unit().symbol(),
+                rhs.unit().symbol()
+            )
+        }
+    }
+
     /// Returns the difference between `self` and `other`, if both have the
     /// same unit.
     ///
@@ -306,6 +324,24 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
             self.unit().symbol(),
             rhs.unit().symbol(),
         );
+    }
+
+    /// Subtracts the amount of `other` from `self` in place, if both have the
+    /// same unit.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `self` and `other` have different units.
+    fn sub_assign(&mut self, rhs: Self) {
+        if self.unit() == rhs.unit() {
+            *self = self.sub(rhs);
+        } else {
+            panic!(
+                "Can't add '{}' and '{}'.",
+                self.unit().symbol(),
+                rhs.unit().symbol()
+            )
+        }
     }
 
     /// Returns the quotient `self` / `other`, if both have the same unit.
@@ -384,6 +420,11 @@ where
         Self::new(self.equiv_amount(to_unit), to_unit)
     }
 
+    /// Converts `self` to the equivalent `to_unit`.
+    fn convert_assign(&mut self, to_unit: Self::UnitType) {
+        *self = self.convert(to_unit);
+    }
+
     /// Returns true, if `self` and `other` have equivalent amounts, otherwise
     /// `false`.
     #[inline(always)]
@@ -410,10 +451,22 @@ where
         Self::new(self.amount() + rhs.equiv_amount(self.unit()), self.unit())
     }
 
+    /// Adds the unit-equivalent amount of `other` to `self` in place.
+    #[inline]
+    fn add_assign(&mut self, rhs: Self) {
+        *self = HasRefUnit::add(*self, rhs);
+    }
+
     /// Returns the difference between `self` and `other`
     #[inline]
     fn sub(self, rhs: Self) -> Self {
         Self::new(self.amount() - rhs.equiv_amount(self.unit()), self.unit())
+    }
+
+    /// Subtracts the unit-equivalent amount of `other` from `self` in place.
+    #[inline]
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = HasRefUnit::sub(*self, rhs);
     }
 
     /// Returns the quotient `self` / `other`
