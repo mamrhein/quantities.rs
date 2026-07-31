@@ -333,9 +333,7 @@ pub(crate) fn analyze(item_ast: &mut Item) -> QtyDef {
         });
     } else {
         qty_def.units = unit_defs_without_scale_from_attrs(&unit_attrs);
-        qty_def
-            .units
-            .sort_by(|a, b| a.name.value().cmp(&b.name.value()));
+        qty_def.units.sort_by_key(|a| a.name.value());
     }
     qty_def
 }
