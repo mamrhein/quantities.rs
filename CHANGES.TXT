@@ -1,5 +1,8 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.15.4    Bumped version of syn to 3.
+          Replaced proc_macro_error2 by proc_macro_error3.
+
 0.15.3    Implement assign operators for quantities (thanks to Phena
           Ildanach).
 
