@@ -13,7 +13,7 @@ mod quantity_attr_helper;
 
 use ::convert_case::{Case, Casing};
 use ::proc_macro::TokenStream;
-use ::proc_macro_error2::proc_macro_error;
+use ::proc_macro_error3::proc_macro_error;
 use ::proc_macro2::{Span, TokenStream as TokenStream2};
 use ::quote::quote;
 use ::syn::{Ident, ItemEnum, parse_macro_input};

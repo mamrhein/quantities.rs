@@ -8,7 +8,7 @@
 // $Revision$
 
 use convert_case::{Case, Casing};
-use proc_macro_error2::{abort, abort_call_site};
+use proc_macro_error3::{abort, abort_call_site};
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 

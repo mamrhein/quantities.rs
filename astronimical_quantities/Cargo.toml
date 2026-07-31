@@ -13,7 +13,7 @@ keywords = ["quantity", "unit", "unit-safe", "measure", "astronomical"]
 categories = ["data-structures", "mathematics", "science"]
 
 [dependencies]
-quantities = { version = "0.15.0", path = ".." }
+quantities = { version = "0.15", path = ".." }
 
 [dev-dependencies]
 trybuild = "1"
