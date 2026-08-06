@@ -258,6 +258,18 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
     /// Returns the unit of `self`.
     fn unit(&self) -> Self::UnitType;
 
+    /// Returns the absolute value of `self`.
+    #[inline(always)]
+    fn abs(&self) -> Self {
+        Self::new(self.amount().abs(), self.unit())
+    }
+
+    /// Returns the sign number of `self`.
+    #[inline(always)]
+    fn signum(&self) -> AmountT {
+        self.amount().signum()
+    }
+
     /// Return `true` if `self` and `other` have the same unit and their
     /// amounts are equal, otherwise `false`.
     #[inline(always)]
@@ -354,21 +366,13 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
         if self.unit().symbol().is_empty() {
             fmt::Display::fmt(&self.amount(), form)
         } else {
-            let tmp: String;
             let amnt_non_neg = self.amount() >= AMNT_ZERO;
-            #[cfg(feature = "fpdec")]
             let abs_amnt = self.amount().abs();
-            #[cfg(not(feature = "fpdec"))]
-            let abs_amnt = if amnt_non_neg {
-                self.amount()
+            let tmp = if let Some(prec) = form.precision() {
+                format!("{:.*} {}", prec, abs_amnt, self.unit())
             } else {
-                -self.amount()
+                format!("{} {}", abs_amnt, self.unit())
             };
-            if let Some(prec) = form.precision() {
-                tmp = format!("{:.*} {}", prec, abs_amnt, self.unit());
-            } else {
-                tmp = format!("{} {}", abs_amnt, self.unit());
-            }
             form.pad_integral(amnt_non_neg, "", &tmp)
         }
     }
