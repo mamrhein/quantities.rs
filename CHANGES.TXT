@@ -1,5 +1,11 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.15.5    Member functions `abs` / `signum` promoted to the `Quantity` trait
+          (thanks to Phena Ildanach).
+          Generics boilerplate reduced — `Quantity` and `HasRefUnit` now carry
+          broader trait bounds, and single-unit quantities implement equality/
+          partial-ordering traits directly  (thanks to Phena Ildanach).
+
 0.15.4    Bumped version of syn to 3.
           Replaced proc_macro_error2 by proc_macro_error3.
 
