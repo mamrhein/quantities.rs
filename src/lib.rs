@@ -232,7 +232,9 @@ pub trait LinearScaledUnit: Unit {
 }
 
 /// The abstract type of quantities.
-pub trait Quantity: Copy + Sized + Mul<AmountT> {
+pub trait Quantity:
+    Copy + PartialEq + PartialOrd + Sized + Mul<AmountT, Output = Self>
+{
     /// Associated type of unit
     type UnitType: Unit<QuantityType = Self>;
 
@@ -379,9 +381,10 @@ pub trait Quantity: Copy + Sized + Mul<AmountT> {
 }
 
 /// Trait for quantities having a reference unit
-pub trait HasRefUnit: Quantity + Add<Self> + Sub<Self> + Div<Self>
-where
-    <Self as Quantity>::UnitType: LinearScaledUnit,
+pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit>
+    + Add<Self, Output = Self>
+    + Sub<Self, Output = Self>
+    + Div<Self, Output = AmountT>
 {
     /// Unit used as reference for scaling the units of `Self::UnitType`.
     const REF_UNIT: <Self as Quantity>::UnitType;
