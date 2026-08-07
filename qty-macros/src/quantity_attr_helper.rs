@@ -475,6 +475,19 @@ fn codegen_qty_single_unit(
                 Self::UnitType::#unit_ident
             }
         }
+        impl Eq for #qty_ident {}
+        impl PartialEq<Self> for #qty_ident {
+            #[inline(always)]
+            fn eq(&self, other: &Self) -> bool {
+                <Self as Quantity>::eq(self, other)
+            }
+        }
+        impl PartialOrd for #qty_ident {
+            #[inline(always)]
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+                <Self as Quantity>::partial_cmp(self, other)
+            }
+        }
         impl Add<Self> for #qty_ident {
             type Output = Self;
             #[inline(always)]

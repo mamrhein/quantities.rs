@@ -232,7 +232,9 @@ pub trait LinearScaledUnit: Unit {
 }
 
 /// The abstract type of quantities.
-pub trait Quantity: Copy + Sized + Mul<AmountT, Output = Self> {
+pub trait Quantity:
+    Copy + PartialEq + PartialOrd + Sized + Mul<AmountT, Output = Self>
+{
     /// Associated type of unit
     type UnitType: Unit<QuantityType = Self>;
 
