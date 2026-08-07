@@ -42,14 +42,6 @@ help: the trait `quantities::LinearScaledUnit` is not implemented for `BarUnit`
              EnergyUnit
              FooUnit
            and $N others
-note: required by a bound in `quantities::HasRefUnit`
-  --> src/lib.rs
-   |
-   | pub trait HasRefUnit: Quantity + Add<Self> + Sub<Self> + Div<Self>
-   |           ---------- required by a bound in this trait
-   | where
-   |     <Self as Quantity>::UnitType: LinearScaledUnit,
-   |                                   ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit`
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `Bar: quantities::HasRefUnit` is not satisfied
@@ -139,20 +131,6 @@ note: required for `Baz` to implement `std::ops::Div<Bar>`
    |        ^^^
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-error[E0599]: no method named `scale` found for enum `BarUnit` in the current scope
-  --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
-   |
-17 | #[quantity]
-   | ----------- method `scale` not found for this enum
-...
-21 | #[quantity(Foo * Bar)]
-   | ^^^^^^^^^^^^^^^^^^^^^^ method not found in `BarUnit`
-   |
-   = help: items from traits can only be used if the trait is implemented and in scope
-   = note: the following trait defines an item `scale`, perhaps you need to implement it:
-           candidate #1: `quantities::LinearScaledUnit`
-   = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 error[E0599]: no associated function or constant named `unit_from_scale` found for struct `Bar` in the current scope
   --> tests/ui/derived_rhs_no_ref_unit.rs:21:1
    |
@@ -191,8 +169,8 @@ help: the trait `quantities::LinearScaledUnit` is not implemented for `BarUnit`
 note: required by a bound in `quantities::HasRefUnit::_fit`
   --> src/lib.rs
    |
-   |     <Self as Quantity>::UnitType: LinearScaledUnit,
-   |                                   ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit::_fit`
+   | pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit>
+   |                                          ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit::_fit`
 ...
    |     fn _fit(amount: AmountT) -> Self {
    |        ---- required by a bound in this associated function
