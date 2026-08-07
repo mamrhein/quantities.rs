@@ -449,14 +449,6 @@ fn codegen_qty_single_unit(
         pub struct #qty_ident {
             amount: AmountT
         }
-        impl #qty_ident {
-            fn abs(&self) -> Self {
-                Self { amount: self.amount.abs() }
-            }
-            fn signum(&self) -> AmountT {
-                self.amount.signum()
-            }
-        }
         impl Quantity for #qty_ident {
             type UnitType = #unit_enum_ident;
 
@@ -610,10 +602,6 @@ fn codegen_impl_quantity(
     unit_enum_ident: &syn::Ident,
 ) -> TokenStream {
     let serde_derives = codegen_serde_derives();
-    let fn_abs_doc =
-        format!("Returns the absolute value of the `{}` value.", qty_ident);
-    let fn_signum_doc =
-        format!("Returns the sign of the `{}` values amount.", qty_ident);
     let fn_new_doc = format!(
         "Creates a new `{}` value with the given amount and unit.",
         qty_ident
@@ -628,16 +616,6 @@ fn codegen_impl_quantity(
         pub struct #qty_ident {
             amount: AmountT,
             unit: #unit_enum_ident
-        }
-        impl #qty_ident {
-            #[doc = #fn_abs_doc]
-            pub fn abs(&self) -> Self {
-                Self { amount: self.amount.abs(), unit: self.unit }
-            }
-            #[doc = #fn_signum_doc]
-            pub fn signum(&self) -> AmountT {
-                self.amount.signum()
-            }
         }
         impl Quantity for #qty_ident {
             type UnitType = #unit_enum_ident;
