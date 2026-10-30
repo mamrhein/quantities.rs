@@ -383,6 +383,44 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_sum_same_unit() {
+        let amnt1 = Amnt!(0.1);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(-0.2);
+        let qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit1;
+        let res: Foo = [qty1, qty2].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2);
+        assert_eq!(res.unit(), unit1);
+        let res: Foo = [qty2, qty1].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2);
+        assert_eq!(res.unit(), unit1);
+    }
+
+    #[test]
+    fn test_sum_diff_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let unit2 = FooUnit::B;
+        let qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit2;
+        let res: Foo = [qty1, qty2].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2 * Amnt!(0.4));
+        assert_eq!(res.unit(), unit1);
+        let res: Foo = [qty2, qty1].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 * Amnt!(2.5) + amnt2);
+        assert_eq!(res.unit(), unit2);
+    }
+
+    #[test]
+    fn test_sum_empty() {
+        let res: Foo = [].into_iter().sum();
+        assert_eq!(res.amount(), Amnt!(0.0));
+        assert_eq!(res.unit(), Foo::REF_UNIT);
+    }
+
+    #[test]
     fn test_mul_amnt() {
         let amnt1 = Amnt!(17.4);
         let unit1 = FooUnit::A;
@@ -650,6 +688,39 @@ mod quantity_without_ref_unit_tests {
     }
 
     #[test]
+    fn test_sum_same_unit() {
+        let amnt1 = Amnt!(0.1);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(-0.2);
+        let qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit1;
+        let res: Foo = [qty1, qty2].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2);
+        assert_eq!(res.unit(), unit1);
+        let res: Foo = [qty2, qty1].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2);
+        assert_eq!(res.unit(), unit1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_sum_diff_unit() {
+        let amnt1 = Amnt!(17.4);
+        let unit1 = FooUnit::A;
+        let amnt2 = Amnt!(0.37);
+        let unit2 = FooUnit::B;
+        let qty1 = amnt1 * unit1;
+        let qty2 = amnt2 * unit2;
+        let _res: Foo = [qty1, qty2].into_iter().sum();
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_sum_empty() {
+        let _res: Foo = [].into_iter().sum();
+    }
+
+    #[test]
     fn test_mul_amnt() {
         let amnt1 = Amnt!(17.4);
         let unit1 = crate::quantity_with_ref_unit_tests::FooUnit::A;
@@ -810,6 +881,21 @@ mod quantity_single_unit_tests {
         let res = qty2 / qty1;
         assert_almost_eq!(res, amnt2 / amnt1);
     }
+
+    #[test]
+    fn test_sum() {
+        let amnt1 = Amnt!(517.04);
+        let amnt2 = Amnt!(14.3);
+        let qty1 = amnt1 * POP;
+        let qty2 = amnt2 * POP;
+        let res: Foo = [qty1, qty2].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2);
+        assert_eq!(res.unit(), POP);
+        let res: Foo = [qty2, qty1].into_iter().sum();
+        assert_almost_eq!(res.amount(), amnt1 + amnt2);
+        assert_eq!(res.unit(), POP);
+    }
+
 }
 
 #[cfg(test)]

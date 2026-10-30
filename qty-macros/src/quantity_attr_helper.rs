@@ -513,6 +513,12 @@ fn codegen_qty_single_unit(
                 self.amount() / rhs.amount()
             }
         }
+        impl Sum<Self> for #qty_ident {
+            #[inline(always)]
+            fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+                Quantity::sum(iter)
+            }
+        }
     )
 }
 
@@ -726,6 +732,12 @@ fn codegen_qty_without_ref_unit(
                 <Self as Quantity>::div(self, rhs)
             }
         }
+        impl Sum<Self> for #qty_ident {
+            #[inline(always)]
+            fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+                Quantity::sum(iter)
+            }
+        }
     )
 }
 
@@ -872,6 +884,12 @@ fn codegen_qty_with_ref_unit(
             #[inline(always)]
             fn div(self, rhs: Self) -> Self::Output {
                 <Self as HasRefUnit>::div(self, rhs)
+            }
+        }
+        impl Sum<Self> for #qty_ident {
+            #[inline(always)]
+            fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+                HasRefUnit::sum(iter)
             }
         }
     )

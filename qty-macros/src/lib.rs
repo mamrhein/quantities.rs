@@ -360,6 +360,12 @@ pub fn derive_enum_iter(input: TokenStream) -> TokenStream {
 ///         <Self as HasRefUnit>::div(self, rhs)
 ///     }
 /// }
+/// impl Sum<Self> for Mass {
+///     #[inline(always)]
+///     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+///         HasRefUnit::sum(iter)
+///     }
+/// }
 /// #[doc = "0.001·g"]
 /// pub const MILLIGRAM: MassUnit = MassUnit::Milligram;
 /// #[doc = "0.001·kg"]

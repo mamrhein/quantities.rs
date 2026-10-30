@@ -60,6 +60,7 @@ use alloc::{borrow::ToOwned, format, string::String};
 use core::{
     cmp::Ordering,
     fmt,
+    iter::{Sum},
     ops::{Add, Div, Mul, Sub},
 };
 
@@ -232,8 +233,13 @@ pub trait LinearScaledUnit: Unit {
 }
 
 /// The abstract type of quantities.
-pub trait Quantity:
-    Copy + PartialEq + PartialOrd + Sized + Mul<AmountT, Output = Self>
+pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
+    + Add<Self, Output = Self>
+    + Sub<Self, Output = Self>
+    + Div<Self, Output = AmountT>
+    + Sum<Self>
+    + Mul<AmountT, Output = Self>
+    + Div<AmountT, Output = Self>
 {
     /// Associated type of unit
     type UnitType: Unit<QuantityType = Self>;
@@ -312,7 +318,7 @@ pub trait Quantity:
     ///
     /// Panics if `self` and `other` have different units.
     fn add_assign(&mut self, rhs: Self) {
-        *self = self.add(rhs);
+        *self = Quantity::add(*self, rhs);
     }
 
     /// Returns the difference between `self` and `other`, if both have the
@@ -339,7 +345,7 @@ pub trait Quantity:
     ///
     /// Panics if `self` and `other` have different units.
     fn sub_assign(&mut self, rhs: Self) {
-        *self = self.sub(rhs);
+        *self = Quantity::sub(*self, rhs);
     }
 
     /// Returns the quotient `self` / `other`, if both have the same unit.
@@ -356,6 +362,20 @@ pub trait Quantity:
             self.unit().symbol(),
             rhs.unit().symbol()
         );
+    }
+
+    /// Returns the sum of all quantities in the iterator.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the iterator has no remaining items, or if items in the iterator have different
+    /// units.
+    fn sum(mut iter: impl Iterator<Item = Self>) -> Self {
+        if let Some(start) = iter.next() {
+            iter.fold(start, Quantity::add)
+        } else {
+            panic!("Can't determine unit with an empty iterator")
+        }
     }
 
     /// Formats `self` using the given formatter.
@@ -381,11 +401,7 @@ pub trait Quantity:
 }
 
 /// Trait for quantities having a reference unit
-pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit>
-    + Add<Self, Output = Self>
-    + Sub<Self, Output = Self>
-    + Div<Self, Output = AmountT>
-{
+pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit> + Default {
     /// Unit used as reference for scaling the units of `Self::UnitType`.
     const REF_UNIT: <Self as Quantity>::UnitType;
 
@@ -464,6 +480,16 @@ pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit>
     #[inline]
     fn div(self, rhs: Self) -> AmountT {
         self.amount() / rhs.equiv_amount(self.unit())
+    }
+
+    /// Returns the sum of all quantities in the iterator.
+    #[inline]
+    fn sum(mut iter: impl Iterator<Item = Self>) -> Self {
+        if let Some(start) = iter.next() {
+            iter.fold(start, HasRefUnit::add)
+        } else {
+            Self::default()
+        }
     }
 
     #[doc(hidden)]
