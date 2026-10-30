@@ -278,6 +278,52 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
         self.amount().signum()
     }
 
+    /// Returns the largest integer less than or equal to `self` with the
+    /// same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    fn floor(self) -> Self { Self::new(self.amount().floor(), self.unit()) }
+
+    /// Returns the largest integer less than or equal to `self` with the
+    /// same unit.
+    #[cfg(feature = "fpdec")]
+    fn floor(self) -> Self { Self::new(Decimal::floor(&self.amount()), self.unit()) }
+
+    /// Returns the smallest integer greater than or equal to `self` with
+    /// the same unit
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    fn ceil(self) -> Self { Self::new(self.amount().ceil(), self.unit()) }
+
+    /// Returns the smallest integer greater than or equal to `self` with
+    /// the same unit
+    #[cfg(feature = "fpdec")]
+    fn ceil(self) -> Self { Self::new(Decimal::ceil(&self.amount()), self.unit()) }
+
+    /// Returns the nearest integer to `self` with the same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    fn round(self) -> Self { Self::new(self.amount().round(), self.unit()) }
+
+    /// Returns the nearest integer to `self` with the same unit.
+    #[cfg(feature = "fpdec")]
+    fn round(self) -> Self {
+        Self::new(fpdec::Round::round(self.amount(), 0), self.unit())
+    }
+
+    /// Returns the integer part of `self` with the same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    fn trunc(self) -> Self { Self::new(self.amount().trunc(), self.unit()) }
+
+    /// Returns the integer part of `self` with the same unit.
+    #[cfg(feature = "fpdec")]
+    fn trunc(self) -> Self { Self::new(Decimal::trunc(&self.amount()), self.unit()) }
+
+    /// Returns the fractional part of `self` with the same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    fn fract(self) -> Self { Self::new(self.amount().fract(), self.unit()) }
+
+    /// Returns the fractional part of `self` with the same unit.
+    #[cfg(feature = "fpdec")]
+    fn fract(self) -> Self { Self::new(Decimal::fract(&self.amount()), self.unit()) }
+
     /// Return `true` if `self` and `other` have the same unit and their
     /// amounts are equal, otherwise `false`.
     #[inline(always)]
