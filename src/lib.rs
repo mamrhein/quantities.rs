@@ -478,6 +478,79 @@ pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit> + Default {
         *self = self.convert(to_unit);
     }
 
+    /// Returns the largest integer less than or equal to `self` with the
+    /// same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    #[inline]
+    fn equiv_floor(&self, unit: Self::UnitType) -> Self {
+        Self::new(self.equiv_amount(unit).floor(), unit)
+    }
+
+    /// Returns the largest integer less than or equal to `self` with the
+    /// same unit.
+    #[cfg(feature = "fpdec")]
+    #[inline]
+    fn equiv_floor(&self, unit: Self::UnitType) -> Self {
+        Self::new(Decimal::floor(&self.equiv_amount(unit)), unit)
+    }
+
+    /// Returns the smallest integer greater than or equal to `self` with
+    /// the same unit
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    #[inline]
+    fn equiv_ceil(&self, unit: Self::UnitType) -> Self {
+        Self::new(self.equiv_amount(unit).ceil(), unit)
+    }
+
+    /// Returns the smallest integer greater than or equal to `self` with
+    /// the same unit
+    #[cfg(feature = "fpdec")]
+    #[inline]
+    fn equiv_ceil(&self, unit: Self::UnitType) -> Self {
+        Self::new(Decimal::ceil(&self.equiv_amount(unit)), unit)
+    }
+
+    /// Returns the nearest integer to `self` with the same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    #[inline]
+    fn equiv_round(&self, unit: Self::UnitType) -> Self {
+        Self::new(self.equiv_amount(unit).round(), unit)
+    }
+
+    /// Returns the nearest integer to `self` with the same unit.
+    #[cfg(feature = "fpdec")]
+    fn equiv_round(&self, unit: Self::UnitType) -> Self {
+        Self::new(fpdec::Round::round(self.equiv_amount(unit), 0), unit)
+    }
+
+    /// Returns the integer part of `self` with the same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    #[inline]
+    fn equiv_trunc(&self, unit: Self::UnitType) -> Self {
+        Self::new(self.equiv_amount(unit).trunc(), unit)
+    }
+
+    /// Returns the integer part of `self` with the same unit.
+    #[cfg(feature = "fpdec")]
+    #[inline]
+    fn equiv_trunc(&self, unit: Self::UnitType) -> Self {
+        Self::new(Decimal::trunc(&self.equiv_amount(unit)), unit)
+    }
+
+    /// Returns the fractional part of `self` with the same unit.
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    #[inline]
+    fn equiv_fract(&self, unit: Self::UnitType) -> Self {
+        Self::new(self.equiv_amount(unit).fract(), unit)
+    }
+
+    /// Returns the fractional part of `self` with the same unit.
+    #[cfg(feature = "fpdec")]
+    #[inline]
+    fn equiv_fract(&self, unit: Self::UnitType) -> Self {
+        Self::new(Decimal::fract(&self.equiv_amount(unit)), unit)
+    }
+
     /// Returns true, if `self` and `other` have equivalent amounts, otherwise
     /// `false`.
     #[inline(always)]

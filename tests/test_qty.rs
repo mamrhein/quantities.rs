@@ -132,6 +132,14 @@ mod quantity_with_ref_unit_tests {
     }
 
     #[test]
+    fn test_signum() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).signum(), Amnt!(1.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).signum(), Amnt!(-1.0));
+        #[cfg(feature = "fpdec")]
+        assert_eq!(Foo::new(Amnt!(0.0), FooUnit::A).signum(), Amnt!(0.0));
+    }
+
+    #[test]
     #[cfg(any(feature = "std", feature = "fpdec"))]
     fn test_floor() {
         assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).floor().amount(), Amnt!(123.0));
@@ -169,14 +177,6 @@ mod quantity_with_ref_unit_tests {
     fn test_fract() {
         let amount = Amnt!(123.456);
         assert_eq!(Foo::new(amount, FooUnit::A).fract().amount(), amount.fract());
-    }
-
-    #[test]
-    fn test_signum() {
-        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).signum(), Amnt!(1.0));
-        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).signum(), Amnt!(-1.0));
-        #[cfg(feature = "fpdec")]
-        assert_eq!(Foo::new(Amnt!(0.0), FooUnit::A).signum(), Amnt!(0.0));
     }
 
     #[test]
@@ -237,6 +237,60 @@ mod quantity_with_ref_unit_tests {
         qty.convert_assign(FooUnit::B);
         assert_almost_eq!(qty.amount(), Amnt!(17.4));
         assert_eq!(qty.unit(), FooUnit::B);
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "fpdec"))]
+    fn test_equiv_floor() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).equiv_floor(FooUnit::A).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(123.5), FooUnit::A).equiv_floor(FooUnit::A).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).equiv_floor(FooUnit::A).amount(), Amnt!(-124.0));
+        assert_eq!(Foo::new(Amnt!(-123.5), FooUnit::A).equiv_floor(FooUnit::A).amount(), Amnt!(-124.0));
+        assert_eq!(Foo::new(Amnt!(49.3), FooUnit::A).equiv_floor(FooUnit::B).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(49.4), FooUnit::A).equiv_floor(FooUnit::B).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(-49.3), FooUnit::A).equiv_floor(FooUnit::B).amount(), Amnt!(-124.0));
+        assert_eq!(Foo::new(Amnt!(-49.4), FooUnit::A).equiv_floor(FooUnit::B).amount(), Amnt!(-124.0));
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "fpdec"))]
+    fn test_equiv_ceil() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).equiv_ceil(FooUnit::A).amount(), Amnt!(124.0));
+        assert_eq!(Foo::new(Amnt!(123.5), FooUnit::A).equiv_ceil(FooUnit::A).amount(), Amnt!(124.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).equiv_ceil(FooUnit::A).amount(), Amnt!(-123.0));
+        assert_eq!(Foo::new(Amnt!(-123.5), FooUnit::A).equiv_ceil(FooUnit::A).amount(), Amnt!(-123.0));
+        assert_eq!(Foo::new(Amnt!(49.3), FooUnit::A).equiv_ceil(FooUnit::B).amount(), Amnt!(124.0));
+        assert_eq!(Foo::new(Amnt!(49.4), FooUnit::A).equiv_ceil(FooUnit::B).amount(), Amnt!(124.0));
+        assert_eq!(Foo::new(Amnt!(-49.3), FooUnit::A).equiv_ceil(FooUnit::B).amount(), Amnt!(-123.0));
+        assert_eq!(Foo::new(Amnt!(-49.4), FooUnit::A).equiv_ceil(FooUnit::B).amount(), Amnt!(-123.0));
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "fpdec"))]
+    fn test_equiv_round() {
+        assert_eq!(Foo::new(Amnt!(123.4), FooUnit::A).equiv_round(FooUnit::A).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(123.5), FooUnit::A).equiv_round(FooUnit::A).amount(), Amnt!(124.0));
+        assert_eq!(Foo::new(Amnt!(-123.4), FooUnit::A).equiv_round(FooUnit::A).amount(), Amnt!(-123.0));
+        assert_eq!(Foo::new(Amnt!(-123.5), FooUnit::A).equiv_round(FooUnit::A).amount(), Amnt!(-124.0));
+        assert_eq!(Foo::new(Amnt!(49.3), FooUnit::A).equiv_round(FooUnit::B).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(49.4), FooUnit::A).equiv_round(FooUnit::B).amount(), Amnt!(124.0));
+        assert_eq!(Foo::new(Amnt!(-49.3), FooUnit::A).equiv_round(FooUnit::B).amount(), Amnt!(-123.0));
+        assert_eq!(Foo::new(Amnt!(-49.4), FooUnit::A).equiv_round(FooUnit::B).amount(), Amnt!(-124.0));
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "fpdec"))]
+    fn test_equiv_trunc() {
+        assert_eq!(Foo::new(Amnt!(123.5), FooUnit::A).equiv_trunc(FooUnit::A).amount(), Amnt!(123.0));
+        assert_eq!(Foo::new(Amnt!(49.4), FooUnit::A).equiv_trunc(FooUnit::B).amount(), Amnt!(123.0));
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "fpdec"))]
+    fn test_equiv_fract() {
+        let expected = Amnt!(123.5).fract();
+        assert_eq!(Foo::new(Amnt!(123.5), FooUnit::A).equiv_fract(FooUnit::A).amount(), expected);
+        assert_eq!(Foo::new(Amnt!(49.4), FooUnit::A).equiv_fract(FooUnit::B).amount(), expected);
     }
 
     #[test]
