@@ -1,8 +1,8 @@
 [package]
 name = "qty-macros"
-version = "0.15.5"
+version = "0.15.6"
 edition = "2021"
-authors = ["Michael Amrhein <michael@adrhinum.de>"]
+authors = ["Michael Amrhein <michael@adrhinum.de>", "Phena Ildanach <phena.ildanach@phena.info>"]
 description = "Macros supporting the implementation of quantities."
 readme = "README.md"
 homepage = "https://github.com/mamrhein/quantities.rs"

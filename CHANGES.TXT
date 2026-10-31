@@ -1,5 +1,11 @@
 Version   Changes
 --------  --------------------------------------------------------------------
+0.15.6    Added floor, ceil, round, trunc, and fract methods to Quantity.
+          Added equiv_ versions of those methods to HasRefUnit.
+          Implement Sum for quantities.
+          Moved some trait bounds from HasRefUnit to Quantity as they also
+          apply there.
+
 0.15.5    Member functions `abs` / `signum` promoted to the `Quantity` trait
           (thanks to Phena Ildanach).
           Generics boilerplate reduced — `Quantity` and `HasRefUnit` now carry
