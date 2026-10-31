@@ -144,7 +144,7 @@ help: the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
 note: required by a bound in `quantities::HasRefUnit::_fit`
   --> src/lib.rs
    |
-   | pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit>
+   | pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit> + Default {
    |                                          ^^^^^^^^^^^^^^^^ required by this bound in `HasRefUnit::_fit`
 ...
    |     fn _fit(amount: AmountT) -> Self {

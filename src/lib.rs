@@ -245,6 +245,7 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     type UnitType: Unit<QuantityType = Self>;
 
     /// Returns an iterator over the variants of `Self::UnitType`.
+    #[inline]
     #[must_use]
     fn iter_units() -> impl Iterator<Item = Self::UnitType> {
         Self::UnitType::iter()
@@ -252,6 +253,7 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
 
     /// Returns `Some(unit)` where `unit.symbol()` == `symbol`, or `None` if
     /// there is no such unit.
+    #[inline]
     #[must_use]
     fn unit_from_symbol(symbol: &str) -> Option<Self::UnitType> {
         Self::iter_units().find(|&unit| unit.symbol() == symbol)
@@ -267,62 +269,90 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     fn unit(&self) -> Self::UnitType;
 
     /// Returns the absolute value of `self`.
-    #[inline(always)]
+    #[inline]
     fn abs(&self) -> Self {
         Self::new(self.amount().abs(), self.unit())
     }
 
     /// Returns the sign number of `self`.
-    #[inline(always)]
+    #[inline]
     fn signum(&self) -> AmountT {
         self.amount().signum()
     }
 
-    /// Returns the largest integer less than or equal to `self` with the
-    /// same unit.
+    /// Returns the largest integer less than or equal to `self` with the same
+    /// unit.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
-    fn floor(self) -> Self { Self::new(self.amount().floor(), self.unit()) }
+    #[inline]
+    fn floor(self) -> Self {
+        Self::new(self.amount().floor(), self.unit())
+    }
 
-    /// Returns the largest integer less than or equal to `self` with the
+    /// Returns the largest integer less than or equal to `self` with the same
+    /// unit.
+    #[cfg(feature = "fpdec")]
+    #[inline]
+    fn floor(self) -> Self {
+        Self::new(Decimal::floor(&self.amount()), self.unit())
+    }
+
+    /// Returns the smallest integer greater than or equal to `self` with the
+    /// same unit
+    #[cfg(all(feature = "std", not(feature = "fpdec")))]
+    #[inline]
+    fn ceil(self) -> Self {
+        Self::new(self.amount().ceil(), self.unit())
+    }
+
+    /// Returns the smallest integer greater than or equal to `self` with the
     /// same unit.
     #[cfg(feature = "fpdec")]
-    fn floor(self) -> Self { Self::new(Decimal::floor(&self.amount()), self.unit()) }
-
-    /// Returns the smallest integer greater than or equal to `self` with
-    /// the same unit
-    #[cfg(all(feature = "std", not(feature = "fpdec")))]
-    fn ceil(self) -> Self { Self::new(self.amount().ceil(), self.unit()) }
-
-    /// Returns the smallest integer greater than or equal to `self` with
-    /// the same unit
-    #[cfg(feature = "fpdec")]
-    fn ceil(self) -> Self { Self::new(Decimal::ceil(&self.amount()), self.unit()) }
+    #[inline]
+    fn ceil(self) -> Self {
+        Self::new(Decimal::ceil(&self.amount()), self.unit())
+    }
 
     /// Returns the nearest integer to `self` with the same unit.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
-    fn round(self) -> Self { Self::new(self.amount().round(), self.unit()) }
+    #[inline]
+    fn round(self) -> Self {
+        Self::new(self.amount().round(), self.unit())
+    }
 
     /// Returns the nearest integer to `self` with the same unit.
     #[cfg(feature = "fpdec")]
+    #[inline]
     fn round(self) -> Self {
         Self::new(fpdec::Round::round(self.amount(), 0), self.unit())
     }
 
     /// Returns the integer part of `self` with the same unit.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
-    fn trunc(self) -> Self { Self::new(self.amount().trunc(), self.unit()) }
+    #[inline]
+    fn trunc(self) -> Self {
+        Self::new(self.amount().trunc(), self.unit())
+    }
 
     /// Returns the integer part of `self` with the same unit.
     #[cfg(feature = "fpdec")]
-    fn trunc(self) -> Self { Self::new(Decimal::trunc(&self.amount()), self.unit()) }
+    #[inline]
+    fn trunc(self) -> Self {
+        Self::new(Decimal::trunc(&self.amount()), self.unit())
+    }
 
     /// Returns the fractional part of `self` with the same unit.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
-    fn fract(self) -> Self { Self::new(self.amount().fract(), self.unit()) }
+    #[inline]
+    fn fract(self) -> Self {
+        Self::new(self.amount().fract(), self.unit())
+    }
 
     /// Returns the fractional part of `self` with the same unit.
     #[cfg(feature = "fpdec")]
-    fn fract(self) -> Self { Self::new(Decimal::fract(&self.amount()), self.unit()) }
+    #[inline]
+    fn fract(self) -> Self {
+        Self::new(Decimal::fract(&self.amount()), self.unit())
+    }
 
     /// Return `true` if `self` and `other` have the same unit and their
     /// amounts are equal, otherwise `false`.
@@ -333,6 +363,7 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
 
     /// Returns the partial order of `self`s and `other`s amounts, if both
     /// have the same unit, otherwise `None`.
+    #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.unit() == other.unit() {
             PartialOrd::partial_cmp(&self.amount(), &other.amount())
@@ -346,15 +377,13 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     /// # Panics
     ///
     /// Panics if `self` and `other` have different units.
+    #[inline]
     fn add(self, rhs: Self) -> Self {
         if self.unit() == rhs.unit() {
-            return Self::new(self.amount() + rhs.amount(), self.unit());
+            Self::new(self.amount() + rhs.amount(), self.unit())
+        } else {
+            panic!("Can't add '{}' and '{}'.", self.unit(), rhs.unit())
         }
-        panic!(
-            "Can't add '{}' and '{}'.",
-            self.unit().symbol(),
-            rhs.unit().symbol()
-        );
     }
 
     /// Adds the amount of `other` to `self` in place, if both have the same
@@ -363,6 +392,7 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     /// # Panics
     ///
     /// Panics if `self` and `other` have different units.
+    #[inline]
     fn add_assign(&mut self, rhs: Self) {
         *self = Quantity::add(*self, rhs);
     }
@@ -373,15 +403,13 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     /// # Panics
     ///
     /// Panics if `self` and `other` have different units.
+    #[inline]
     fn sub(self, rhs: Self) -> Self {
         if self.unit() == rhs.unit() {
-            return Self::new(self.amount() - rhs.amount(), self.unit());
+            Self::new(self.amount() - rhs.amount(), self.unit())
+        } else {
+            panic!("Can't subtract '{}' and '{}'.", self.unit(), rhs.unit())
         }
-        panic!(
-            "Can't subtract '{}' and '{}'.",
-            self.unit().symbol(),
-            rhs.unit().symbol(),
-        );
     }
 
     /// Subtracts the amount of `other` from `self` in place, if both have the
@@ -390,6 +418,7 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     /// # Panics
     ///
     /// Panics if `self` and `other` have different units.
+    #[inline]
     fn sub_assign(&mut self, rhs: Self) {
         *self = Quantity::sub(*self, rhs);
     }
@@ -399,23 +428,22 @@ pub trait Quantity: Copy + PartialEq + PartialOrd + Sized
     /// # Panics
     ///
     /// Panics if `self` and `other` have different units.
+    #[inline]
     fn div(self, rhs: Self) -> AmountT {
         if self.unit() == rhs.unit() {
-            return self.amount() / rhs.amount();
+            self.amount() / rhs.amount()
+        } else {
+            panic!("Can't divide '{}' and '{}'.", self.unit(), rhs.unit())
         }
-        panic!(
-            "Can't divide '{}' and '{}'.",
-            self.unit().symbol(),
-            rhs.unit().symbol()
-        );
     }
 
     /// Returns the sum of all quantities in the iterator.
     ///
     /// # Panics
     ///
-    /// Panics if the iterator has no remaining items, or if items in the iterator have different
-    /// units.
+    /// Panics if the iterator has no remaining items, or if items in the
+    /// iterator have different units.
+    #[inline]
     fn sum(mut iter: impl Iterator<Item = Self>) -> Self {
         if let Some(start) = iter.next() {
             iter.fold(start, Quantity::add)
@@ -453,6 +481,7 @@ pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit> + Default {
 
     /// Returns `Some(unit)` where `unit.scale()` == `amnt`, or `None` if
     /// there is no such unit.
+    #[inline]
     #[must_use]
     fn unit_from_scale(amnt: AmountT) -> Option<Self::UnitType> {
         Self::iter_units().find(|&unit| unit.scale() == amnt)
@@ -469,82 +498,91 @@ pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit> + Default {
     }
 
     /// Returns `qty` where `qty` == `self` and `qty.unit()` is `to_unit`.
+    #[inline]
     fn convert(&self, to_unit: Self::UnitType) -> Self {
         Self::new(self.equiv_amount(to_unit), to_unit)
     }
 
     /// Converts `self` to the equivalent `to_unit`.
+    #[inline]
     fn convert_assign(&mut self, to_unit: Self::UnitType) {
         *self = self.convert(to_unit);
     }
 
-    /// Returns the largest integer less than or equal to `self` with the
-    /// same unit.
+    /// Returns the largest integer less than or equal to the equivalent value
+    /// of `self` in terms of `unit`.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
     #[inline]
     fn equiv_floor(&self, unit: Self::UnitType) -> Self {
         Self::new(self.equiv_amount(unit).floor(), unit)
     }
 
-    /// Returns the largest integer less than or equal to `self` with the
-    /// same unit.
+    /// Returns the largest integer less than or equal to the equivalent value
+    /// of `self` in terms of `unit`.
     #[cfg(feature = "fpdec")]
     #[inline]
     fn equiv_floor(&self, unit: Self::UnitType) -> Self {
         Self::new(Decimal::floor(&self.equiv_amount(unit)), unit)
     }
 
-    /// Returns the smallest integer greater than or equal to `self` with
-    /// the same unit
+    /// Returns the smallest integer greater than or equal to the equivalent
+    /// value of `self` in terms of `unit`.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
     #[inline]
     fn equiv_ceil(&self, unit: Self::UnitType) -> Self {
         Self::new(self.equiv_amount(unit).ceil(), unit)
     }
 
-    /// Returns the smallest integer greater than or equal to `self` with
-    /// the same unit
+    /// Returns the smallest integer greater than or equal to the equivalent
+    /// value of `self` in terms of `unit`.
     #[cfg(feature = "fpdec")]
     #[inline]
     fn equiv_ceil(&self, unit: Self::UnitType) -> Self {
         Self::new(Decimal::ceil(&self.equiv_amount(unit)), unit)
     }
 
-    /// Returns the nearest integer to `self` with the same unit.
+    /// Returns the nearest integer to the equivalent value of `self` in terms
+    /// of `unit`.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
     #[inline]
     fn equiv_round(&self, unit: Self::UnitType) -> Self {
         Self::new(self.equiv_amount(unit).round(), unit)
     }
 
-    /// Returns the nearest integer to `self` with the same unit.
+    /// Returns the nearest integer to the equivalent value of `self` in terms
+    /// of `unit`.
     #[cfg(feature = "fpdec")]
+    #[inline]
     fn equiv_round(&self, unit: Self::UnitType) -> Self {
         Self::new(fpdec::Round::round(self.equiv_amount(unit), 0), unit)
     }
 
-    /// Returns the integer part of `self` with the same unit.
+    /// Returns the integer part of the equivalent value of `self` in terms of
+    /// `unit`.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
     #[inline]
     fn equiv_trunc(&self, unit: Self::UnitType) -> Self {
         Self::new(self.equiv_amount(unit).trunc(), unit)
     }
 
-    /// Returns the integer part of `self` with the same unit.
+    /// Returns the integer part of the equivalent value of `self` in terms of
+    /// `unit`.
     #[cfg(feature = "fpdec")]
     #[inline]
     fn equiv_trunc(&self, unit: Self::UnitType) -> Self {
         Self::new(Decimal::trunc(&self.equiv_amount(unit)), unit)
     }
 
-    /// Returns the fractional part of `self` with the same unit.
+    /// Returns the fractional part of the equivalent value of `self` in terms
+    /// of `unit`.
     #[cfg(all(feature = "std", not(feature = "fpdec")))]
     #[inline]
     fn equiv_fract(&self, unit: Self::UnitType) -> Self {
         Self::new(self.equiv_amount(unit).fract(), unit)
     }
 
-    /// Returns the fractional part of `self` with the same unit.
+    /// Returns the fractional part of the equivalent value of `self` in terms
+    /// of `unit`.
     #[cfg(feature = "fpdec")]
     #[inline]
     fn equiv_fract(&self, unit: Self::UnitType) -> Self {
@@ -560,6 +598,7 @@ pub trait HasRefUnit: Quantity<UnitType: LinearScaledUnit> + Default {
 
     /// Returns the partial order of `self`s amount and `other`s eqivalent
     /// amount in `self`s unit.
+    #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         if self.unit() == other.unit() {
             PartialOrd::partial_cmp(&self.amount(), &other.amount())
