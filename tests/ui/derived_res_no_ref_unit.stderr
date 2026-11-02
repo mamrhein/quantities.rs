@@ -9,16 +9,19 @@ help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
    |
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Acceleration
-             Area
-             Bar
-             DataThroughput
-             DataVolume
-             Energy
-             Foo
-             Force
-           and $N others
+help: the following other types implement trait `quantities::HasRefUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:12:1
+   |
+12 | #[quantity]
+   | ^^^^^^^^^^^ `Foo`
+...
+17 | #[quantity]
+   | ^^^^^^^^^^^ `Bar`
+   |
+  ::: src/lib.rs
+   |
+   | impl HasRefUnit for AmountT {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^ `f64`
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `BazUnit: quantities::LinearScaledUnit` is not satisfied
@@ -32,16 +35,19 @@ help: the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
    |
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^
-   = help: the following other types implement trait `quantities::LinearScaledUnit`:
-             AccelerationUnit
-             AreaUnit
-             BarUnit
-             DataThroughputUnit
-             DataVolumeUnit
-             DurationUnit
-             EnergyUnit
-             FooUnit
-           and $N others
+help: the following other types implement trait `quantities::LinearScaledUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:12:1
+   |
+12 | #[quantity]
+   | ^^^^^^^^^^^ `FooUnit`
+...
+17 | #[quantity]
+   | ^^^^^^^^^^^ `BarUnit`
+   |
+  ::: src/lib.rs
+   |
+   | impl LinearScaledUnit for One {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `quantities::One`
    = note: this error originates in the attribute macro `quantity` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: cannot divide `Baz` by `Bar`
@@ -55,16 +61,19 @@ help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
    |
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Acceleration
-             Area
-             Bar
-             DataThroughput
-             DataVolume
-             Energy
-             Foo
-             Force
-           and $N others
+help: the following other types implement trait `quantities::HasRefUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:12:1
+   |
+12 | #[quantity]
+   | ^^^^^^^^^^^ `Foo`
+...
+17 | #[quantity]
+   | ^^^^^^^^^^^ `Bar`
+   |
+  ::: src/lib.rs
+   |
+   | impl HasRefUnit for AmountT {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^ `f64`
 note: required for `Baz` to implement `std::ops::Div<Bar>`
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
@@ -86,16 +95,19 @@ help: the trait `quantities::HasRefUnit` is not implemented for `Baz`
    |
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^
-   = help: the following other types implement trait `quantities::HasRefUnit`:
-             Acceleration
-             Area
-             Bar
-             DataThroughput
-             DataVolume
-             Energy
-             Foo
-             Force
-           and $N others
+help: the following other types implement trait `quantities::HasRefUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:12:1
+   |
+12 | #[quantity]
+   | ^^^^^^^^^^^ `Foo`
+...
+17 | #[quantity]
+   | ^^^^^^^^^^^ `Bar`
+   |
+  ::: src/lib.rs
+   |
+   | impl HasRefUnit for AmountT {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^ `f64`
 note: required for `Baz` to implement `std::ops::Div<Foo>`
   --> tests/ui/derived_res_no_ref_unit.rs:22:1
    |
@@ -131,16 +143,19 @@ help: the trait `quantities::LinearScaledUnit` is not implemented for `BazUnit`
    |
 22 | #[quantity(Foo * Bar)]
    | ^^^^^^^^^^^^^^^^^^^^^^
-   = help: the following other types implement trait `quantities::LinearScaledUnit`:
-             AccelerationUnit
-             AreaUnit
-             BarUnit
-             DataThroughputUnit
-             DataVolumeUnit
-             DurationUnit
-             EnergyUnit
-             FooUnit
-           and $N others
+help: the following other types implement trait `quantities::LinearScaledUnit`
+  --> tests/ui/derived_res_no_ref_unit.rs:12:1
+   |
+12 | #[quantity]
+   | ^^^^^^^^^^^ `FooUnit`
+...
+17 | #[quantity]
+   | ^^^^^^^^^^^ `BarUnit`
+   |
+  ::: src/lib.rs
+   |
+   | impl LinearScaledUnit for One {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `quantities::One`
 note: required by a bound in `quantities::HasRefUnit::_fit`
   --> src/lib.rs
    |
